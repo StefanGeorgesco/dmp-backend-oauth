@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -40,6 +43,9 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
 @SqlGroup({ @Sql(scripts = "/sql/create-users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/delete-users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD) })
 public class UserServiceIntegrationTest {
+
+	@MockBean
+	private KeycloakService keycloakService;
 
 	@Autowired
 	private UserDTO userDTO;
@@ -72,7 +78,9 @@ public class UserServiceIntegrationTest {
 	private PatientFile patientFile;
 
 	@Autowired
-	User user;
+	private User user;
+	
+	private String username;
 
 	private List<Specialty> specialties;
 
@@ -126,6 +134,9 @@ public class UserServiceIntegrationTest {
 		userDTO.setUsername("username");
 		userDTO.setPassword("password");
 		userDTO.setSecurityCode("12345678");
+		
+		username = "nom_utilisateur";
+		user.setUsername(username);
 	}
 
 	@AfterEach
@@ -143,6 +154,8 @@ public class UserServiceIntegrationTest {
 
 	@Test
 	public void testCreateDoctorAccountSuccess() {
+		
+		when(keycloakService.createKeycloakUser(userDTO)).thenReturn(HttpStatus.CREATED);
 
 		assertFalse(userDAO.existsById("doctorId"));
 
@@ -153,6 +166,8 @@ public class UserServiceIntegrationTest {
 
 	@Test
 	public void testCreatePatientAccountSuccess() {
+
+		when(keycloakService.createKeycloakUser(userDTO)).thenReturn(HttpStatus.CREATED);
 
 		assertFalse(userDAO.existsById("patientFileId"));
 
@@ -285,6 +300,8 @@ public class UserServiceIntegrationTest {
 
 	@Test
 	public void testDeleteUserSuccess() {
+		when(keycloakService.deleteKeycloakUser("user")).thenReturn(HttpStatus.NO_CONTENT);
+		
 		assertTrue(userDAO.existsById("D001"));
 
 		assertDoesNotThrow(() -> userService.deleteUser("D001"));
@@ -298,7 +315,7 @@ public class UserServiceIntegrationTest {
 
 		DeleteException ex = assertThrows(DeleteException.class, () -> userService.deleteUser("D002"));
 
-		assertEquals("Le compte utilisateur n'a pas pu être supprimé.", ex.getMessage());
+		assertEquals("Compte utilisateur non trouvé.", ex.getMessage());
 	}
 
 }

@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -22,6 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -34,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dao.UserDAO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.SpecialtyDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.AddressDTO;
@@ -53,6 +57,9 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
 		@Sql(scripts = "/sql/create-users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/delete-users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD) })
 public class DoctorControllerIntegrationTest {
+
+	@MockBean
+	private KeycloakService keycloakService;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -286,7 +293,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001, ROLE_DOCTOR
+	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
 	public void testUpdateDoctorSuccess() throws Exception {
 		assertTrue(doctorDAO.existsById("D001"));
 
@@ -327,7 +334,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // "D001", ROLE_DOCTOR
+	@WithMockUser(username="user",roles={"DOCTOR"}) // "D001"
 	public void testGetDoctorDetailsSuccess() throws Exception {
 
 		doctorDTO.setId("D001");
@@ -345,7 +352,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"}) // ROLE_PATIENT
+	@WithMockUser(username="eric",roles={"PATIENT"})
 	public void testGetDoctorDetailsFailureBadRole() throws Exception {
 
 		mockMvc.perform(get("/doctor/details")).andExpect(status().isForbidden());
@@ -359,7 +366,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="user",roles={"DOCTOR"})
 	public void testGetDoctorByIdUserIsDoctorSuccess() throws Exception {
 
 		assertTrue(doctorDAO.existsById("D002"));
@@ -375,7 +382,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testGetDoctorByIdUserIsAdminSuccess() throws Exception {
 
 		assertTrue(doctorDAO.existsById("D002"));
@@ -391,7 +398,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"}) // ROLE_PATIENT
+	@WithMockUser(username="eric",roles={"PATIENT"})
 	public void testGetDoctorByIdUserIsPatientSuccess() throws Exception {
 
 		assertTrue(doctorDAO.existsById("D002"));
@@ -414,9 +421,8 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testDeleteDoctorSuccessNoUser() throws Exception {
-
 		assertFalse(userDAO.existsById("D002"));
 
 		assertTrue(doctorDAO.existsById("D002"));
@@ -429,8 +435,9 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testDeleteDoctorSuccessUserPresent() throws Exception {
+		when(keycloakService.deleteKeycloakUser(user.getUsername())).thenReturn(HttpStatus.NO_CONTENT);
 
 		userDAO.save(user);
 
@@ -448,7 +455,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testDeleteDoctorFailureDoctorDoesNotExist() throws Exception {
 
 		assertFalse(doctorDAO.existsById("D003"));
@@ -459,14 +466,14 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="user",roles={"DOCTOR"})
 	public void testDeleteDoctorFailureBadRoleDoctor() throws Exception {
 
 		mockMvc.perform(delete("/doctor/D002")).andExpect(status().isForbidden());
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"}) // ROLE_PATIENT
+	@WithMockUser(username="eric",roles={"PATIENT"})
 	public void testDeleteDoctorFailureBadRolePatient() throws Exception {
 
 		mockMvc.perform(delete("/doctor/D002")).andExpect(status().isForbidden());
@@ -480,7 +487,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testFindDoctorsByIdOrFirstnameOrLastnameSuccessFound2UserIsAdmin() throws Exception {
 		mockMvc.perform(get("/doctor?q=el")).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$", hasSize(2)))
@@ -488,21 +495,21 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testFindDoctorsByIdOrFirstnameOrLastnameSuccessFound0() throws Exception {
 		mockMvc.perform(get("/doctor?q=za")).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$", hasSize(0)));
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testFindDoctorsByIdOrFirstnameOrLastnameSuccessFound0SearchStringIsBlank() throws Exception {
 		mockMvc.perform(get("/doctor?q=")).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$", hasSize(0)));
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="user",roles={"DOCTOR"})
 	public void testFindDoctorsByIdOrFirstnameOrLastnameSuccessFound2UserIsDoctor() throws Exception {
 		mockMvc.perform(get("/doctor?q=el")).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$", hasSize(2)))
@@ -510,14 +517,14 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testFindDoctorsByIdOrFirstnameOrLastnameFailureMissingQParam() throws Exception {
 		mockMvc.perform(get("/doctor?question=el")).andExpect(status().isInternalServerError())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON));
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"}) // ROLE_PATIENT
+	@WithMockUser(username="eric",roles={"PATIENT"})
 	public void testFindDoctorsByIdOrFirstnameOrLastnameFailureBadRolePatient() throws Exception {
 
 		mockMvc.perform(get("/doctor?q=el")).andExpect(status().isForbidden());
@@ -531,7 +538,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testGetSpecialtyByIdSuccessUserIsAdmin() throws Exception {
 
 		assertTrue(specialtyDAO.existsById("S003"));
@@ -542,7 +549,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testGetSpecialtyByIdFailureUserIsAdminSPecialtyDoesNotExist() throws Exception {
 
 		assertFalse(specialtyDAO.existsById("S103"));
@@ -553,7 +560,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="user",roles={"DOCTOR"})
 	public void testGetSpecialtyByIdFailureUserIsDoctor() throws Exception {
 
 		assertTrue(specialtyDAO.existsById("S003"));
@@ -562,7 +569,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"}) // ROLE_PATIENT
+	@WithMockUser(username="eric",roles={"PATIENT"})
 	public void testGetSpecialtyByIdFailureUserIsPatient() throws Exception {
 
 		assertTrue(specialtyDAO.existsById("S003"));
@@ -580,7 +587,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testGetSpecialtiesByIdOrDescriptionFound8UserIsAdmin() throws Exception {
 
 		mockMvc.perform(get("/specialty?q=chirur")).andExpect(status().isOk())
@@ -590,7 +597,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testGetSpecialtiesByIdOrDescriptionFound0UserIsAdmin() throws Exception {
 
 		mockMvc.perform(get("/specialty?q=tu")).andExpect(status().isOk())
@@ -598,7 +605,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testGetSpecialtiesByIdOrDescriptionFound0SearchStringIsBlankUserIsAdmin() throws Exception {
 
 		mockMvc.perform(get("/specialty?q=")).andExpect(status().isOk())
@@ -606,7 +613,7 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(roles={"ADMIN"}) // ROLE_ADMIN
+	@WithMockUser(roles={"ADMIN"})
 	public void testGetSpecialtiesSuccessUserIsAdmin() throws Exception {
 
 		mockMvc.perform(get("/specialty")).andExpect(status().isOk())
@@ -616,14 +623,14 @@ public class DoctorControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="user",roles={"DOCTOR"})
 	public void testGetSpecialtiesByIdOrDescriptionFailureUserIsDoctor() throws Exception {
 
 		mockMvc.perform(get("/specialty?q=chirur")).andExpect(status().isForbidden());
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"}) // ROLE_PATIENT
+	@WithMockUser(username="eric",roles={"PATIENT"})
 	public void testGetSpecialtiesByIdOrDescriptionFailureUserIsPatient() throws Exception {
 
 		mockMvc.perform(get("/specialty?q=chirur")).andExpect(status().isForbidden());

@@ -17,11 +17,14 @@ import io.netty.handler.timeout.WriteTimeoutHandler;
 import reactor.netty.http.client.HttpClient;
 
 @Configuration
-public class WebClientConfig {
+public class WebClientsConfig {
 
 	@Value("${rnipp.url}")
 	private String rnippUrl;
 
+	@Value("${keycloak.auth-server-url}")
+	private String keycloakUri;
+	
 	@Bean
 	public HttpClient getHttpClient() {
 		return HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
@@ -35,5 +38,13 @@ public class WebClientConfig {
 		return WebClient.builder().clientConnector(new ReactorClientHttpConnector(getHttpClient())).baseUrl(rnippUrl)
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).build();
 	}
+
+	@Bean
+    public WebClient keyCloakClient() {
+    	return  WebClient.builder()
+    			.baseUrl(keycloakUri)
+    			.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+    			.build();
+    }
 
 }

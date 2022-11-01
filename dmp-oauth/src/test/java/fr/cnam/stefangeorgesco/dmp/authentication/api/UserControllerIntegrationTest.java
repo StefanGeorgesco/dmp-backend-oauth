@@ -4,10 +4,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
+import static org.mockito.ArgumentMatchers.any;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dao.UserDAO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.FileDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.SpecialtyDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.model.Address;
@@ -43,6 +47,9 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
 @AutoConfigureMockMvc
 @SpringBootTest
 public class UserControllerIntegrationTest {
+
+	@MockBean
+	private KeycloakService keycloakService;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -78,7 +85,7 @@ public class UserControllerIntegrationTest {
 	private PatientFile patientFile;
 
 	@Autowired
-	User user;
+	private User user;
 
 	private List<Specialty> specialties;
 
@@ -153,6 +160,8 @@ public class UserControllerIntegrationTest {
 	@Test
 	public void testCreateDoctorAccountSuccess() throws Exception {
 
+		when(keycloakService.createKeycloakUser(any(UserDTO.class))).thenReturn(HttpStatus.CREATED);
+
 		assertFalse(userDAO.existsById("doctorId"));
 
 		mockMvc.perform(
@@ -165,6 +174,8 @@ public class UserControllerIntegrationTest {
 
 	@Test
 	public void testCreatePatientAccountSuccess() throws Exception {
+
+		when(keycloakService.createKeycloakUser(any(UserDTO.class))).thenReturn(HttpStatus.CREATED);
 
 		userDTO.setId("patientFileId");
 		userDTO.setSecurityCode("7890");

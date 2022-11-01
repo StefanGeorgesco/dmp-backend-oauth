@@ -1163,7 +1163,7 @@ public class PatientFileServiceTest {
 	}
 
 	@Test
-	public void testDeletePatientFileSuccessNoUser() throws DeleteException {
+	public void testDeletePatientFileSuccessNoUser() throws DeleteException, FinderException {
 		when(correspondenceDAO.deleteAllByPatientFileId("P001")).thenReturn(3);
 		when(patientFileItemDAO.deleteAllByPatientFileId("P001")).thenReturn(9);
 		doNothing().when(patientFileDAO).deleteById("P001");
@@ -1178,7 +1178,7 @@ public class PatientFileServiceTest {
 	}
 
 	@Test
-	public void testDeletePatientFileSuccessUserPresent() throws DeleteException {
+	public void testDeletePatientFileSuccessUserPresent() throws DeleteException, FinderException {
 		when(correspondenceDAO.deleteAllByPatientFileId("P001")).thenReturn(3);
 		when(patientFileItemDAO.deleteAllByPatientFileId("P001")).thenReturn(9);
 		doNothing().when(patientFileDAO).deleteById("P001");
@@ -1193,7 +1193,7 @@ public class PatientFileServiceTest {
 	}
 
 	@Test
-	public void testDeletePatientFileFailurePatientFileDoesNotExist() throws DeleteException {
+	public void testDeletePatientFileFailurePatientFileDoesNotExist() throws DeleteException, FinderException {
 		when(correspondenceDAO.deleteAllByPatientFileId("P001")).thenReturn(0);
 		when(patientFileItemDAO.deleteAllByPatientFileId("P001")).thenReturn(0);
 		doThrow(new RuntimeException("")).when(patientFileDAO).deleteById("P001");

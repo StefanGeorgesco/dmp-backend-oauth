@@ -317,7 +317,7 @@ public class DoctorServiceTest {
 	}
 
 	@Test
-	public void testDeleteDoctorSuccessNoUser() throws DeleteException {
+	public void testDeleteDoctorSuccessNoUser() throws DeleteException, FinderException {
 		doNothing().when(doctorDAO).deleteById("D002");
 		doThrow(new DeleteException("")).when(userService).deleteUser("D002");
 
@@ -328,7 +328,7 @@ public class DoctorServiceTest {
 	}
 
 	@Test
-	public void testDeleteDoctorSuccessUserPresent() throws DeleteException {
+	public void testDeleteDoctorSuccessUserPresent() throws DeleteException, FinderException {
 		doNothing().when(doctorDAO).deleteById("D001");
 		doNothing().when(userService).deleteUser("D001");
 
@@ -339,7 +339,7 @@ public class DoctorServiceTest {
 	}
 
 	@Test
-	public void testDeleteDoctorFailureDoctorDoesNotExist() throws DeleteException {
+	public void testDeleteDoctorFailureDoctorDoesNotExist() throws DeleteException, FinderException {
 		doThrow(new RuntimeException("")).when(doctorDAO).deleteById("D003");
 		doThrow(new DeleteException("")).when(userService).deleteUser("D003");
 

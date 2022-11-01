@@ -18,6 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,6 +48,9 @@ public class UserServiceTest {
 
 	@MockBean
 	private PatientFile patientFile;
+	
+	@MockBean
+	private KeycloakService keycloakService;
 
 	@Autowired
 	private UserService userService;
@@ -55,7 +59,9 @@ public class UserServiceTest {
 	private UserDTO userDTO;
 
 	@Autowired
-	User user;
+	private User user;
+	
+	private String username;
 
 	private ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
@@ -65,6 +71,9 @@ public class UserServiceTest {
 		userDTO.setUsername("username");
 		userDTO.setPassword("password");
 		userDTO.setSecurityCode("securityCode");
+		
+		username = "nom_utilisateur";
+		user.setUsername(username);
 	}
 
 	@Test
@@ -74,7 +83,8 @@ public class UserServiceTest {
 		when(userDAO.existsByUsername(userDTO.getUsername())).thenReturn(false);
 		when(fileDAO.findById(userDTO.getId())).thenReturn(Optional.of(doctor));
 		when(userDAO.save(userCaptor.capture())).thenAnswer(invocation -> invocation.getArguments()[0]);
-
+		when(keycloakService.createKeycloakUser(userDTO)).thenReturn(HttpStatus.CREATED);
+		
 		assertDoesNotThrow(() -> userService.createUser(userDTO));
 
 		verify(userDAO, times(1)).existsById(userDTO.getId());
@@ -96,6 +106,7 @@ public class UserServiceTest {
 		when(userDAO.existsByUsername(userDTO.getUsername())).thenReturn(false);
 		when(fileDAO.findById(userDTO.getId())).thenReturn(Optional.of(patientFile));
 		when(userDAO.save(userCaptor.capture())).thenAnswer(invocation -> invocation.getArguments()[0]);
+		when(keycloakService.createKeycloakUser(userDTO)).thenReturn(HttpStatus.CREATED);
 
 		assertDoesNotThrow(() -> userService.createUser(userDTO));
 
@@ -190,7 +201,9 @@ public class UserServiceTest {
 
 	@Test
 	public void testDeleteUserSuccess() {
+		when(userDAO.findById("P001")).thenReturn(Optional.of(user));
 		doNothing().when(userDAO).deleteById("P001");
+		when(keycloakService.deleteKeycloakUser(username)).thenReturn(HttpStatus.NO_CONTENT);
 
 		assertDoesNotThrow(() -> userService.deleteUser("P001"));
 

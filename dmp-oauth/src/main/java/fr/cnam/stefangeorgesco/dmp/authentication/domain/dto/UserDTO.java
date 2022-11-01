@@ -1,5 +1,8 @@
 package fr.cnam.stefangeorgesco.dmp.authentication.domain.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -29,6 +32,8 @@ public class UserDTO {
 	@NotBlank(message = "Le mot de passe est obligatoire.")
 	@Size(min = 4, message = "Le mot de passe doit contenir au moins 4 caractères.")
 	private String password;
+	
+	private List<String> roles = new ArrayList<>();
 
 	/**
 	 * Ce code généré lors de la création du dossier de médecin ou du dossier
@@ -60,6 +65,14 @@ public class UserDTO {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
 	}
 
 	public String getSecurityCode() {
