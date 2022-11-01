@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "frontend.url",
+    "type": "java.lang.String",
+    "description": "front-end url for development (cors settings)"
+  },
+  {
+    "name": "rnipp.url",
+    "type": "java.lang.String",
+    "description": "Rnipp Service url"
+  }
+]}

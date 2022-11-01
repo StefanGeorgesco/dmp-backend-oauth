@@ -1,0 +1,5 @@
+#Production users
+A001	admin			admin			ADMIN
+D001	john			1234			DOCTOR
+D002	marco			doctor			DOCTOR
+P001	jean			12345			PATIENT

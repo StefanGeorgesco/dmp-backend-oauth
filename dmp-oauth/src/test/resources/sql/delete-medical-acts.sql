@@ -1,0 +1,1 @@
+delete from t_medical_act
