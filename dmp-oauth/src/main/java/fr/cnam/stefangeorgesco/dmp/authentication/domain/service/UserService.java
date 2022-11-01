@@ -90,9 +90,9 @@ public class UserService {
 		file.checkUserData(user, bCryptPasswordEncoder);
 
 		if (file instanceof Doctor) {
-			userDTO.setRoles(List.of("DOCTOR"));
+			userDTO.setRole("DOCTOR");
 		} else {
-			userDTO.setRoles(List.of("PATIENT"));
+			userDTO.setRole("PATIENT");
 		}
 
 		HttpStatus responseStatus;

@@ -51,7 +51,8 @@ public class KeycloakService {
 		user.setEnabled(true);
 		user.setUsername(userDTO.getUsername());
 		user.setCredentials(List.of(credentials));
-		user.setRealmRoles(userDTO.getRoles());
+//		user.setRealmRoles(List.of(userDTO.getRole()));
+		user.setGroups(List.of(userDTO.getRole() + "S"));
 
 		ResponseEntity<Void> resp = keyCloakClient
 										.post()
@@ -83,7 +84,7 @@ public class KeycloakService {
 		byte[] postData = admin.getBytes(StandardCharsets.UTF_8);
 		Map<String, String> result = keyCloakClient
 										.post()
-										.uri("/realms/Master/protocol/openid-connect/token")
+										.uri("/realms/master/protocol/openid-connect/token")
 										.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 										.body(Mono.just(postData), byte[].class)
 										.retrieve()

@@ -33,7 +33,7 @@ public class UserDTO {
 	@Size(min = 4, message = "Le mot de passe doit contenir au moins 4 caractères.")
 	private String password;
 	
-	private List<String> roles = new ArrayList<>();
+	private String role;
 
 	/**
 	 * Ce code généré lors de la création du dossier de médecin ou du dossier
@@ -67,12 +67,12 @@ public class UserDTO {
 		this.password = password;
 	}
 
-	public List<String> getRoles() {
-		return roles;
+	public String getRole() {
+		return role;
 	}
 
-	public void setRoles(List<String> roles) {
-		this.roles = roles;
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	public String getSecurityCode() {
