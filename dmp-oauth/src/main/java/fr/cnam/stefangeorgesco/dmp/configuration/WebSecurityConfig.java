@@ -22,12 +22,15 @@ public class WebSecurityConfig {
 
 	@Value("${frontend.url}")
 	private String frontEndUrl;
+	
+	@Value("${keycloak.principal-attribute}")
+	private String principalClaimName;
 
 	@Bean
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
-        jwtAuthenticationConverter.setPrincipalClaimName("preferred_username");
+        jwtAuthenticationConverter.setPrincipalClaimName(principalClaimName);
 		
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().cors()
 				.configurationSource(new CorsConfigurationSource() {
@@ -44,7 +47,6 @@ public class WebSecurityConfig {
 					}
 				}).and().csrf().disable()
 				.authorizeHttpRequests()
-						.mvcMatchers(HttpMethod.POST, "/login").permitAll()
 						.mvcMatchers(HttpMethod.POST, "/user").permitAll()
 						.mvcMatchers(HttpMethod.POST, "/doctor").hasRole("ADMIN")
 						.mvcMatchers(HttpMethod.POST, "/patient-file").hasRole("DOCTOR")
@@ -75,7 +77,6 @@ public class WebSecurityConfig {
 						.mvcMatchers(HttpMethod.GET, "/disease").hasRole("DOCTOR")
 						.mvcMatchers(HttpMethod.GET, "/medical-act/{id}").hasRole("DOCTOR")
 						.mvcMatchers(HttpMethod.GET, "/medical-act").hasRole("DOCTOR")
-						.mvcMatchers(HttpMethod.GET, "/", "/*.ico", "/assets/**").permitAll()
 						.anyRequest().denyAll()
 						.and().oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter);
 		
