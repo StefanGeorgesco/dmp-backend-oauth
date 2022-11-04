@@ -1,6 +1,7 @@
 package fr.cnam.stefangeorgesco.dmp.authentication.domain.service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,17 +43,25 @@ public class KeycloakService {
 	WebClient keyCloakClient;
 	
 	public HttpStatus createKeycloakUser(UserDTO userDTO) throws WebClientResponseException {
+		
 		String token = getAdminToken();
+		
 		CredentialRepresentation credentials = new CredentialRepresentation();
 		credentials.setType("password");
 		credentials.setTemporary(false);
 		credentials.setValue(userDTO.getPassword());
+		
 		UserRepresentation user = new UserRepresentation();
 		user.setEnabled(true);
 		user.setUsername(userDTO.getUsername());
 		user.setCredentials(List.of(credentials));
 //		user.setRealmRoles(List.of(userDTO.getRole()));
 		user.setGroups(List.of(userDTO.getRole() + "S"));
+		
+		Map<String, List<String>> attributes = new HashMap<>();
+		attributes.put("id", List.of(userDTO.getId()));
+		
+		user.setAttributes(attributes);
 
 		ResponseEntity<Void> resp = keyCloakClient
 										.post()
