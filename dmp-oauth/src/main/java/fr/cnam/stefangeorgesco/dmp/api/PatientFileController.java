@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.CorrespondenceDTO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.DiseaseDTO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO;
@@ -43,9 +41,6 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.UpdateException;
  */
 @RestController
 public class PatientFileController {
-
-	@Autowired
-	private UserService userService;
 
 	@Autowired
 	private PatientFileService patientFileService;
@@ -72,9 +67,7 @@ public class PatientFileController {
 	public ResponseEntity<PatientFileDTO> createPatientFile(@Valid @RequestBody PatientFileDTO patientFileDTO,
 			Principal principal) throws FinderException, CheckException, CreateException {
 
-		UserDTO userDTO = userService.findUserByUsername(principal.getName());
-
-		patientFileDTO.setReferringDoctorId(userDTO.getId());
+		patientFileDTO.setReferringDoctorId(principal.getName());
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(patientFileService.createPatientFile(patientFileDTO));
 	}
@@ -99,9 +92,7 @@ public class PatientFileController {
 	public ResponseEntity<PatientFileDTO> updatePatientFile(@Valid @RequestBody PatientFileDTO patientFileDTO,
 			Principal principal) throws FinderException, UpdateException {
 
-		UserDTO userDTO = userService.findUserByUsername(principal.getName());
-
-		patientFileDTO.setId(userDTO.getId());
+		patientFileDTO.setId(principal.getName());
 
 		return ResponseEntity.ok(patientFileService.updatePatientFile(patientFileDTO));
 	}
@@ -119,9 +110,7 @@ public class PatientFileController {
 	@GetMapping("/patient-file/details")
 	public ResponseEntity<PatientFileDTO> getPatientFileDetails(Principal principal) throws FinderException {
 
-		UserDTO userDTO = userService.findUserByUsername(principal.getName());
-
-		return ResponseEntity.ok(patientFileService.findPatientFile(userDTO.getId()));
+		return ResponseEntity.ok(patientFileService.findPatientFile(principal.getName()));
 	}
 
 	/**
@@ -139,7 +128,7 @@ public class PatientFileController {
 	public ResponseEntity<List<CorrespondenceDTO>> findPatientCorrespondences(Principal principal)
 			throws FinderException {
 
-		String userId = userService.findUserByUsername(principal.getName()).getId();
+		String userId = principal.getName();
 
 		return ResponseEntity.ok(patientFileService.findCorrespondencesByPatientFileId(userId));
 	}
@@ -159,7 +148,7 @@ public class PatientFileController {
 	public ResponseEntity<List<PatientFileItemDTO>> findPatientPatientFileItems(Principal principal)
 			throws FinderException {
 
-		String userId = userService.findUserByUsername(principal.getName()).getId();
+		String userId = principal.getName();
 
 		return ResponseEntity.ok(patientFileService.findPatientFileItemsByPatientFileId(userId));
 	}
@@ -268,15 +257,15 @@ public class PatientFileController {
 			@Valid @RequestBody CorrespondenceDTO correspondenceDTO, @PathVariable String id, Principal principal)
 			throws FinderException, CreateException {
 
-		UserDTO userDTO = userService.findUserByUsername(principal.getName());
+		String userId = principal.getName();
 
 		PatientFileDTO patientFileDTO = patientFileService.findPatientFile(id);
 
-		if (!userDTO.getId().equals(patientFileDTO.getReferringDoctorId())) {
+		if (!userId.equals(patientFileDTO.getReferringDoctorId())) {
 			throw new CreateException("L'utilisateur n'est pas le médecin référent.");
 		}
 
-		if (userDTO.getId().equals(correspondenceDTO.getDoctorId())) {
+		if (userId.equals(correspondenceDTO.getDoctorId())) {
 			throw new CreateException("Impossible de créer une correspondance pour le médecin référent.");
 		}
 
@@ -314,7 +303,7 @@ public class PatientFileController {
 			@Valid @RequestBody PatientFileItemDTO patientFileItemDTO, @PathVariable String id, Principal principal)
 			throws FinderException, CreateException {
 
-		String userId = userService.findUserByUsername(principal.getName()).getId();
+		String userId = principal.getName();
 
 		String referringDoctorId = patientFileService.findPatientFile(id).getReferringDoctorId();
 
@@ -360,7 +349,7 @@ public class PatientFileController {
 	public ResponseEntity<List<CorrespondenceDTO>> findCorrespondencesByPatientFileId(@PathVariable String id,
 			Principal principal) throws FinderException {
 
-		String userId = userService.findUserByUsername(principal.getName()).getId();
+		String userId = principal.getName();
 
 		String referringDoctorId = patientFileService.findPatientFile(id).getReferringDoctorId();
 
@@ -403,7 +392,7 @@ public class PatientFileController {
 	public ResponseEntity<List<PatientFileItemDTO>> findPatientFileItemsByPatientFileId(@PathVariable String id,
 			Principal principal) throws FinderException {
 
-		String userId = userService.findUserByUsername(principal.getName()).getId();
+		String userId = principal.getName();
 
 		String referringDoctorId = patientFileService.findPatientFile(id).getReferringDoctorId();
 
@@ -453,7 +442,7 @@ public class PatientFileController {
 			@Valid @RequestBody PatientFileItemDTO patientFileItemDTO, @PathVariable String patienfFileId,
 			@PathVariable String itemId, Principal principal) throws FinderException, UpdateException {
 
-		String userId = userService.findUserByUsername(principal.getName()).getId();
+		String userId = principal.getName();
 
 		UUID patientFileItemId = UUID.fromString(itemId);
 
@@ -514,11 +503,11 @@ public class PatientFileController {
 	public ResponseEntity<RestResponse> deleteCorrespondence(@PathVariable String patientFileId,
 			@PathVariable String correspondenceId, Principal principal) throws FinderException, DeleteException {
 
-		UserDTO userDTO = userService.findUserByUsername(principal.getName());
+		String userId = principal.getName();
 
 		PatientFileDTO patientFileDTO = patientFileService.findPatientFile(patientFileId);
 
-		if (!userDTO.getId().equals(patientFileDTO.getReferringDoctorId())) {
+		if (!userId.equals(patientFileDTO.getReferringDoctorId())) {
 			throw new DeleteException("L'utilisateur n'est pas le médecin référent.");
 		}
 
@@ -560,7 +549,7 @@ public class PatientFileController {
 	public ResponseEntity<RestResponse> deletePatientFileItem(@PathVariable String patienfFileId,
 			@PathVariable String itemId, Principal principal) throws FinderException, DeleteException {
 
-		String userId = userService.findUserByUsername(principal.getName()).getId();
+		String userId = principal.getName();
 
 		UUID patientFileItemId = UUID.fromString(itemId);
 

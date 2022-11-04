@@ -245,7 +245,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreatePatientFileSuccess() throws Exception {
 		doNothing().when(rnippService).checkPatientData(patientFileDTO);
 
@@ -264,7 +264,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"})
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreatePatientFileFailurePatientFileAlreadyExist() throws Exception {
 		patientFileDAO.save(patientFile);
 
@@ -277,7 +277,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"})
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreatePatientFileFailurePatientFileDTONonValidLastname() throws Exception {
 		patientFileDTO.setLastname("");
 
@@ -292,7 +292,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"})
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreatePatientFileFailurePatientFileDTONonValidAddressCountry() throws Exception {
 		patientFileDTO.getAddressDTO().setCountry(null);
 
@@ -322,7 +322,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"}) // P001
+	@WithMockUser(username="P001",roles={"PATIENT"}) // P001
 	public void testUpdatePatientFileSuccess() throws Exception {
 		patientFileDTO.setReferringDoctorId("D002"); // try to change doctor
 
@@ -347,7 +347,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"})
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testUpdatePatientFileFailureBadRole() throws Exception {
 		mockMvc.perform(put("/patient-file/details").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(patientFileDTO))).andExpect(status().isForbidden());
@@ -362,7 +362,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"}) // P001
+	@WithMockUser(username="P001",roles={"PATIENT"}) // P001
 	public void testGetPatientFileDetailsSuccess() throws Exception {
 
 		patientFileDTO.setId("P001");
@@ -381,7 +381,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"})
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testGetPatientFileDetailsFailureBadRole() throws Exception {
 
 		mockMvc.perform(get("/patient-file/details")).andExpect(status().isForbidden());
@@ -395,7 +395,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"})
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testGetPatientFileByIdUserIsDoctorSuccess() throws Exception {
 
 		patientFileDTO.setId("P001");
@@ -435,7 +435,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testGetPatientFileByIdFailureUserIsPatient() throws Exception {
 
 		mockMvc.perform(get("/patient-file/P001")).andExpect(status().isForbidden());
@@ -463,7 +463,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"})
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testUpdateReferringDoctorFailureUserIsDoctor() throws Exception {
 
 		mockMvc.perform(put("/patient-file/P001/referring-doctor").contentType(MediaType.APPLICATION_JSON)
@@ -471,7 +471,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testUpdateReferringDoctorFailureUserIsPatient() throws Exception {
 
 		mockMvc.perform(put("/patient-file/P001/referring-doctor").contentType(MediaType.APPLICATION_JSON)
@@ -510,7 +510,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"})
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testFindPatientFilesByIdOrFirstnameOrLastnameSuccessFound4UserIsPatientFile() throws Exception {
 		mockMvc.perform(get("/patient-file?q=ma")).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$", hasSize(5)))
@@ -526,7 +526,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testFindPatientFilesByIdOrFirstnameOrLastnameFailureBadRolePatient() throws Exception {
 
 		mockMvc.perform(get("/patient-file?q=ma")).andExpect(status().isForbidden());
@@ -540,7 +540,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreateCorrespondanceSuccess() throws Exception {
 
 		count = correspondenceDAO.count();
@@ -560,7 +560,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreateCorrespondanceFailurePatientFileDoesNotExist() throws Exception {
 
 		count = correspondenceDAO.count();
@@ -574,7 +574,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreateCorrespondanceFailureDoctorIsNotReferringDoctor() throws Exception {
 
 		count = correspondenceDAO.count();
@@ -588,7 +588,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreateCorrespondanceFailureCorrespondingDoctorIsReferringDoctor() throws Exception {
 
 		correspondenceDTO.setDoctorId("D001");
@@ -604,7 +604,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testCreateCorrespondanceFailureBadRolePatient() throws Exception {
 
 		mockMvc.perform(post("/patient-file/P001/correspondence").contentType(MediaType.APPLICATION_JSON)
@@ -628,7 +628,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testDeleteCorrespondanceSuccess() throws Exception {
 
 		count = correspondenceDAO.count();
@@ -646,7 +646,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testDeleteCorrespondanceFailureDoctorIsNotReferringDoctor() throws Exception {
 
 		count = correspondenceDAO.count();
@@ -665,7 +665,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testDeleteCorrespondanceFailurePatientFileAndCorrespondanceDontMatch() throws Exception {
 
 		count = correspondenceDAO.count();
@@ -684,7 +684,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testDeleteCorrespondanceFailureCorrespondanceDoesNotExist() throws Exception {
 
 		count = correspondenceDAO.count();
@@ -702,7 +702,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testDeleteCorrespondanceFailureBadRolePatient() throws Exception {
 
 		uuid = UUID.fromString("e1eb3425-d257-4c5e-8600-b125731c458c"); // P001 (referring D001), corresponding D007
@@ -744,7 +744,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // "D001", ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testFindCorrespondancesByPatientFileIdSuccessUserIsReferringDoctor() throws Exception {
 
 		mockMvc.perform(get("/patient-file/P001/correspondence")).andExpect(status().isOk())
@@ -757,7 +757,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // "D001", ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testFindCorrespondancesByPatientFileIdSuccessUserIsActiveCorrespondingDoctor() throws Exception {
 
 		mockMvc.perform(get("/patient-file/P006/correspondence")).andExpect(status().isOk())
@@ -770,7 +770,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // "D001", ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testFindCorrespondancesByPatientFileIdFailureCorrespondenceExpired() throws Exception {
 
 		mockMvc.perform(get("/patient-file/P013/correspondence")).andExpect(status().isNotFound())
@@ -779,7 +779,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // "D001", ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testFindCorrespondancesByPatientFileIdReturns0UserIsNotReferringNorCorrespondingDoctor()
 			throws Exception {
 
@@ -789,7 +789,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testFindCorrespondancesByPatientFileIdFailureBadRolePatient() throws Exception {
 
 		mockMvc.perform(get("/patient-file/P001/correspondence")).andExpect(status().isForbidden());
@@ -810,7 +810,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"}) // P001
+	@WithMockUser(username="P001",roles={"PATIENT"}) // P001
 	public void testFindPatientCorrespondancesSuccess() throws Exception {
 
 		mockMvc.perform(get("/patient-file/details/correspondence")).andExpect(status().isOk())
@@ -823,7 +823,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testFindPatientCorrespondancesFailureBadRoleDoctor() throws Exception {
 
 		mockMvc.perform(get("/patient-file/details/correspondence")).andExpect(status().isForbidden());
@@ -844,7 +844,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetDiseaseByIdSuccessUserIsDoctor() throws Exception {
 
 		assertTrue(diseaseDAO.existsById("J01"));
@@ -855,7 +855,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetDiseaseByIdFailureUserIsDoctorDiseaseDoesNotExist() throws Exception {
 
 		assertFalse(diseaseDAO.existsById("J000"));
@@ -875,7 +875,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testGetDiseaseByIdFailureUserIsPatient() throws Exception {
 
 		assertTrue(diseaseDAO.existsById("J01"));
@@ -893,7 +893,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetDiseasesByIdOrDescriptionFound8UserIsDoctor() throws Exception {
 
 		mockMvc.perform(get("/disease?q=sinusite")).andExpect(status().isOk())
@@ -903,7 +903,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetDiseasesByIdOrDescriptionLimit5UserIsDoctor() throws Exception {
 
 		mockMvc.perform(get("/disease?q=sinusite&limit=5")).andExpect(status().isOk())
@@ -911,7 +911,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetDiseasesByIdOrDescriptionFound0UserIsDoctor() throws Exception {
 
 		mockMvc.perform(get("/disease?q=mas")).andExpect(status().isOk())
@@ -919,7 +919,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetDiseasesByIdOrDescriptionFound0SearchStringIsBlankUserIsDoctor() throws Exception {
 
 		mockMvc.perform(get("/disease?q=")).andExpect(status().isOk())
@@ -927,7 +927,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetDiseasesByIdOrDescriptionErrorQSearchStringIsAbsentUserIsDoctor() throws Exception {
 
 		mockMvc.perform(get("/disease")).andExpect(status().isInternalServerError())
@@ -942,7 +942,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testGetDiseasesByIdOrDescriptionFailureUserIsPatient() throws Exception {
 
 		mockMvc.perform(get("/disease?q=sinusite")).andExpect(status().isForbidden());
@@ -956,7 +956,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetMedicalActByIdSuccessUserIsDoctor() throws Exception {
 
 		assertTrue(medicalActDAO.existsById("HCAE201"));
@@ -968,7 +968,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetMedicalActByIdFailureUserIsDoctorMedicalActDoesNotExist() throws Exception {
 
 		assertFalse(medicalActDAO.existsById("H000000"));
@@ -988,7 +988,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testGetMedicalActByIdFailureUserIsPatient() throws Exception {
 
 		assertTrue(medicalActDAO.existsById("HCAE201"));
@@ -1006,7 +1006,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetMedicalActsByIdOrDescriptionFound9UserIsDoctor() throws Exception {
 
 		mockMvc.perform(get("/medical-act?q=radio")).andExpect(status().isOk())
@@ -1016,7 +1016,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetMedicalActsByIdOrDescriptionLimit5UserIsDoctor() throws Exception {
 
 		mockMvc.perform(get("/medical-act?q=radio&limit=5")).andExpect(status().isOk())
@@ -1024,7 +1024,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetMedicalActsByIdOrDescriptionFound0UserIsDoctor() throws Exception {
 
 		mockMvc.perform(get("/medical-act?q=rid")).andExpect(status().isOk())
@@ -1032,7 +1032,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetMedicalActsByIdOrDescriptionFound0SearchStringIsBlankUserIsDoctor() throws Exception {
 
 		mockMvc.perform(get("/medical-act?q=")).andExpect(status().isOk())
@@ -1040,7 +1040,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testGetMedicalActsByIdOrDescriptionErrorQSearchStringIsAbsentUserIsDoctor() throws Exception {
 
 		mockMvc.perform(get("/medical-act")).andExpect(status().isInternalServerError())
@@ -1055,7 +1055,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testGetMedicalActsByIdOrDescriptionFailureUserIsPatient() throws Exception {
 
 		mockMvc.perform(get("/medical-act?q=radio")).andExpect(status().isForbidden());
@@ -1069,7 +1069,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreateActSuccessUserIsReferringDoctor() throws Exception {
 
 		count = patientFileItemDAO.count();
@@ -1104,7 +1104,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreateActSuccessUserIsActiveCorrespondingDoctor() throws Exception {
 
 		count = patientFileItemDAO.count();
@@ -1139,7 +1139,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreateActFailureUserCorrespondanceExpired() throws Exception {
 
 		count = patientFileItemDAO.count();
@@ -1161,7 +1161,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreateActFailureUserIsNotReferringNorCorrespondingDoctor() throws Exception {
 
 		count = patientFileItemDAO.count();
@@ -1183,7 +1183,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreateActFailurePatientFileDoesNotExist() throws Exception {
 
 		count = patientFileItemDAO.count();
@@ -1205,7 +1205,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testCreatePatientFileItemFailureBadRolePatient() throws Exception {
 
 		LocalDate now = LocalDate.now();
@@ -1253,7 +1253,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testUpdatePatientFileItemSuccessUserIsReferringAndAuthor() throws Exception {
 
 		uuid = UUID.fromString("1b57e70f-8eb0-4a97-99c6-5d44f138c22c");
@@ -1296,7 +1296,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testUpdatePatientFileItemSuccessUserIsActiveCorrespondentAndAuthor() throws Exception {
 
 		uuid = UUID.fromString("7f331dd1-0950-4991-964c-2383ba92699e");
@@ -1342,7 +1342,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testUpdatePatientFileItemUserIsReferringAndAuthorFailureWrongPayloadType() throws Exception {
 
 		uuid = UUID.fromString("1b57e70f-8eb0-4a97-99c6-5d44f138c22c"); // type Act
@@ -1366,7 +1366,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testUpdatePatientFileItemUserIsReferringAndAuthorFailurePatientFileItemDoesNotExist() throws Exception {
 
 		uuid = UUID.fromString("1b57e70f-8eb0-4a97-99c6-5d44f138c22"); // does not exist
@@ -1389,7 +1389,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testUpdatePatientFileItemFailureUserIsReferringButNotAuthor() throws Exception {
 
 		uuid = UUID.fromString("c793da7f-5ca8-41f5-a0f0-1cc77b34b6fe");
@@ -1412,7 +1412,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testUpdatePatientFileItemFailureUserIsActiveCorrespondentButNotAuthor() throws Exception {
 
 		uuid = UUID.fromString("643bce5b-9c74-4e6f-8ae2-5809a31bedb4");
@@ -1433,7 +1433,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testUpdatePatientFileItemFailureUserIsCorrespondentAndAuthorButNotActiveCorrespondent()
 			throws Exception {
 
@@ -1455,7 +1455,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testUpdatePatientFileItemFailureUserIsNotReferringNorCorrespondingDoctor() throws Exception {
 
 		uuid = UUID.fromString("b7bdb6e4-da4b-47f9-9b67-cfd67567aaca");
@@ -1478,7 +1478,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testUpdatePatientFileItemUserIsReferringAndAuthorFailurePatientFileItemAndPatientFileDontMatch()
 			throws Exception {
 
@@ -1523,7 +1523,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testUpdatePatientFileItemFailureBadRolePatient() throws Exception {
 
 		uuid = UUID.fromString("1b57e70f-8eb0-4a97-99c6-5d44f138c22c");
@@ -1565,7 +1565,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testDeletePatientFileItemSuccessUserIsReferringAndAuthor() throws Exception {
 
 		count = patientFileItemDAO.count();
@@ -1583,7 +1583,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testDeletePatientFileItemSuccessUserIsActiveCorrespondentAndAuthor() throws Exception {
 
 		count = patientFileItemDAO.count();
@@ -1601,7 +1601,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testDeletePatientFileItemUserIsReferringAndAuthorFailurePatientFileItemDoesNotExist() throws Exception {
 
 		count = patientFileItemDAO.count();
@@ -1618,7 +1618,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testDeletePatientFileItemFailureUserIsReferringButNotAuthor() throws Exception {
 
 		count = patientFileItemDAO.count();
@@ -1634,7 +1634,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testDeletePatientFileItemFailureUserIsActiveCorrespondentButNotAuthor() throws Exception {
 
 		count = patientFileItemDAO.count();
@@ -1650,7 +1650,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testDeletePatientFileItemFailureUserIsCorrespondentAndAuthorButNotActiveCorrespondent()
 			throws Exception {
 
@@ -1667,7 +1667,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testDeletePatientFileItemFailureUserIsNotReferringNorCorrespondingDoctor() throws Exception {
 
 		count = patientFileItemDAO.count();
@@ -1683,7 +1683,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testDeletePatientFileItemUserIsReferringAndAuthorFailurePatientFileItemAndPatientFileDontMatch()
 			throws Exception {
 
@@ -1709,7 +1709,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testDeletePatientFileItemFailureBadRolePatient() throws Exception {
 
 		uuid = UUID.fromString("1b57e70f-8eb0-4a97-99c6-5d44f138c22c");
@@ -1727,7 +1727,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001, ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testFindPatientFileItemsByPatientFileIdSuccessUserIsReferringDoctor() throws Exception {
 
 		mockMvc.perform(get("/patient-file/P005/item")).andExpect(status().isOk())
@@ -1736,7 +1736,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001, ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testFindPatientFileItemsByPatientFileIdSuccessUserIsActiveCorrespondingDoctor() throws Exception {
 
 		mockMvc.perform(get("/patient-file/P006/item")).andExpect(status().isOk())
@@ -1745,7 +1745,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001, ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testFindPatientFileItemsByPatientFileIdFailureCorrespondenceExpired() throws Exception {
 
 		mockMvc.perform(get("/patient-file/P013/item")).andExpect(status().isNotFound())
@@ -1754,7 +1754,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // D001, ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testFindPatientFileItemsByPatientFileIdFailureUserIsNotReferringNorCorrespondingDoctor()
 			throws Exception {
 
@@ -1764,7 +1764,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testFindPatientFileItemsByPatientFileIdFailureBadRolePatient() throws Exception {
 
 		mockMvc.perform(get("/patient-file/P005/item")).andExpect(status().isForbidden());
@@ -1785,7 +1785,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"}) // P001, ROLE_DOCTOR
+	@WithMockUser(username="P001",roles={"PATIENT"}) // P001, ROLE_DOCTOR
 	public void testFindPatientPatientFileItemsSuccess() throws Exception {
 
 		mockMvc.perform(get("/patient-file/details/item")).andExpect(status().isOk())
@@ -1801,7 +1801,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testFindPatientPatientFileItemsFailureBadRoleDoctor() throws Exception {
 
 		mockMvc.perform(get("/patient-file/details/item")).andExpect(status().isForbidden());
@@ -1868,7 +1868,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="user",roles={"DOCTOR"}) // ROLE_DOCTOR
+	@WithMockUser(username="D001",roles={"DOCTOR"}) // ROLE_DOCTOR
 	public void testDeletePatientFileFailureBadRolePatientFile() throws Exception {
 
 		id = "P005";
@@ -1877,7 +1877,7 @@ public class PatientFileControllerIntegrationTest {
 	}
 
 	@Test
-	@WithMockUser(username="eric",roles={"PATIENT"})
+	@WithMockUser(username="P001",roles={"PATIENT"})
 	public void testDeletePatientFileFailureBadRolePatient() throws Exception {
 
 		id = "P005";

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.SpecialtyDTO;
@@ -82,9 +81,7 @@ public class DoctorController {
 	public ResponseEntity<DoctorDTO> updateDoctor(@Valid @RequestBody DoctorDTO doctorDTO, Principal principal)
 			throws FinderException, UpdateException {
 
-		UserDTO userDTO = userService.findUserByUsername(principal.getName());
-
-		doctorDTO.setId(userDTO.getId());
+		doctorDTO.setId(principal.getName());
 
 		return ResponseEntity.ok(doctorService.updateDoctor(doctorDTO));
 	}
@@ -102,9 +99,7 @@ public class DoctorController {
 	@GetMapping("/doctor/details")
 	public ResponseEntity<DoctorDTO> getDoctorDetails(Principal principal) throws FinderException {
 
-		UserDTO userDTO = userService.findUserByUsername(principal.getName());
-
-		return ResponseEntity.ok(doctorService.findDoctor(userDTO.getId()));
+		return ResponseEntity.ok(doctorService.findDoctor(principal.getName()));
 	}
 
 	/**
