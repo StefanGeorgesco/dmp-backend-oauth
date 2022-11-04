@@ -99,7 +99,6 @@ public class KeycloakService {
 										.retrieve()
 										.bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
 										.block();
-		result.forEach((k, v) -> System.err.println(k + " : " + v));
 		String token = result.get("access_token");
 		return token;
 	}
