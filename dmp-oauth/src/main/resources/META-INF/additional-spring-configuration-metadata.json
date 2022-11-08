@@ -10,6 +10,26 @@
     "description": "Rnipp Service url"
   },
   {
+    "name": "keycloak.auth-server-url",
+    "type": "java.lang.String",
+    "description": "A description for 'keycloak.auth-server-url'"
+  },
+  {
+    "name": "keycloak.realm",
+    "type": "java.lang.String",
+    "description": "A description for 'keycloak.realm'"
+  },
+  {
+    "name": "keycloak.resource",
+    "type": "java.lang.String",
+    "description": "A description for 'keycloak.resource'"
+  },
+  {
+    "name": "keycloak.principal-attribute",
+    "type": "java.lang.String",
+    "description": "A description for 'keycloak.principal-attribute'"
+  },
+  {
     "name": "IAM.admin.client.username",
     "type": "java.lang.String",
     "description": "A description for 'IAM.admin.client.username'"
@@ -28,25 +48,5 @@
     "name": "IAM.admin.client.client_id",
     "type": "java.lang.String",
     "description": "A description for 'IAM.admin.client.client_id'"
-  },
-  {
-    "name": "keycloak.principal-attribute",
-    "type": "java.lang.String",
-    "description": "A description for 'keycloak.principal-attribute'"
-  },
-  {
-    "name": "keycloak.auth-server-url",
-    "type": "java.lang.String",
-    "description": "A description for 'keycloak.auth-server-url'"
-  },
-  {
-    "name": "keycloak.realm",
-    "type": "java.lang.String",
-    "description": "A description for 'keycloak.realm'"
-  },
-  {
-    "name": "keycloak.resource",
-    "type": "java.lang.String",
-    "description": "A description for 'keycloak.resource'"
   }
 ]}
