@@ -39,7 +39,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.dao.UserDAO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.CorrespondenceDAO;
@@ -81,9 +80,7 @@ import fr.cnam.stefangeorgesco.dmp.domain.service.RnippService;
 		@Sql(scripts = "/sql/delete-medical-acts.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
 		@Sql(scripts = "/sql/delete-correspondences.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
 		@Sql(scripts = "/sql/delete-files.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
-		@Sql(scripts = "/sql/delete-specialties.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
-		@Sql(scripts = "/sql/create-users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-		@Sql(scripts = "/sql/delete-users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD) })
+		@Sql(scripts = "/sql/delete-specialties.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD) })
 public class PatientFileControllerIntegrationTest {
 
 	@MockBean
@@ -97,9 +94,6 @@ public class PatientFileControllerIntegrationTest {
 
 	@MockBean
 	private RnippService rnippService;
-
-	@Autowired
-	private UserDAO userDAO;
 
 	@Autowired
 	private PatientFileDAO patientFileDAO;
@@ -1817,10 +1811,8 @@ public class PatientFileControllerIntegrationTest {
 	@Test
 	@WithMockUser(roles={"ADMIN"})
 	public void testDeletePatientFileSuccessNoUser() throws Exception {
-
 		id = "P005";
-
-		assertFalse(userDAO.existsById(id));
+		when(keycloakService.userExistsById(id)).thenReturn(false);
 
 		assertTrue(patientFileDAO.existsById(id));
 
@@ -1834,14 +1826,9 @@ public class PatientFileControllerIntegrationTest {
 	@Test
 	@WithMockUser(roles={"ADMIN"})
 	public void testDeletePatientFileSuccessUserPresent() throws Exception {
-		when(keycloakService.deleteKeycloakUser(user.getUsername())).thenReturn(HttpStatus.NO_CONTENT);
-
 		id = "P005";
-
-		user.setId(id);
-		userDAO.save(user);
-
-		assertTrue(userDAO.existsById(id));
+		when(keycloakService.userExistsById(id)).thenReturn(true);
+		when(keycloakService.deleteUser(user.getId())).thenReturn(HttpStatus.NO_CONTENT);
 
 		assertTrue(patientFileDAO.existsById(id));
 
@@ -1850,8 +1837,6 @@ public class PatientFileControllerIntegrationTest {
 				.andExpect(jsonPath("$.message", is("Le dossier patient a bien été supprimé.")));
 
 		assertFalse(patientFileDAO.existsById(id));
-
-		assertFalse(userDAO.existsById(id));
 	}
 
 	@Test

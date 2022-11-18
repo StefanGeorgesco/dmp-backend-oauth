@@ -41,79 +41,87 @@ public class KeycloakService {
 
 	@Autowired
 	WebClient keyCloakClient;
-	
-	public HttpStatus createKeycloakUser(UserDTO userDTO) throws WebClientResponseException {
+
+	public boolean userExistsByUsername(String username) {
+		String token = getAdminToken();
 		
+		UserRepresentation[] ur = keyCloakClient.get()
+				.uri("/admin/realms/" + realm + "/users?username=" + username + "&exact=true")
+				.header("Authorization", "Bearer " + token).retrieve().bodyToMono(UserRepresentation[].class).block();
+		
+		return ur.length > 0;
+	}
+
+	public boolean userExistsById(String id) {
+		String token = getAdminToken();
+		
+		UserRepresentation[] ur = keyCloakClient.get()
+				.uri("/admin/realms/" + realm + "/users?q=id:" + id)
+				.header("Authorization", "Bearer " + token).retrieve().bodyToMono(UserRepresentation[].class).block();
+		
+		return ur.length > 0;
+	}
+
+	public HttpStatus createUser(UserDTO userDTO) throws WebClientResponseException {
 		String token = getAdminToken();
 		
 		CredentialRepresentation credentials = new CredentialRepresentation();
 		credentials.setType("password");
 		credentials.setTemporary(false);
 		credentials.setValue(userDTO.getPassword());
-		
+
 		UserRepresentation user = new UserRepresentation();
 		user.setEnabled(true);
 		user.setUsername(userDTO.getUsername());
 		user.setCredentials(List.of(credentials));
 //		user.setRealmRoles(List.of(userDTO.getRole()));
 		user.setGroups(List.of(userDTO.getRole() + "S"));
-		
+
 		Map<String, List<String>> attributes = new HashMap<>();
 		attributes.put("id", List.of(userDTO.getId()));
-		
+
 		user.setAttributes(attributes);
 
-		ResponseEntity<Void> resp = keyCloakClient
-										.post()
-										.uri("/admin/realms/" + realm + "/users")
-										.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-										.header("Authorization", "Bearer " + token).body(Mono.just(user), UserRepresentation.class)
-										.retrieve()
-										.toBodilessEntity()
-										.block();
+		ResponseEntity<Void> resp = keyCloakClient.post().uri("/admin/realms/" + realm + "/users")
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.header("Authorization", "Bearer " + token).body(Mono.just(user), UserRepresentation.class).retrieve()
+				.toBodilessEntity().block();
 		return resp.getStatusCode();
 	}
 
-	public HttpStatus deleteKeycloakUser(String username) {
+	public HttpStatus deleteUser(String id) {
 		String token = getAdminToken();
-		String userId = getKeycloakUSerId(token, username);
-		ResponseEntity<Void> resp = keyCloakClient
-										.delete()
-										.uri("/admin/realms/" + realm + "/users/" + userId)
-										.header("Authorization", "Bearer " + token)
-										.retrieve()
-										.toBodilessEntity()
-										.block();
+		
+		String userId = getUserIdById(token, id);
+		
+		ResponseEntity<Void> resp = keyCloakClient.delete().uri("/admin/realms/" + realm + "/users/" + userId)
+				.header("Authorization", "Bearer " + token).retrieve().toBodilessEntity().block();
+		
 		return resp.getStatusCode();
 	}
 
-	public String getAdminToken() {
+	private String getUserIdById(String token, String id) {
+		UserRepresentation[] ur = keyCloakClient.get()
+				.uri("/admin/realms/" + realm + "/users?q=id:" + id)
+				.header("Authorization", "Bearer " + token).retrieve().bodyToMono(UserRepresentation[].class).block();
+		try {
+			return ur[0].getId();
+		} catch (ArrayIndexOutOfBoundsException e) {
+		}
+		return "unknown";
+	}
+	
+	private String getAdminToken() {
 		String admin = "username=" + username + "&password=" + password + "&grant_type=" + grant_type + "&client_id="
 				+ client_id;
 		byte[] postData = admin.getBytes(StandardCharsets.UTF_8);
-		Map<String, String> result = keyCloakClient
-										.post()
-										.uri("/realms/master/protocol/openid-connect/token")
-										.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-										.body(Mono.just(postData), byte[].class)
-										.retrieve()
-										.bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
-										.block();
+		Map<String, String> result = keyCloakClient.post().uri("/realms/master/protocol/openid-connect/token")
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+				.body(Mono.just(postData), byte[].class).retrieve()
+				.bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {
+				}).block();
 		String token = result.get("access_token");
 		return token;
 	}
 
-	private String getKeycloakUSerId(String token, String username) {
-		UserRepresentation[] ur = keyCloakClient
-									.get()
-									.uri("/admin/realms/" + realm + "/users?username=" + username)
-									.header("Authorization", "Bearer " + token)
-									.retrieve()
-									.bodyToMono(UserRepresentation[].class)
-									.block();
-		try {
-			return ur[0].getId();
-		} catch (ArrayIndexOutOfBoundsException e) {}
-		return "unknown";
-	}
 }

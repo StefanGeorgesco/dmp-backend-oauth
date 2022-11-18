@@ -1,10 +1,5 @@
 package fr.cnam.stefangeorgesco.dmp.authentication.domain.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 
 /**
@@ -13,8 +8,6 @@ import javax.validation.constraints.NotBlank;
  * @author Stéfan Georgesco
  *
  */
-@Entity
-@Table(name = "t_user")
 public class User implements IUser {
 
 	/**
@@ -22,7 +15,6 @@ public class User implements IUser {
 	 * patient auquel l'utilisateur est associé (propriétaire du dossier) et permet
 	 * cette association.
 	 */
-	@Id
 	@NotBlank(message = "L'identifiant est obligatoire.")
 	private String id;
 
@@ -30,11 +22,9 @@ public class User implements IUser {
 	 * Nom d'utilisateur pour l'identification et l'authentification de
 	 * l'utilisateur.
 	 */
-	@Column(unique = true)
 	@NotBlank(message = "Le non utilisateur est obligatoire.")
 	private String username;
 
-	@Transient
 	private String password;
 
 	/**
@@ -43,7 +33,6 @@ public class User implements IUser {
 	 * l'utilisateur lors de la création de son compte utilisateur et de valider
 	 * cette association. Il n'est pas conservé dans la persistance.
 	 */
-	@Transient
 	private String securityCode;
 
 	public User() {

@@ -6,8 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.mockito.ArgumentMatchers.any;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -32,9 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.dao.UserDAO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.FileDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.SpecialtyDAO;
@@ -61,9 +57,6 @@ public class UserControllerIntegrationTest {
 	UserDTO userDTO;
 
 	@Autowired
-	private UserDAO userDAO;
-
-	@Autowired
 	private FileDAO fileDAO;
 
 	@Autowired
@@ -83,9 +76,6 @@ public class UserControllerIntegrationTest {
 
 	@Autowired
 	private PatientFile patientFile;
-
-	@Autowired
-	private User user;
 
 	private List<Specialty> specialties;
 
@@ -146,48 +136,32 @@ public class UserControllerIntegrationTest {
 		fileDAO.delete(patientFile);
 		fileDAO.delete(doctor);
 		specialtyDAO.delete(specialty);
-		if (userDAO.existsById("doctorId")) {
-			userDAO.deleteById("doctorId");
-		}
-		if (userDAO.existsById("patientFileId")) {
-			userDAO.deleteById("patientFileId");
-		}
-		if (userDAO.existsByUsername("username")) {
-			userDAO.deleteById(userDAO.findByUsername("username").get().getId());
-		}
 	}
 
 	@Test
 	public void testCreateDoctorAccountSuccess() throws Exception {
 
-		when(keycloakService.createKeycloakUser(any(UserDTO.class))).thenReturn(HttpStatus.CREATED);
-
-		assertFalse(userDAO.existsById("doctorId"));
+		when(keycloakService.createUser(any(UserDTO.class))).thenReturn(HttpStatus.CREATED);
 
 		mockMvc.perform(
 				post("/user").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO)))
 				.andExpect(status().isCreated()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Le compte utilisateur a été créé.")));
-
-		assertTrue(userDAO.existsById("doctorId"));
 	}
 
 	@Test
 	public void testCreatePatientAccountSuccess() throws Exception {
 
-		when(keycloakService.createKeycloakUser(any(UserDTO.class))).thenReturn(HttpStatus.CREATED);
+		when(keycloakService.createUser(any(UserDTO.class))).thenReturn(HttpStatus.CREATED);
 
 		userDTO.setId("patientFileId");
 		userDTO.setSecurityCode("7890");
-
-		assertFalse(userDAO.existsById("patientFileId"));
 
 		mockMvc.perform(
 				post("/user").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO)))
 				.andExpect(status().isCreated()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Le compte utilisateur a été créé.")));
 
-		assertTrue(userDAO.existsById("patientFileId"));
 	}
 
 	@Test
@@ -203,18 +177,12 @@ public class UserControllerIntegrationTest {
 				.andExpect(jsonPath("$.id", is("L'identifiant est obligatoire.")))
 				.andExpect(jsonPath("$.username", is("Le non utilisateur est obligatoire.")))
 				.andExpect(jsonPath("$.password", is("Le mot de passe doit contenir au moins 4 caractères.")));
-
-		assertFalse(userDAO.existsById("doctorId"));
 	}
 
 	@Test
 	public void testCreateDoctorAccountFailureUserAccountAlreadyExistsById() throws Exception {
 
-		user.setId("doctorId");
-		user.setUsername("John");
-		user.setPassword("0123");
-		user.setSecurityCode("0000");
-		userDAO.save(user);
+		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(true);
 
 		mockMvc.perform(
 				post("/user").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO)))
@@ -226,12 +194,8 @@ public class UserControllerIntegrationTest {
 	@Test
 	public void testCreateDoctorAccountFailureUserAccountAlreadyExistsByUsername() throws Exception {
 
-		user.setId("id");
-		user.setUsername("username");
-		user.setPassword("0123");
-		user.setSecurityCode("0000");
-		userDAO.save(user);
-
+		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
+		
 		mockMvc.perform(
 				post("/user").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO)))
 				.andExpect(status().isConflict()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -251,8 +215,6 @@ public class UserControllerIntegrationTest {
 				post("/user").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO)))
 				.andExpect(status().isNotFound()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Le dossier n'existe pas.")));
-
-		assertFalse(userDAO.existsById("patientFileId"));
 	}
 
 	@Test
@@ -264,8 +226,6 @@ public class UserControllerIntegrationTest {
 				post("/user").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO)))
 				.andExpect(status().isBadRequest()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Les données ne correspondent pas.")));
-
-		assertFalse(userDAO.existsById("doctorId"));
 	}
 
 }

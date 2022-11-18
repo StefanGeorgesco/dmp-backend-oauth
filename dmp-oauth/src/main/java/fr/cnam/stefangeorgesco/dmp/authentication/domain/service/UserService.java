@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.dao.UserDAO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.FileDAO;
@@ -34,9 +33,6 @@ public class UserService {
 
 	@Autowired
 	private KeycloakService keycloakService;
-
-	@Autowired
-	private UserDAO userDAO;
 
 	@Autowired
 	private FileDAO fileDAO;
@@ -67,12 +63,12 @@ public class UserService {
 	 */
 	public void createUser(UserDTO userDTO)
 			throws FinderException, CheckException, CreateException, DuplicateKeyException {
-
-		if (userDAO.existsById(userDTO.getId())) {
+		
+		if (keycloakService.userExistsById(userDTO.getId())) {
 			throw new DuplicateKeyException("Le compte utilisateur existe déjà.");
 		}
 
-		if (userDAO.existsByUsername(userDTO.getUsername())) {
+		if (keycloakService.userExistsByUsername(userDTO.getUsername())) {
 			throw new DuplicateKeyException("Le nom d'utilisateur existe déjà.");
 		}
 
@@ -94,45 +90,10 @@ public class UserService {
 			userDTO.setRole("PATIENT");
 		}
 
-		HttpStatus responseStatus;
-
 		try {
-			responseStatus = keycloakService.createKeycloakUser(userDTO);
+			keycloakService.createUser(userDTO);
 		} catch (WebClientResponseException e) {
 			throw new CreateException("Le compte utilisateur n'a pas pu être créé (erreur webclient Keycloak).");
-		}
-
-		if (responseStatus == HttpStatus.CREATED) {
-			try {
-				userDAO.save(user);
-			} catch (RuntimeException e) {
-				keycloakService.deleteKeycloakUser(userDTO.getUsername());
-				throw new CreateException("Le compte utilisateur n'a pas pu être créé.");
-			}
-		} else {
-			throw new CreateException("Le compte utilisateur n'a pas pu être créé (erreur Keycloak).");
-		}
-
-	}
-
-	/**
-	 * Service de recherche d'un compte utilisateur par nom d'utilisateur.
-	 * 
-	 * @param username le nom d'utilisateur du compte recherché.
-	 * @return l'objet
-	 *         {@link fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO}
-	 *         représentant le compte utilisateur recherché, encapsulé dans un objet
-	 *         org.springframework.http.ResponseEntity.
-	 * @throws FinderException le compte utilisateur n'a pas été trouvé.
-	 */
-	public UserDTO findUserByUsername(String username) throws FinderException {
-
-		Optional<User> optionalUser = userDAO.findByUsername(username);
-
-		if (optionalUser.isPresent()) {
-			return userModelMapper.map(optionalUser.get(), UserDTO.class);
-		} else {
-			throw new FinderException("Compte utilisateur non trouvé.");
 		}
 
 	}
@@ -146,33 +107,23 @@ public class UserService {
 	 */
 	public void deleteUser(String id) throws DeleteException {
 
-		String username = "";
-
-		Optional<User> optionalUser = userDAO.findById(id);
-
-		if (optionalUser.isPresent()) {
-			username = optionalUser.get().getUsername();
-		} else {
+		if (!keycloakService.userExistsById(id)) {
 			throw new DeleteException("Compte utilisateur non trouvé.");
 		}
 
 		HttpStatus responseStatus;
 
 		try {
-			responseStatus = keycloakService.deleteKeycloakUser(username);
+			responseStatus = keycloakService.deleteUser(id);
 		} catch (WebClientResponseException e) {
 			throw new DeleteException("Le compte utilisateur n'a pas pu être supprimé (erreur webclient Keycloak).");
 		}
 
-		if (responseStatus == HttpStatus.NO_CONTENT) {
-			try {
-				userDAO.deleteById(id);
-			} catch (Exception e) {
-				throw new DeleteException("Le compte utilisateur n'a pas pu être supprimé.");
-			}
-		} else {
+		if (responseStatus != HttpStatus.NO_CONTENT) {
 			throw new DeleteException("Le compte utilisateur n'a pas pu être supprimé (erreur Keycloak, HTTPStatus : "
 					+ responseStatus + ").");
+		} else {
+			
 		}
 
 	}

@@ -35,7 +35,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.dao.UserDAO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
@@ -53,9 +52,7 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
 @SqlGroup({ @Sql(scripts = "/sql/create-specialties.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/create-files.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/delete-files.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
-		@Sql(scripts = "/sql/delete-specialties.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
-		@Sql(scripts = "/sql/create-users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-		@Sql(scripts = "/sql/delete-users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD) })
+		@Sql(scripts = "/sql/delete-specialties.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD) })
 public class DoctorControllerIntegrationTest {
 
 	@MockBean
@@ -72,9 +69,6 @@ public class DoctorControllerIntegrationTest {
 
 	@Autowired
 	private SpecialtyDAO specialtyDAO;
-
-	@Autowired
-	private UserDAO userDAO;
 
 	@Autowired
 	private SpecialtyDTO specialtyDTO1;
@@ -423,7 +417,7 @@ public class DoctorControllerIntegrationTest {
 	@Test
 	@WithMockUser(roles={"ADMIN"})
 	public void testDeleteDoctorSuccessNoUser() throws Exception {
-		assertFalse(userDAO.existsById("D002"));
+		when(keycloakService.userExistsById("D002")).thenReturn(false);
 
 		assertTrue(doctorDAO.existsById("D002"));
 
@@ -437,11 +431,9 @@ public class DoctorControllerIntegrationTest {
 	@Test
 	@WithMockUser(roles={"ADMIN"})
 	public void testDeleteDoctorSuccessUserPresent() throws Exception {
-		when(keycloakService.deleteKeycloakUser(user.getUsername())).thenReturn(HttpStatus.NO_CONTENT);
+		when(keycloakService.deleteUser(user.getUsername())).thenReturn(HttpStatus.NO_CONTENT);
 
-		userDAO.save(user);
-
-		assertTrue(userDAO.existsById("D002"));
+		when(keycloakService.userExistsById("D002")).thenReturn(true);
 
 		assertTrue(doctorDAO.existsById("D002"));
 
@@ -450,8 +442,6 @@ public class DoctorControllerIntegrationTest {
 				.andExpect(jsonPath("$.message", is("Le dossier de médecin a bien été supprimé.")));
 
 		assertFalse(doctorDAO.existsById("D002"));
-
-		assertFalse(userDAO.existsById("D002"));
 	}
 
 	@Test

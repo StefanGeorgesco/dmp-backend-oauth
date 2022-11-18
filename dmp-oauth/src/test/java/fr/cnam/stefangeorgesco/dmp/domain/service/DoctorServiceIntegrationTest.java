@@ -23,7 +23,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.dao.UserDAO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
@@ -42,9 +41,7 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
 @SqlGroup({ @Sql(scripts = "/sql/create-specialties.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/create-files.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/delete-files.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
-		@Sql(scripts = "/sql/delete-specialties.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
-		@Sql(scripts = "/sql/create-users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-		@Sql(scripts = "/sql/delete-users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD) })
+		@Sql(scripts = "/sql/delete-specialties.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD) })
 public class DoctorServiceIntegrationTest {
 
 	@MockBean
@@ -52,9 +49,6 @@ public class DoctorServiceIntegrationTest {
 	
 	@Autowired
 	private DoctorDAO doctorDAO;
-
-	@Autowired
-	private UserDAO userDAO;
 
 	@Autowired
 	private DoctorService doctorService;
@@ -241,7 +235,7 @@ public class DoctorServiceIntegrationTest {
 	@Test
 	public void testDeleteDoctorSuccessNoUser() {
 
-		assertFalse(userDAO.existsById("D002"));
+		when(keycloakService.userExistsById("D002")).thenReturn(false);
 
 		assertTrue(doctorDAO.existsById("D002"));
 
@@ -253,19 +247,14 @@ public class DoctorServiceIntegrationTest {
 	@Test
 	public void testDeleteDoctorSuccessUserPresent() {
 		
-		when(keycloakService.deleteKeycloakUser(user.getUsername())).thenReturn(HttpStatus.NO_CONTENT);
-
-		userDAO.save(user);
-
-		assertTrue(userDAO.existsById("D002"));
+		when(keycloakService.userExistsById("D002")).thenReturn(true);
+		when(keycloakService.deleteUser(user.getUsername())).thenReturn(HttpStatus.NO_CONTENT);
 
 		assertTrue(doctorDAO.existsById("D002"));
 
 		assertDoesNotThrow(() -> doctorService.deleteDoctor("D002"));
 
 		assertFalse(doctorDAO.existsById("D002"));
-
-		assertFalse(userDAO.existsById("D002"));
 	}
 
 	@Test

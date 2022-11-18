@@ -26,7 +26,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.dao.UserDAO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.CorrespondenceDAO;
@@ -82,9 +81,6 @@ public class PatientFileServiceIntegrationTest {
 	
 	@MockBean
 	private RnippService rnippService;
-
-	@Autowired
-	private UserDAO userDAO;
 
 	@Autowired
 	private DoctorDAO doctorDAO;
@@ -1049,7 +1045,7 @@ public class PatientFileServiceIntegrationTest {
 
 		id = "P005";
 
-		assertFalse(userDAO.existsById(id));
+		when(keycloakService.userExistsById(id)).thenReturn(false);
 
 		assertTrue(patientFileDAO.existsById(id));
 
@@ -1073,15 +1069,12 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testDeletePatientFileSuccessUserPresent() {
 
-		when(keycloakService.deleteKeycloakUser(user.getUsername())).thenReturn(HttpStatus.NO_CONTENT);
+		when(keycloakService.userExistsById(id)).thenReturn(true);
+		when(keycloakService.deleteUser(user.getId())).thenReturn(HttpStatus.NO_CONTENT);
 
 		id = "P005";
 
 		user.setId(id);
-		userDAO.save(user);
-
-		assertTrue(userDAO.existsById(id));
-
 		assertTrue(patientFileDAO.existsById(id));
 
 		List<CorrespondenceDTO> correspondenceDTOs = patientFileService.findCorrespondencesByPatientFileId(id);
@@ -1099,16 +1092,12 @@ public class PatientFileServiceIntegrationTest {
 
 		assertEquals(0, correspondenceDTOs.size());
 		assertEquals(0, patientFileItemDTOs.size());
-
-		assertFalse(userDAO.existsById(id));
 	}
 
 	@Test
 	public void testDeletePatientFileFailurePatientFileDoesNotExist() {
 
 		id = "P002";
-
-		assertFalse(userDAO.existsById(id));
 
 		DeleteException ex = assertThrows(DeleteException.class, () -> patientFileService.deletePatientFile(id));
 

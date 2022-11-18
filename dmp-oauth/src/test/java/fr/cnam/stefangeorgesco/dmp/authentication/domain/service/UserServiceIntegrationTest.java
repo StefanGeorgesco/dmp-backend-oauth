@@ -2,10 +2,7 @@ package fr.cnam.stefangeorgesco.dmp.authentication.domain.service;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -21,10 +18,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlGroup;
-
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.dao.UserDAO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.FileDAO;
@@ -40,8 +33,6 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
 
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
-@SqlGroup({ @Sql(scripts = "/sql/create-users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-		@Sql(scripts = "/sql/delete-users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD) })
 public class UserServiceIntegrationTest {
 
 	@MockBean
@@ -52,9 +43,6 @@ public class UserServiceIntegrationTest {
 
 	@Autowired
 	private UserService userService;
-
-	@Autowired
-	private UserDAO userDAO;
 
 	@Autowired
 	private FileDAO fileDAO;
@@ -144,50 +132,32 @@ public class UserServiceIntegrationTest {
 		fileDAO.delete(patientFile);
 		fileDAO.delete(doctor);
 		specialtyDAO.delete(specialty);
-		if (userDAO.existsById("doctorId")) {
-			userDAO.deleteById("doctorId");
-		}
-		if (userDAO.existsById("patientFileId")) {
-			userDAO.deleteById("patientFileId");
-		}
 	}
 
 	@Test
 	public void testCreateDoctorAccountSuccess() {
 		
-		when(keycloakService.createKeycloakUser(userDTO)).thenReturn(HttpStatus.CREATED);
-
-		assertFalse(userDAO.existsById("doctorId"));
+		when(keycloakService.createUser(userDTO)).thenReturn(HttpStatus.CREATED);
 
 		assertDoesNotThrow(() -> userService.createUser(userDTO));
-
-		assertTrue(userDAO.existsById("doctorId"));
 	}
 
 	@Test
 	public void testCreatePatientAccountSuccess() {
 
-		when(keycloakService.createKeycloakUser(userDTO)).thenReturn(HttpStatus.CREATED);
-
-		assertFalse(userDAO.existsById("patientFileId"));
+		when(keycloakService.createUser(userDTO)).thenReturn(HttpStatus.CREATED);
 
 		userDTO.setId("patientFileId");
 		userDTO.setSecurityCode("7890");
 
 		assertDoesNotThrow(() -> userService.createUser(userDTO));
-
-		assertTrue(userDAO.existsById("patientFileId"));
 	}
 
 	@Test
 	public void testCreateDoctorAccountFailureUserAccountAlreadyExistsById() {
 
-		user.setId("doctorId");
-		user.setUsername("John");
-		user.setPassword("0123");
-		user.setSecurityCode("0000");
-		userDAO.save(user);
-
+		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(true);
+		
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
 		assertEquals("Le compte utilisateur existe déjà.", ex.getMessage());
 	}
@@ -195,15 +165,8 @@ public class UserServiceIntegrationTest {
 	@Test
 	public void testCreatePatientAccountFailureUserAccountAlreadyExistsById() {
 
-		user.setId("patientFileId");
-		user.setUsername("John");
-		user.setPassword("0123");
-		user.setSecurityCode("0000");
-		userDAO.save(user);
-
-		userDTO.setId("patientFileId");
-		userDTO.setSecurityCode("7890");
-
+		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(true);
+		
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
 		assertEquals("Le compte utilisateur existe déjà.", ex.getMessage());
 	}
@@ -211,11 +174,7 @@ public class UserServiceIntegrationTest {
 	@Test
 	public void testCreateDoctorAccountFailureUserAccountAlreadyExistsByUsername() {
 
-		user.setId("id");
-		user.setUsername("username");
-		user.setPassword("0123");
-		user.setSecurityCode("0000");
-		userDAO.save(user);
+		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
 
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
 		assertEquals("Le nom d'utilisateur existe déjà.", ex.getMessage());
@@ -224,14 +183,7 @@ public class UserServiceIntegrationTest {
 	@Test
 	public void testCreatePatientAccountFailureUserAccountAlreadyExistsByUsername() {
 
-		user.setId("id");
-		user.setUsername("username");
-		user.setPassword("0123");
-		user.setSecurityCode("0000");
-		userDAO.save(user);
-
-		userDTO.setId("patientFileId");
-		userDTO.setSecurityCode("7890");
+		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
 
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
 		assertEquals("Le nom d'utilisateur existe déjà.", ex.getMessage());
@@ -244,8 +196,6 @@ public class UserServiceIntegrationTest {
 		fileDAO.delete(doctor);
 
 		assertThrows(FinderException.class, () -> userService.createUser(userDTO));
-
-		assertFalse(userDAO.existsById("doctorId"));
 	}
 
 	@Test
@@ -257,8 +207,6 @@ public class UserServiceIntegrationTest {
 		userDTO.setSecurityCode("7890");
 
 		assertThrows(FinderException.class, () -> userService.createUser(userDTO));
-
-		assertFalse(userDAO.existsById("patientFileId"));
 	}
 
 	@Test
@@ -267,8 +215,6 @@ public class UserServiceIntegrationTest {
 		userDTO.setSecurityCode("1111");
 
 		assertThrows(CheckException.class, () -> userService.createUser(userDTO));
-
-		assertFalse(userDAO.existsById("doctorId"));
 	}
 
 	@Test
@@ -278,40 +224,19 @@ public class UserServiceIntegrationTest {
 		userDTO.setSecurityCode("1111");
 
 		assertThrows(CheckException.class, () -> userService.createUser(userDTO));
-
-		assertFalse(userDAO.existsById("patientFileId"));
-	}
-
-	@Test
-	public void testFindUserByUsernameSuccess() {
-		UserDTO userDTO = assertDoesNotThrow(() -> userService.findUserByUsername("user"));
-
-		assertEquals("D001", userDTO.getId());
-		assertNull(userDTO.getPassword());
-		assertNull(userDTO.getSecurityCode());
-	}
-
-	@Test
-	public void testFindUserByUsernameFailureUserDoesNotExist() {
-		FinderException ex = assertThrows(FinderException.class, () -> userService.findUserByUsername("user0"));
-
-		assertEquals("Compte utilisateur non trouvé.", ex.getMessage());
 	}
 
 	@Test
 	public void testDeleteUserSuccess() {
-		when(keycloakService.deleteKeycloakUser("user")).thenReturn(HttpStatus.NO_CONTENT);
+		when(keycloakService.userExistsById("D001")).thenReturn(true);
+		when(keycloakService.deleteUser("D001")).thenReturn(HttpStatus.NO_CONTENT);
 		
-		assertTrue(userDAO.existsById("D001"));
-
 		assertDoesNotThrow(() -> userService.deleteUser("D001"));
-
-		assertFalse(userDAO.existsById("D001"));
 	}
 
 	@Test
 	public void testDeleteUserFailureUserDoesNotExist() {
-		assertFalse(userDAO.existsById("D002"));
+		when(keycloakService.userExistsById("D002")).thenReturn(false);
 
 		DeleteException ex = assertThrows(DeleteException.class, () -> userService.deleteUser("D002"));
 
