@@ -9,7 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -241,7 +244,7 @@ public class PatientFileControllerIntegrationTest {
 	@Test
 	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreatePatientFileSuccess() throws Exception {
-		doNothing().when(rnippService).checkPatientData(patientFileDTO);
+		doNothing().when(rnippService).checkPatientData(any(PatientFileDTO.class));
 
 		assertFalse(patientFileDAO.existsById("P002"));
 
@@ -254,6 +257,7 @@ public class PatientFileControllerIntegrationTest {
 				.andExpect(jsonPath("$.referringDoctorId", is("D001")))
 				.andExpect(jsonPath("$.dateOfBirth", is("2000-02-13")));
 
+		verify(rnippService, times(1)).checkPatientData(any(PatientFileDTO.class));
 		assertTrue(patientFileDAO.existsById("P002"));
 	}
 
@@ -262,20 +266,20 @@ public class PatientFileControllerIntegrationTest {
 	public void testCreatePatientFileFailurePatientFileAlreadyExist() throws Exception {
 		patientFileDAO.save(patientFile);
 
-		doNothing().when(rnippService).checkPatientData(patientFileDTO);
+		doNothing().when(rnippService).checkPatientData(any(PatientFileDTO.class));
 
 		mockMvc.perform(post("/patient-file").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(patientFileDTO))).andExpect(status().isConflict())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Un dossier avec cet identifiant existe déjà.")));
+
+		verify(rnippService, times(1)).checkPatientData(any(PatientFileDTO.class));
 	}
 
 	@Test
 	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreatePatientFileFailurePatientFileDTONonValidLastname() throws Exception {
 		patientFileDTO.setLastname("");
-
-		doNothing().when(rnippService).checkPatientData(patientFileDTO);
 
 		mockMvc.perform(post("/patient-file").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(patientFileDTO))).andExpect(status().isNotAcceptable())
@@ -289,8 +293,6 @@ public class PatientFileControllerIntegrationTest {
 	@WithMockUser(username="D001",roles={"DOCTOR"})
 	public void testCreatePatientFileFailurePatientFileDTONonValidAddressCountry() throws Exception {
 		patientFileDTO.getAddressDTO().setCountry(null);
-
-		doNothing().when(rnippService).checkPatientData(patientFileDTO);
 
 		mockMvc.perform(post("/patient-file").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(patientFileDTO))).andExpect(status().isNotAcceptable())
@@ -1828,7 +1830,7 @@ public class PatientFileControllerIntegrationTest {
 	public void testDeletePatientFileSuccessUserPresent() throws Exception {
 		id = "P005";
 		when(keycloakService.userExistsById(id)).thenReturn(true);
-		when(keycloakService.deleteUser(user.getId())).thenReturn(HttpStatus.NO_CONTENT);
+		when(keycloakService.deleteUser(id)).thenReturn(HttpStatus.NO_CONTENT);
 
 		assertTrue(patientFileDAO.existsById(id));
 
@@ -1836,6 +1838,8 @@ public class PatientFileControllerIntegrationTest {
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.status", is(200)))
 				.andExpect(jsonPath("$.message", is("Le dossier patient a bien été supprimé.")));
 
+		verify(keycloakService, times(1)).userExistsById(id);
+		verify(keycloakService, times(1)).deleteUser(id);
 		assertFalse(patientFileDAO.existsById(id));
 	}
 

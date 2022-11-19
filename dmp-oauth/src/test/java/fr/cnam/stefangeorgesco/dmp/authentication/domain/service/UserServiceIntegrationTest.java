@@ -3,6 +3,8 @@ package fr.cnam.stefangeorgesco.dmp.authentication.domain.service;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -140,6 +142,8 @@ public class UserServiceIntegrationTest {
 		when(keycloakService.createUser(userDTO)).thenReturn(HttpStatus.CREATED);
 
 		assertDoesNotThrow(() -> userService.createUser(userDTO));
+
+		verify(keycloakService, times(1)).createUser(userDTO);
 	}
 
 	@Test
@@ -151,6 +155,8 @@ public class UserServiceIntegrationTest {
 		userDTO.setSecurityCode("7890");
 
 		assertDoesNotThrow(() -> userService.createUser(userDTO));
+
+		verify(keycloakService, times(1)).createUser(userDTO);
 	}
 
 	@Test
@@ -159,6 +165,8 @@ public class UserServiceIntegrationTest {
 		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(true);
 		
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
+
+		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
 		assertEquals("Le compte utilisateur existe déjà.", ex.getMessage());
 	}
 
@@ -168,6 +176,8 @@ public class UserServiceIntegrationTest {
 		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(true);
 		
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
+
+		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
 		assertEquals("Le compte utilisateur existe déjà.", ex.getMessage());
 	}
 
@@ -177,6 +187,8 @@ public class UserServiceIntegrationTest {
 		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
 
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
+
+		verify(keycloakService, times(1)).userExistsByUsername(userDTO.getUsername());
 		assertEquals("Le nom d'utilisateur existe déjà.", ex.getMessage());
 	}
 
@@ -186,6 +198,8 @@ public class UserServiceIntegrationTest {
 		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
 
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
+
+		verify(keycloakService, times(1)).userExistsByUsername(userDTO.getUsername());
 		assertEquals("Le nom d'utilisateur existe déjà.", ex.getMessage());
 	}
 
@@ -232,6 +246,9 @@ public class UserServiceIntegrationTest {
 		when(keycloakService.deleteUser("D001")).thenReturn(HttpStatus.NO_CONTENT);
 		
 		assertDoesNotThrow(() -> userService.deleteUser("D001"));
+
+		verify(keycloakService, times(1)).userExistsById("D001");
+		verify(keycloakService, times(1)).deleteUser("D001");
 	}
 
 	@Test

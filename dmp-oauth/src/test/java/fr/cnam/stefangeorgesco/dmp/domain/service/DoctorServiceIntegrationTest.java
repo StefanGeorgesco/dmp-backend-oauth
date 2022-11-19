@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -236,11 +238,11 @@ public class DoctorServiceIntegrationTest {
 	public void testDeleteDoctorSuccessNoUser() {
 
 		when(keycloakService.userExistsById("D002")).thenReturn(false);
-
 		assertTrue(doctorDAO.existsById("D002"));
 
 		assertDoesNotThrow(() -> doctorService.deleteDoctor("D002"));
 
+		verify(keycloakService, times(1)).userExistsById("D002");
 		assertFalse(doctorDAO.existsById("D002"));
 	}
 
@@ -248,12 +250,13 @@ public class DoctorServiceIntegrationTest {
 	public void testDeleteDoctorSuccessUserPresent() {
 		
 		when(keycloakService.userExistsById("D002")).thenReturn(true);
-		when(keycloakService.deleteUser(user.getUsername())).thenReturn(HttpStatus.NO_CONTENT);
-
+		when(keycloakService.deleteUser("D002")).thenReturn(HttpStatus.NO_CONTENT);
 		assertTrue(doctorDAO.existsById("D002"));
 
 		assertDoesNotThrow(() -> doctorService.deleteDoctor("D002"));
 
+		verify(keycloakService, times(1)).userExistsById("D002");
+		verify(keycloakService, times(1)).deleteUser("D002");
 		assertFalse(doctorDAO.existsById("D002"));
 	}
 

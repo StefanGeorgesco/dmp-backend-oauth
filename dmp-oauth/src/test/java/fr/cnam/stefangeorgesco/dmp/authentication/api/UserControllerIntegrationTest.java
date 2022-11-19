@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.mockito.ArgumentMatchers.any;
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -147,6 +149,8 @@ public class UserControllerIntegrationTest {
 				post("/user").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO)))
 				.andExpect(status().isCreated()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Le compte utilisateur a été créé.")));
+
+		verify(keycloakService, times(1)).createUser(any(UserDTO.class));
 	}
 
 	@Test
@@ -162,6 +166,7 @@ public class UserControllerIntegrationTest {
 				.andExpect(status().isCreated()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Le compte utilisateur a été créé.")));
 
+		verify(keycloakService, times(1)).createUser(any(UserDTO.class));
 	}
 
 	@Test
@@ -189,6 +194,7 @@ public class UserControllerIntegrationTest {
 				.andExpect(status().isConflict()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Le compte utilisateur existe déjà.")));
 
+		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
 	}
 
 	@Test
@@ -201,6 +207,7 @@ public class UserControllerIntegrationTest {
 				.andExpect(status().isConflict()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Le nom d'utilisateur existe déjà.")));
 
+		verify(keycloakService, times(1)).userExistsByUsername(userDTO.getUsername());
 	}
 
 	@Test

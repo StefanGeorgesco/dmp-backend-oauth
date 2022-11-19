@@ -134,8 +134,6 @@ public class UserService {
 		if (responseStatus != HttpStatus.NO_CONTENT) {
 			throw new DeleteException("Le compte utilisateur n'a pas pu être supprimé (erreur Keycloak, HTTPStatus : "
 					+ responseStatus + ").");
-		} else {
-			
 		}
 
 	}

@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -1057,6 +1059,7 @@ public class PatientFileServiceIntegrationTest {
 
 		assertDoesNotThrow(() -> patientFileService.deletePatientFile(id));
 
+		verify(keycloakService, times(1)).userExistsById(id);
 		assertFalse(patientFileDAO.existsById(id));
 
 		correspondenceDTOs = patientFileService.findCorrespondencesByPatientFileId(id);
@@ -1069,10 +1072,10 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testDeletePatientFileSuccessUserPresent() {
 
-		when(keycloakService.userExistsById(id)).thenReturn(true);
-		when(keycloakService.deleteUser(user.getId())).thenReturn(HttpStatus.NO_CONTENT);
-
 		id = "P005";
+
+		when(keycloakService.userExistsById(id)).thenReturn(true);
+		when(keycloakService.deleteUser(id)).thenReturn(HttpStatus.NO_CONTENT);
 
 		user.setId(id);
 		assertTrue(patientFileDAO.existsById(id));
@@ -1085,6 +1088,8 @@ public class PatientFileServiceIntegrationTest {
 
 		assertDoesNotThrow(() -> patientFileService.deletePatientFile(id));
 
+		verify(keycloakService, times(1)).userExistsById(id);
+		verify(keycloakService, times(1)).deleteUser(id);
 		assertFalse(patientFileDAO.existsById(id));
 
 		correspondenceDTOs = patientFileService.findCorrespondencesByPatientFileId(id);
