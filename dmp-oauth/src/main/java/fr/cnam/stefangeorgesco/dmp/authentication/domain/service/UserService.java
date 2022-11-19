@@ -102,6 +102,11 @@ public class UserService {
 
 	}
 	
+	/**
+	 * Service de mise à jour des données de l'utilisateur.
+	 * 
+	 * @param userDTO l'objet UserDTO contenant les données à mettre à jour.
+	 */
 	public void updateUser(UserDTO userDTO) {
 		try {
 			keycloakService.updateUser(userDTO);
@@ -115,7 +120,6 @@ public class UserService {
 	 * 
 	 * @param id l'identifiant du compte utilisateur.
 	 * @throws DeleteException le compte utilisateur n'a pas pu être supprimé.
-	 * @throws FinderException le compte utilisateur n'existe pas.
 	 */
 	public void deleteUser(String id) throws DeleteException {
 

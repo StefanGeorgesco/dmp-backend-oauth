@@ -42,29 +42,48 @@ public class KeycloakService {
 	@Autowired
 	WebClient keyCloakClient;
 
+	/**
+	 * Service indiquant si un utilisateur existe, recherche par nom d'utilisateur.
+	 * 
+	 * @param username le nom d'utilisateur.
+	 * @return égal à true si l'utilisateur existe, false sinon.
+	 */
 	public boolean userExistsByUsername(String username) {
 		String token = getAdminToken();
-		
+
 		UserRepresentation[] ur = keyCloakClient.get()
 				.uri("/admin/realms/" + realm + "/users?username=" + username + "&exact=true")
 				.header("Authorization", "Bearer " + token).retrieve().bodyToMono(UserRepresentation[].class).block();
-		
+
 		return ur.length > 0;
 	}
 
+	/**
+	 * Service indiquant si un utilisateur existe, recherche par identifiant.
+	 * 
+	 * @param id l'identifiant.
+	 * @return égal à true si l'utilisateur existe, false sinon.
+	 */
 	public boolean userExistsById(String id) {
 		String token = getAdminToken();
-		
-		UserRepresentation[] ur = keyCloakClient.get()
-				.uri("/admin/realms/" + realm + "/users?q=id:" + id)
+
+		UserRepresentation[] ur = keyCloakClient.get().uri("/admin/realms/" + realm + "/users?q=id:" + id)
 				.header("Authorization", "Bearer " + token).retrieve().bodyToMono(UserRepresentation[].class).block();
-		
+
 		return ur.length > 0;
 	}
 
+	/**
+	 * Service de création d'un utilisateur (credentials, username, firstname,
+	 * lastname, email, group, id ttribute)
+	 * 
+	 * @param userDTO objet UserDTO comportant les données de l'utilisateur.
+	 * @return statut HttpStatus (valeur) retourné par la requête WebClient.
+	 * @throws WebClientResponseException
+	 */
 	public HttpStatus createUser(UserDTO userDTO) throws WebClientResponseException {
 		String token = getAdminToken();
-		
+
 		CredentialRepresentation credentials = new CredentialRepresentation();
 		credentials.setType("password");
 		credentials.setTemporary(false);
@@ -91,6 +110,14 @@ public class KeycloakService {
 		return resp.getStatusCode();
 	}
 
+	/**
+	 * Service de mise à jour des données de l'utilisateur (firstname, lastname,
+	 * email).
+	 * 
+	 * @param userDTO les données à mettre à jour.
+	 * @return statut HttpStatus (valeur) retourné par la requête WebClient.
+	 * @throws WebClientResponseException
+	 */
 	public HttpStatus updateUser(UserDTO userDTO) throws WebClientResponseException {
 		String token = getAdminToken();
 		String userId = getUserIdById(token, userDTO.getId());
@@ -100,31 +127,32 @@ public class KeycloakService {
 		user.setLastName(userDTO.getLastname());
 		user.setEmail(userDTO.getEmail());
 
-		ResponseEntity<Void> resp = keyCloakClient
-									.put()
-									.uri("/admin/realms/" + realm + "/users/" + userId)
-									.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-									.header("Authorization", "Bearer " + token).body(Mono.just(user), UserRepresentation.class)
-									.retrieve()
-									.toBodilessEntity()
-									.block();
+		ResponseEntity<Void> resp = keyCloakClient.put().uri("/admin/realms/" + realm + "/users/" + userId)
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.header("Authorization", "Bearer " + token).body(Mono.just(user), UserRepresentation.class).retrieve()
+				.toBodilessEntity().block();
 		return resp.getStatusCode();
 	}
 
+	/**
+	 * Service de suppression d'un utilisateur désigné par son identifiant.
+	 * 
+	 * @param id l'identifiant de l'utilisateur à supprimer.
+	 * @return statut HttpStatus (valeur) retourné par la requête WebClient.
+	 */
 	public HttpStatus deleteUser(String id) {
 		String token = getAdminToken();
-		
+
 		String userId = getUserIdById(token, id);
-		
+
 		ResponseEntity<Void> resp = keyCloakClient.delete().uri("/admin/realms/" + realm + "/users/" + userId)
 				.header("Authorization", "Bearer " + token).retrieve().toBodilessEntity().block();
-		
+
 		return resp.getStatusCode();
 	}
 
 	private String getUserIdById(String token, String id) {
-		UserRepresentation[] ur = keyCloakClient.get()
-				.uri("/admin/realms/" + realm + "/users?q=id:" + id)
+		UserRepresentation[] ur = keyCloakClient.get().uri("/admin/realms/" + realm + "/users?q=id:" + id)
 				.header("Authorization", "Bearer " + token).retrieve().bodyToMono(UserRepresentation[].class).block();
 		try {
 			return ur[0].getId();
@@ -132,7 +160,7 @@ public class KeycloakService {
 		}
 		return "unknown";
 	}
-	
+
 	private String getAdminToken() {
 		String admin = "username=" + username + "&password=" + password + "&grant_type=" + grant_type + "&client_id="
 				+ client_id;
