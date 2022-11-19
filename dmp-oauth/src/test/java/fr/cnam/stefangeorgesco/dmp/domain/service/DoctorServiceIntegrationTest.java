@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,6 +26,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
@@ -157,11 +159,12 @@ public class DoctorServiceIntegrationTest {
 	@Test
 	public void testUpdateDoctorSuccess() {
 		doctorDTO.setId("D001"); // file exists
-
+		when(keycloakService.updateUser(any(UserDTO.class))).thenReturn(HttpStatus.ACCEPTED);
 		assertTrue(doctorDAO.existsById("D001"));
 
 		response = assertDoesNotThrow(() -> doctorService.updateDoctor(doctorDTO));
 
+		verify(keycloakService, times(1)).updateUser(any(UserDTO.class));
 		savedDoctor = doctorDAO.findById("D001").get();
 
 		// no change in saved object

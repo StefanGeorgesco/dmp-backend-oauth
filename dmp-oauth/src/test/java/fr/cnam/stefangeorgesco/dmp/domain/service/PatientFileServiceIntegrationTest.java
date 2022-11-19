@@ -12,6 +12,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +29,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.CorrespondenceDAO;
@@ -262,11 +264,12 @@ public class PatientFileServiceIntegrationTest {
 	public void testUpdatePatientFileSuccess() {
 		patientFileDTO.setReferringDoctorId("D002"); // try to change doctor
 		patientFileDTO.setId("P001"); // file exists
-
+		when(keycloakService.updateUser(any(UserDTO.class))).thenReturn(HttpStatus.ACCEPTED);
 		assertTrue(patientFileDAO.existsById("P001"));
 
 		patientFileDTOResponse = assertDoesNotThrow(() -> patientFileService.updatePatientFile(patientFileDTO));
 
+		verify(keycloakService, times(1)).updateUser(any(UserDTO.class));
 		savedPatientFile = patientFileDAO.findById("P001").get();
 
 		// no change in saved object

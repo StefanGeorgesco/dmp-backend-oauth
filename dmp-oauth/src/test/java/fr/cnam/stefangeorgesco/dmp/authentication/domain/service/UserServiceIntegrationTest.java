@@ -257,6 +257,7 @@ public class UserServiceIntegrationTest {
 
 		DeleteException ex = assertThrows(DeleteException.class, () -> userService.deleteUser("D002"));
 
+		verify(keycloakService, times(1)).userExistsById("D002");
 		assertEquals("Compte utilisateur non trouvé.", ex.getMessage());
 	}
 
