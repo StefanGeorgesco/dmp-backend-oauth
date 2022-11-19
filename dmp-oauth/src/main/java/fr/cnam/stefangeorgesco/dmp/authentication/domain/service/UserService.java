@@ -83,6 +83,10 @@ public class UserService {
 		User user = commonModelMapper.map(userDTO, User.class);
 
 		file.checkUserData(user, bCryptPasswordEncoder);
+		
+		userDTO.setEmail(file.getEmail());
+		userDTO.setFirstname(file.getFirstname());
+		userDTO.setLastname(file.getLastname());
 
 		if (file instanceof Doctor) {
 			userDTO.setRole("DOCTOR");
@@ -96,6 +100,14 @@ public class UserService {
 			throw new CreateException("Le compte utilisateur n'a pas pu être créé (erreur webclient Keycloak).");
 		}
 
+	}
+	
+	public void updateUser(UserDTO userDTO) {
+		try {
+			keycloakService.updateUser(userDTO);
+		} catch (WebClientResponseException e) {
+			System.err.println("L'utilisateur keycloak n'a pas pu être mise à jour.");
+		}
 	}
 
 	/**

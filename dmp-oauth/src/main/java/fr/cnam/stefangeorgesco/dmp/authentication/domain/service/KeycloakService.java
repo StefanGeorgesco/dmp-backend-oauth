@@ -73,8 +73,10 @@ public class KeycloakService {
 		UserRepresentation user = new UserRepresentation();
 		user.setEnabled(true);
 		user.setUsername(userDTO.getUsername());
+		user.setEmail(userDTO.getEmail());
+		user.setFirstName(userDTO.getFirstname());
+		user.setLastName(userDTO.getLastname());
 		user.setCredentials(List.of(credentials));
-//		user.setRealmRoles(List.of(userDTO.getRole()));
 		user.setGroups(List.of(userDTO.getRole() + "S"));
 
 		Map<String, List<String>> attributes = new HashMap<>();
@@ -86,6 +88,26 @@ public class KeycloakService {
 				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.header("Authorization", "Bearer " + token).body(Mono.just(user), UserRepresentation.class).retrieve()
 				.toBodilessEntity().block();
+		return resp.getStatusCode();
+	}
+
+	public HttpStatus updateUser(UserDTO userDTO) throws WebClientResponseException {
+		String token = getAdminToken();
+		String userId = getUserIdById(token, userDTO.getId());
+
+		UserRepresentation user = new UserRepresentation();
+		user.setFirstName(userDTO.getFirstname());
+		user.setLastName(userDTO.getLastname());
+		user.setEmail(userDTO.getEmail());
+
+		ResponseEntity<Void> resp = keyCloakClient
+									.put()
+									.uri("/admin/realms/" + realm + "/users/" + userId)
+									.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+									.header("Authorization", "Bearer " + token).body(Mono.just(user), UserRepresentation.class)
+									.retrieve()
+									.toBodilessEntity()
+									.block();
 		return resp.getStatusCode();
 	}
 

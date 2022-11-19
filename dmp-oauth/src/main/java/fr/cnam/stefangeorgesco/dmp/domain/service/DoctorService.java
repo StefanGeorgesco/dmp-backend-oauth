@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.FileDAO;
@@ -169,6 +170,13 @@ public class DoctorService {
 		} catch (Exception e) {
 			throw new UpdateException("Le dossier de médecin n'a pas pu être modifié.");
 		}
+		
+		UserDTO userDTO = new UserDTO();
+		userDTO.setId(doctorDTO.getId());
+		userDTO.setFirstname(doctorDTO.getFirstname());
+		userDTO.setLastname(doctorDTO.getLastname());
+		userDTO.setEmail(doctorDTO.getEmail());
+		userService.updateUser(userDTO);
 
 		DoctorDTO response = doctorModelMapper.map(doctor, DoctorDTO.class);
 
