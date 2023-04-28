@@ -2,7 +2,6 @@ package fr.cnam.stefangeorgesco.dmp.domain.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
@@ -14,14 +13,12 @@ import javax.validation.constraints.NotBlank;
  */
 @Entity
 @Table(name = "t_medical_act")
-public class MedicalAct {
+public class MedicalAct extends StringIdBaseEntity {
 
 	/**
 	 * Identifiant, champ 'Code' de la nomenclature CCAM
+	 * Hérité de StringIdBaseEntity
 	 */
-	@Id
-	@NotBlank(message = "L'identifiant est obligatoire.")
-	private String id;
 
 	/**
 	 * Champ 'Texte' de la nomenclature CCAM
@@ -29,14 +26,6 @@ public class MedicalAct {
 	@Column(length = 800)
 	@NotBlank(message = "La description est obligatoire.")
 	private String description;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getDescription() {
 		return description;
@@ -46,4 +35,21 @@ public class MedicalAct {
 		this.description = description;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof MedicalAct)) return false;
+		if (!super.equals(o)) return false;
+
+		MedicalAct that = (MedicalAct) o;
+
+		return getDescription() != null ? getDescription().equals(that.getDescription()) : that.getDescription() == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+		return result;
+	}
 }

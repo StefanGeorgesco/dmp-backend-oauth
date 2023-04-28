@@ -1,20 +1,9 @@
 package fr.cnam.stefangeorgesco.dmp.domain.model;
 
-import java.time.LocalDate;
-import java.util.UUID;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
-
-import org.hibernate.annotations.Type;
+import java.time.LocalDate;
 
 /**
  * Classe abstraite parente des entités représentant les éléments médicaux des
@@ -26,15 +15,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = "t_patient_file_item")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class PatientFileItem {
-
-	/**
-	 * Identifiant
-	 */
-	@Id
-	@GeneratedValue
-	@Type(type = "org.hibernate.type.UUIDCharType")
-	protected UUID id;
+public abstract class PatientFileItem extends UuidIdBaseEntity {
 
 	/**
 	 * Date de création de l'élément médical.
@@ -63,14 +44,6 @@ public abstract class PatientFileItem {
 	@JoinColumn(name = "patient_file_id")
 	@NotNull(message = "Le dossier patient est obligatoire.")
 	protected PatientFile patientFile;
-
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
 
 	public LocalDate getDate() {
 		return date;
@@ -104,4 +77,29 @@ public abstract class PatientFileItem {
 		this.patientFile = patientFile;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof PatientFileItem)) return false;
+		if (!super.equals(o)) return false;
+
+		PatientFileItem that = (PatientFileItem) o;
+
+		if (getDate() != null ? !getDate().equals(that.getDate()) : that.getDate() != null) return false;
+		if (getComments() != null ? !getComments().equals(that.getComments()) : that.getComments() != null)
+			return false;
+		if (getAuthoringDoctor() != null ? !getAuthoringDoctor().equals(that.getAuthoringDoctor()) : that.getAuthoringDoctor() != null)
+			return false;
+		return getPatientFile() != null ? getPatientFile().equals(that.getPatientFile()) : that.getPatientFile() == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + (getDate() != null ? getDate().hashCode() : 0);
+		result = 31 * result + (getComments() != null ? getComments().hashCode() : 0);
+		result = 31 * result + (getAuthoringDoctor() != null ? getAuthoringDoctor().hashCode() : 0);
+		result = 31 * result + (getPatientFile() != null ? getPatientFile().hashCode() : 0);
+		return result;
+	}
 }

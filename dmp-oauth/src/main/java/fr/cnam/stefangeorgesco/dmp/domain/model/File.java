@@ -1,21 +1,14 @@
 package fr.cnam.stefangeorgesco.dmp.domain.model;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
+import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
 
 /**
  * Classe abstraite parente de entités représentant les dossiers patients et les
@@ -27,11 +20,7 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
 @Entity
 @Table(name = "t_file")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class File {
-
-	@Id
-	@NotBlank(message = "L'identifiant est obligatoire.")
-	protected String id;
+public abstract class File extends StringIdBaseEntity {
 
 	/**
 	 * Prénom du patient ou du médecin.
@@ -106,14 +95,6 @@ public abstract class File {
 
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getFirstname() {
 		return firstname;
 	}
@@ -162,4 +143,33 @@ public abstract class File {
 		this.securityCode = securityCode;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof File)) return false;
+		if (!super.equals(o)) return false;
+
+		File file = (File) o;
+
+		if (getFirstname() != null ? !getFirstname().equals(file.getFirstname()) : file.getFirstname() != null)
+			return false;
+		if (getLastname() != null ? !getLastname().equals(file.getLastname()) : file.getLastname() != null)
+			return false;
+		if (getPhone() != null ? !getPhone().equals(file.getPhone()) : file.getPhone() != null) return false;
+		if (getEmail() != null ? !getEmail().equals(file.getEmail()) : file.getEmail() != null) return false;
+		if (getAddress() != null ? !getAddress().equals(file.getAddress()) : file.getAddress() != null) return false;
+		return getSecurityCode() != null ? getSecurityCode().equals(file.getSecurityCode()) : file.getSecurityCode() == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + (getFirstname() != null ? getFirstname().hashCode() : 0);
+		result = 31 * result + (getLastname() != null ? getLastname().hashCode() : 0);
+		result = 31 * result + (getPhone() != null ? getPhone().hashCode() : 0);
+		result = 31 * result + (getEmail() != null ? getEmail().hashCode() : 0);
+		result = 31 * result + (getAddress() != null ? getAddress().hashCode() : 0);
+		result = 31 * result + (getSecurityCode() != null ? getSecurityCode().hashCode() : 0);
+		return result;
+	}
 }

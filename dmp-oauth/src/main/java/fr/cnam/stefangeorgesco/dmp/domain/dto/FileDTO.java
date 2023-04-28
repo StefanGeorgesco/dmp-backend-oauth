@@ -14,10 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Stéfan Georgesco
  *
  */
-public abstract class FileDTO {
-
-	@NotBlank(message = "L'identifiant est obligatoire.")
-	protected String id;
+public abstract class FileDTO extends StringIdBaseDto {
 
 	/**
 	 * Prénom du patient ou du médecin.
@@ -58,14 +55,6 @@ public abstract class FileDTO {
 	 * et de valider son association avec le dossier.
 	 */
 	protected String securityCode;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getFirstname() {
 		return firstname;

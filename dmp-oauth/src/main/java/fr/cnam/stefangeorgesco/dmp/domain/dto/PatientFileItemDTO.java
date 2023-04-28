@@ -1,14 +1,12 @@
 package fr.cnam.stefangeorgesco.dmp.domain.dto;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
-
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Classe abstraite parente des objets de transfert de données représentant les
@@ -17,18 +15,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * @author Stéfan Georgesco
  *
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
 @JsonSubTypes({ @JsonSubTypes.Type(value = ActDTO.class, name = "act"),
 		@JsonSubTypes.Type(value = DiagnosisDTO.class, name = "diagnosis"),
 		@JsonSubTypes.Type(value = MailDTO.class, name = "mail"),
 		@JsonSubTypes.Type(value = PrescriptionDTO.class, name = "prescription"),
 		@JsonSubTypes.Type(value = SymptomDTO.class, name = "symptom") })
-public abstract class PatientFileItemDTO {
-
-	/**
-	 * Identifiant
-	 */
-	protected UUID id;
+public abstract class PatientFileItemDTO extends UuidIdBaseDto {
 
 	/**
 	 * Date de création de l'élément médical.
@@ -67,14 +60,6 @@ public abstract class PatientFileItemDTO {
 	 * Identifiant du dossier patient auquel l'élément médical est associé.
 	 */
 	protected String patientFileId;
-
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
 
 	public LocalDate getDate() {
 		return date;

@@ -1,19 +1,9 @@
 package fr.cnam.stefangeorgesco.dmp.domain.model;
 
-import java.time.LocalDate;
-import java.util.UUID;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.annotations.Type;
+import java.time.LocalDate;
 
 /**
  * Entité représentant une correspondance avec un médecin.
@@ -23,12 +13,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name = "t_correspondence")
-public class Correspondence {
-
-	@Id
-	@GeneratedValue
-	@Type(type = "org.hibernate.type.UUIDCharType")
-	private UUID id;
+public class Correspondence extends UuidIdBaseEntity {
 
 	/**
 	 * Date limite d'effet de la correspondance.
@@ -54,14 +39,6 @@ public class Correspondence {
 	@NotNull(message = "Le dossier patient est obligatoire.")
 	private PatientFile patientFile;
 
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
-
 	public LocalDate getDateUntil() {
 		return dateUntil;
 	}
@@ -86,4 +63,26 @@ public class Correspondence {
 		this.patientFile = patientFile;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Correspondence)) return false;
+		if (!super.equals(o)) return false;
+
+		Correspondence that = (Correspondence) o;
+
+		if (getDateUntil() != null ? !getDateUntil().equals(that.getDateUntil()) : that.getDateUntil() != null)
+			return false;
+		if (getDoctor() != null ? !getDoctor().equals(that.getDoctor()) : that.getDoctor() != null) return false;
+		return getPatientFile() != null ? getPatientFile().equals(that.getPatientFile()) : that.getPatientFile() == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + (getDateUntil() != null ? getDateUntil().hashCode() : 0);
+		result = 31 * result + (getDoctor() != null ? getDoctor().hashCode() : 0);
+		result = 31 * result + (getPatientFile() != null ? getPatientFile().hashCode() : 0);
+		return result;
+	}
 }

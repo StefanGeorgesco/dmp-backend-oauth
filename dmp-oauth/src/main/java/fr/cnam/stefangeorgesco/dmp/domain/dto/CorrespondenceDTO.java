@@ -1,12 +1,10 @@
 package fr.cnam.stefangeorgesco.dmp.domain.dto;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Objet de transfert de données représentant une correspondance avec un
@@ -15,9 +13,7 @@ import javax.validation.constraints.NotNull;
  * @author Stéfan Georgesco
  *
  */
-public class CorrespondenceDTO {
-
-	private UUID id;
+public class CorrespondenceDTO extends UuidIdBaseDto {
 
 	/**
 	 * Date limite d'effet de la correspondance.
@@ -51,14 +47,6 @@ public class CorrespondenceDTO {
 	 * Identifiant du dossier patient auquel la correspondance est associée.
 	 */
 	private String patientFileId;
-
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
 
 	public LocalDate getDateUntil() {
 		return dateUntil;
