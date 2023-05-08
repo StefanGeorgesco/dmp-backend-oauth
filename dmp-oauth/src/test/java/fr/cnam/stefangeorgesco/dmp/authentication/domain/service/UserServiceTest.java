@@ -53,21 +53,21 @@ public class UserServiceTest {
 	@Autowired
 	private UserService userService;
 
-	@Autowired
 	private UserDTO userDTO;
 
-	@Autowired
 	private User user;
 
 	private final ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
 	@BeforeEach
 	public void setup() {
+		userDTO = new UserDTO();
 		userDTO.setId("1");
 		userDTO.setUsername("username");
 		userDTO.setPassword("password");
 		userDTO.setSecurityCode("securityCode");
 
+		user = new User();
 		String username = "nom_utilisateur";
 		user.setUsername(username);
 	}

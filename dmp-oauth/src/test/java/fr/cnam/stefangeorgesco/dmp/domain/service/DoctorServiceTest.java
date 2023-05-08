@@ -58,66 +58,48 @@ public class DoctorServiceTest {
 	private DoctorService doctorService;
 
 	@Autowired
-	private SpecialtyDTO specialtyDTO1;
-
-	@Autowired
-	private SpecialtyDTO specialtyDTO2;
-
-	@Autowired
-	private AddressDTO addressDTO;
-
-	@Autowired
-	private DoctorDTO doctorDTO;
-
-	@Autowired
-	private DoctorDTO doctorDTO1;
-
-	@Autowired
-	private DoctorDTO doctorDTO2;
-
-	@Autowired
-	private DoctorDTO response;
-
-	@Autowired
-	private Specialty specialty1;
-
-	@Autowired
-	private Specialty specialty2;
-
-	@Autowired
-	private Doctor savedDoctor;
-
-	@Autowired
-	private Doctor persistentDoctor;
-
-	@Autowired
-	private Address address1;
-
-	@Autowired
-	private Address address2;
-
-	@Autowired
-	private Doctor foundDoctor1;
-
-	@Autowired
-	private Doctor foundDoctor2;
-
-	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private final ArgumentCaptor<Doctor> doctorCaptor = ArgumentCaptor.forClass(Doctor.class);
 
+	private SpecialtyDTO specialtyDTO1;
+
+	private SpecialtyDTO specialtyDTO2;
+
+	private DoctorDTO doctorDTO;
+
+	private DoctorDTO response;
+
+	private Specialty specialty1;
+
+	private Specialty specialty2;
+
+	private Doctor savedDoctor;
+
+	private Doctor persistentDoctor;
+
+	private Doctor foundDoctor1;
+
+	private Doctor foundDoctor2;
+
 	@BeforeEach
 	public void setupBeforeEach() {
+		specialtyDTO1 = new SpecialtyDTO();
 		specialtyDTO1.setId("S001");
+		specialtyDTO2 = new SpecialtyDTO();
 		specialtyDTO2.setId("S002");
+
 		Set<SpecialtyDTO> specialtyDTOs = new HashSet<>();
 		specialtyDTOs.add(specialtyDTO1);
 		specialtyDTOs.add(specialtyDTO2);
+
+		AddressDTO addressDTO = new AddressDTO();
 		addressDTO.setStreet1("1 Rue Lecourbe");
 		addressDTO.setZipcode("75015");
 		addressDTO.setCity("Paris");
 		addressDTO.setCountry("France");
+
+		doctorDTO = new DoctorDTO();
 		doctorDTO.setId("D001");
 		doctorDTO.setFirstname("Pierre");
 		doctorDTO.setLastname("Martin");
@@ -126,27 +108,33 @@ public class DoctorServiceTest {
 		doctorDTO.setSpecialtiesDTO(specialtyDTOs);
 		doctorDTO.setAddressDTO(addressDTO);
 
+		specialty1 = new Specialty();
 		specialty1.setId("S001");
 		specialty1.setDescription("First specialty");
+		specialty2 = new Specialty();
 		specialty2.setId("S002");
 		specialty2.setDescription("Second specialty");
 
+		persistentDoctor = new Doctor();
 		persistentDoctor.setId(doctorDTO.getId());
 		persistentDoctor.setFirstname("firstname");
 		persistentDoctor.setLastname("lastname");
 		persistentDoctor.setSecurityCode("securityCode");
 		persistentDoctor.setSpecialties(List.of(specialty1, specialty2));
 
+		Address address1 = new Address();
 		address1.setStreet1("street1_1");
 		address1.setZipcode("zipcode_1");
 		address1.setCity("city_1");
 		address1.setCountry("country_1");
 
+		Address address2 = new Address();
 		address2.setStreet1("street1_2");
 		address2.setZipcode("zipcode_2");
 		address2.setCity("city_2");
 		address2.setCountry("country_2");
 
+		foundDoctor1 = new Doctor();
 		foundDoctor1.setId("ID_1");
 		foundDoctor1.setFirstname("firstname_1");
 		foundDoctor1.setLastname("lastname_1");
@@ -154,6 +142,7 @@ public class DoctorServiceTest {
 		foundDoctor1.setSpecialties(List.of(specialty1, specialty2));
 		foundDoctor1.setAddress(address1);
 
+		foundDoctor2 = new Doctor();
 		foundDoctor2.setId("ID_2");
 		foundDoctor2.setFirstname("firstname_2");
 		foundDoctor2.setLastname("lastname_2");
@@ -354,8 +343,8 @@ public class DoctorServiceTest {
 
 		assertEquals(2, doctorsDTO.size());
 
-		doctorDTO1 = doctorsDTO.get(0);
-		doctorDTO2 = doctorsDTO.get(1);
+		DoctorDTO doctorDTO1 = doctorsDTO.get(0);
+		DoctorDTO doctorDTO2 = doctorsDTO.get(1);
 
 		assertEquals("ID_1", doctorDTO1.getId());
 		assertEquals("street1_1", doctorDTO1.getAddressDTO().getStreet1());

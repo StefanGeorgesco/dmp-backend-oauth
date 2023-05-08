@@ -1,37 +1,13 @@
 package fr.cnam.stefangeorgesco.dmp.configuration;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.ActDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.AddressDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.CorrespondenceDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DiagnosisDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DiseaseDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.MailDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.MedicalActDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PrescriptionDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.SpecialtyDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.SymptomDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Act;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Address;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Correspondence;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Diagnosis;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Disease;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Doctor;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Mail;
-import fr.cnam.stefangeorgesco.dmp.domain.model.MedicalAct;
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFile;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Prescription;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Symptom;
+import fr.cnam.stefangeorgesco.dmp.domain.dto.*;
+import fr.cnam.stefangeorgesco.dmp.domain.model.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 
-@Configuration
+//@Configuration
 public class TestConfiguration {
 
 	@Bean(name = "user")

@@ -1,27 +1,6 @@
 package fr.cnam.stefangeorgesco.dmp.authentication.domain.service;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.TestPropertySource;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.FileDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.SpecialtyDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.model.Address;
@@ -32,6 +11,22 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.DeleteException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.DuplicateKeyException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.TestPropertySource;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
@@ -41,40 +36,28 @@ public class UserServiceIntegrationTest {
 	private KeycloakService keycloakService;
 
 	@Autowired
-	private UserDTO userDTO;
-
-	@Autowired
 	private UserService userService;
 
 	@Autowired
 	private FileDAO fileDAO;
 
 	@Autowired
-	SpecialtyDAO specialtyDAO;
-
-	@Autowired
-	private Address doctorAddress;
-
-	@Autowired
-	private Address patientFileAddress;
-
-	@Autowired
-	private Specialty specialty;
-
-	@Autowired
-	private Doctor doctor;
-
-	@Autowired
-	private PatientFile patientFile;
-
-	@Autowired
-	private User user;
+	private SpecialtyDAO specialtyDAO;
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+	private UserDTO userDTO;
+
+	private Specialty specialty;
+
+	private Doctor doctor;
+
+	private PatientFile patientFile;
+
 	@BeforeEach
 	public void setup() {
+		specialty =  new Specialty();
 		specialty.setId("S001");
 		specialty.setDescription("A specialty");
 
@@ -83,11 +66,13 @@ public class UserServiceIntegrationTest {
 		List<Specialty> specialties = new ArrayList<>();
 		specialties.add(specialty);
 
+		Address doctorAddress = new Address();
 		doctorAddress.setStreet1("street");
 		doctorAddress.setCity("city");
 		doctorAddress.setZipcode("zip");
 		doctorAddress.setCountry("country");
 
+		doctor = new Doctor();
 		doctor.setId("doctorId");
 		doctor.setFirstname("firstname");
 		doctor.setLastname("lastname");
@@ -99,11 +84,13 @@ public class UserServiceIntegrationTest {
 
 		fileDAO.save(doctor);
 
+		Address patientFileAddress = new Address();
 		patientFileAddress.setStreet1("1 rue de la Paix");
 		patientFileAddress.setCity("Paris");
 		patientFileAddress.setZipcode("75001");
 		patientFileAddress.setCountry("France");
 
+		patientFile = new PatientFile();
 		patientFile.setId("patientFileId");
 		patientFile.setFirstname("Eric");
 		patientFile.setLastname("Martin");
@@ -116,13 +103,11 @@ public class UserServiceIntegrationTest {
 
 		fileDAO.save(patientFile);
 
+		userDTO = new UserDTO();
 		userDTO.setId("doctorId");
 		userDTO.setUsername("username");
 		userDTO.setPassword("password");
 		userDTO.setSecurityCode("12345678");
-
-		String username = "nom_utilisateur";
-		user.setUsername(username);
 	}
 
 	@AfterEach

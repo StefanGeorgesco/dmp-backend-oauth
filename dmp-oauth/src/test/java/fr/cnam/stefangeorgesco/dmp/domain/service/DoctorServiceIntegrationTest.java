@@ -1,33 +1,6 @@
 package fr.cnam.stefangeorgesco.dmp.domain.service;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlGroup;
-
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.AddressDTO;
@@ -39,6 +12,24 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.DeleteException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.DuplicateKeyException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
@@ -57,43 +48,28 @@ public class DoctorServiceIntegrationTest {
 	@Autowired
 	private DoctorService doctorService;
 
-	@Autowired
 	private SpecialtyDTO specialtyDTO;
 
-	@Autowired
-	private AddressDTO addressDTO;
-
-	@Autowired
 	private DoctorDTO doctorDTO;
 
-	@Autowired
-	private DoctorDTO response;
-
-	@Autowired
-	private Specialty specialty;
-
-	@Autowired
-	private Address address;
-
-	@Autowired
 	private Doctor doctor;
-
-	@Autowired
-	private Doctor savedDoctor;
-
-	@Autowired
-	private User user;
 
 	@BeforeEach
 	public void setupBeforeEach() {
+		specialtyDTO = new SpecialtyDTO();
 		specialtyDTO.setId("S001");
 		specialtyDTO.setDescription("A specialty");
+
 		List<SpecialtyDTO> specialtyDTOs = new ArrayList<>();
 		specialtyDTOs.add(specialtyDTO);
+
+		AddressDTO addressDTO = new AddressDTO();
 		addressDTO.setStreet1("1 Rue Lecourbe");
 		addressDTO.setZipcode("75015");
 		addressDTO.setCity("Paris");
 		addressDTO.setCountry("France");
+
+		doctorDTO = new DoctorDTO();
 		doctorDTO.setId("D003");
 		doctorDTO.setFirstname("Pierre");
 		doctorDTO.setLastname("Martin");
@@ -102,14 +78,20 @@ public class DoctorServiceIntegrationTest {
 		doctorDTO.setSpecialtiesDTO(specialtyDTOs);
 		doctorDTO.setAddressDTO(addressDTO);
 
+		Specialty specialty = new Specialty();
 		specialty.setId("S001");
 		specialty.setDescription("A specialty");
+
 		List<Specialty> specialties = new ArrayList<>();
 		specialties.add(specialty);
+
+		Address address = new Address();
 		address.setStreet1("1 Rue Lecourbe");
 		address.setZipcode("75015");
 		address.setCity("Paris");
 		address.setCountry("France");
+
+		doctor = new Doctor();
 		doctor.setId("D003");
 		doctor.setFirstname("Pierre");
 		doctor.setLastname("Martin");
@@ -118,11 +100,6 @@ public class DoctorServiceIntegrationTest {
 		doctor.setSpecialties(specialties);
 		doctor.setAddress(address);
 		doctor.setSecurityCode("code");
-
-		user.setId("D002");
-		user.setUsername("username");
-		user.setPassword("password");
-		user.setSecurityCode("code");
 	}
 
 	@AfterEach
@@ -158,10 +135,10 @@ public class DoctorServiceIntegrationTest {
 		when(keycloakService.updateUser(any(UserDTO.class))).thenReturn(HttpStatus.ACCEPTED);
 		assertTrue(doctorDAO.existsById("D001"));
 
-		response = assertDoesNotThrow(() -> doctorService.updateDoctor(doctorDTO));
+		DoctorDTO response = assertDoesNotThrow(() -> doctorService.updateDoctor(doctorDTO));
 
 		verify(keycloakService, times(1)).updateUser(any(UserDTO.class));
-		savedDoctor = doctorDAO.findById("D001").orElseThrow();
+		Doctor savedDoctor = doctorDAO.findById("D001").orElseThrow();
 
 		// no change in saved object
 		assertEquals("D001", savedDoctor.getId());

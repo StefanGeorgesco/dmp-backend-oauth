@@ -104,82 +104,35 @@ public class PatientFileServiceIntegrationTest {
 	@Autowired
 	private PatientFileService patientFileService;
 
-	@Autowired
-	private AddressDTO addressDTO;
-
-	@Autowired
 	private PatientFileDTO patientFileDTO;
 
-	@Autowired
 	private PatientFileDTO patientFileDTOResponse;
 
-	@Autowired
 	private CorrespondenceDTO correspondenceDTO;
 
-	@Autowired
 	private DiseaseDTO diseaseDTO;
 
-	@Autowired
 	private MedicalActDTO medicalActDTO;
 
-	@Autowired
 	private ActDTO actDTO;
 
-	@Autowired
 	private DiagnosisDTO diagnosisDTO;
 
-	@Autowired
 	private MailDTO mailDTO;
 
-	@Autowired
 	private PrescriptionDTO prescriptionDTO;
 
-	@Autowired
 	private SymptomDTO symptomDTO;
 
 	private PatientFileItemDTO patientFileItemDTOResponse;
 
-	@Autowired
-	private CorrespondenceDTO correspondenceDTOResponse;
-
-	@Autowired
 	private User user;
 
-	@Autowired
-	private Address address;
-
-	@Autowired
 	private Doctor doctor;
 
-	@Autowired
-	private Doctor authoringDoctor;
-
-	@Autowired
-	private Doctor recipientDoctor;
-
-	@Autowired
 	private PatientFile patientFile;
 
-	@Autowired
 	private PatientFile savedPatientFile;
-
-	@Autowired
-	private PatientFile persistentPatientFile;
-
-	@Autowired
-	private Act act;
-
-	@Autowired
-	private Diagnosis diagnosis;
-
-	@Autowired
-	private Mail mail;
-
-	@Autowired
-	private Prescription prescription;
-
-	@Autowired
-	private Symptom symptom;
 
 	private long count;
 
@@ -195,10 +148,13 @@ public class PatientFileServiceIntegrationTest {
 
 	@BeforeEach
 	public void setup() {
+		AddressDTO addressDTO = new AddressDTO();
 		addressDTO.setStreet1("1 Rue Lecourbe");
 		addressDTO.setZipcode("75015");
 		addressDTO.setCity("Paris Cedex 15");
 		addressDTO.setCountry("France-");
+
+		patientFileDTO = new PatientFileDTO();
 		patientFileDTO.setId("P002");
 		patientFileDTO.setFirstname("Patrick");
 		patientFileDTO.setLastname("Dubois");
@@ -208,11 +164,16 @@ public class PatientFileServiceIntegrationTest {
 		patientFileDTO.setAddressDTO(addressDTO);
 		patientFileDTO.setReferringDoctorId("D001");
 
+		Address address = new Address();
 		address.setStreet1("1 Rue Lecourbe");
 		address.setZipcode("75015");
 		address.setCity("Paris Cedex 15");
 		address.setCountry("France-");
+
+		doctor = new Doctor();
 		doctor.setId("D001");
+
+		patientFile = new PatientFile();
 		patientFile.setId("P002");
 		patientFile.setFirstname("Patrick");
 		patientFile.setLastname("Dubois");
@@ -223,6 +184,7 @@ public class PatientFileServiceIntegrationTest {
 		patientFile.setSecurityCode("code");
 		patientFile.setReferringDoctor(doctor);
 
+		correspondenceDTO = new CorrespondenceDTO();
 		correspondenceDTO.setDateUntil(LocalDate.now().plusDays(1));
 		correspondenceDTO.setDoctorId("D002");
 		correspondenceDTO.setPatientFileId("P001");
@@ -231,10 +193,20 @@ public class PatientFileServiceIntegrationTest {
 		text = "A text";
 		description = "A description";
 
+		user = new User();
 		user.setId("P002");
 		user.setUsername("username");
 		user.setPassword("password");
 		user.setSecurityCode("code");
+
+		diseaseDTO = new DiseaseDTO();
+		medicalActDTO = new MedicalActDTO();
+
+		actDTO = new ActDTO();
+		diagnosisDTO = new DiagnosisDTO();
+		mailDTO = new MailDTO();
+		prescriptionDTO = new PrescriptionDTO();
+		symptomDTO = new SymptomDTO();
 	}
 
 	@Test
@@ -328,7 +300,7 @@ public class PatientFileServiceIntegrationTest {
 	public void testUpdateReferringDoctorSuccess() {
 		patientFileDTO.setId("P001");
 
-		persistentPatientFile = patientFileDAO.findById("P001").orElseThrow();
+		PatientFile persistentPatientFile = patientFileDAO.findById("P001").orElseThrow();
 		assertEquals("D001", persistentPatientFile.getReferringDoctor().getId());
 
 		patientFileDTO.setReferringDoctorId("D002");
@@ -410,7 +382,7 @@ public class PatientFileServiceIntegrationTest {
 
 		doctor = doctorDAO.findById(correspondenceDTO.getDoctorId()).orElseThrow();
 
-		correspondenceDTOResponse = assertDoesNotThrow(
+		CorrespondenceDTO correspondenceDTOResponse = assertDoesNotThrow(
 				() -> patientFileService.createCorrespondence(correspondenceDTO));
 
 		assertEquals(count + 1, correspondenceDAO.count());
@@ -621,8 +593,8 @@ public class PatientFileServiceIntegrationTest {
 		mailDTO.setText("text of this mail");
 		mailDTO.setRecipientDoctorId("D002");
 
-		authoringDoctor = doctorDAO.findById(mailDTO.getAuthoringDoctorId()).orElseThrow();
-		recipientDoctor = doctorDAO.findById(mailDTO.getRecipientDoctorId()).orElseThrow();
+		Doctor authoringDoctor = doctorDAO.findById(mailDTO.getAuthoringDoctorId()).orElseThrow();
+		Doctor recipientDoctor = doctorDAO.findById(mailDTO.getRecipientDoctorId()).orElseThrow();
 
 		PatientFileItemDTO patientFileItemDTOResponse = assertDoesNotThrow(
 				() -> patientFileService.createPatientFileItem(mailDTO));
@@ -676,7 +648,7 @@ public class PatientFileServiceIntegrationTest {
 		actDTO.setPatientFileId("P001");
 		actDTO.setMedicalActDTO(medicalActDTO);
 
-		act = (Act) patientFileItemDAO.findById(uuid).orElseThrow();
+		Act act = (Act) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertNotEquals(comment, act.getComments());
 		assertNotEquals(id, act.getMedicalAct().getId());
@@ -787,7 +759,7 @@ public class PatientFileServiceIntegrationTest {
 		diagnosisDTO.setPatientFileId("P001");
 		diagnosisDTO.setDiseaseDTO(diseaseDTO);
 
-		diagnosis = (Diagnosis) patientFileItemDAO.findById(uuid).orElseThrow();
+		Diagnosis diagnosis = (Diagnosis) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertNotEquals(comment, diagnosis.getComments());
 		assertNotEquals(id, diagnosis.getDisease().getId());
@@ -840,7 +812,7 @@ public class PatientFileServiceIntegrationTest {
 		mailDTO.setDate(LocalDate.now());
 		mailDTO.setPatientFileId("P001");
 
-		mail = (Mail) patientFileItemDAO.findById(uuid).orElseThrow();
+		Mail mail = (Mail) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertNotEquals(comment, mail.getComments());
 		assertNotEquals(text, mail.getText());
@@ -891,7 +863,7 @@ public class PatientFileServiceIntegrationTest {
 		prescriptionDTO.setDate(LocalDate.now());
 		prescriptionDTO.setPatientFileId("P001");
 
-		prescription = (Prescription) patientFileItemDAO.findById(uuid).orElseThrow();
+		Prescription prescription = (Prescription) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertNotEquals(comment, prescription.getComments());
 		assertNotEquals(description, prescription.getDescription());
@@ -936,7 +908,7 @@ public class PatientFileServiceIntegrationTest {
 		symptomDTO.setDate(LocalDate.now());
 		symptomDTO.setPatientFileId("P001");
 
-		symptom = (Symptom) patientFileItemDAO.findById(uuid).orElseThrow();
+		Symptom symptom = (Symptom) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertNotEquals(comment, symptom.getComments());
 		assertNotEquals(description, symptom.getDescription());

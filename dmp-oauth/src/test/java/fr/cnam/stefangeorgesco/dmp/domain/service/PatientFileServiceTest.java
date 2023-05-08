@@ -97,120 +97,6 @@ public class PatientFileServiceTest {
 	private PatientFileService patientFileService;
 
 	@Autowired
-	private AddressDTO addressDTO;
-
-	@Autowired
-	private PatientFileDTO patientFileDTO;
-
-	@Autowired
-	private PatientFileDTO patientFileDTO1;
-
-	@Autowired
-	private PatientFileDTO patientFileDTO2;
-
-	@Autowired
-	private PatientFileDTO patientFileDTOResponse;
-
-	@Autowired
-	private CorrespondenceDTO correspondenceDTO;
-
-	@Autowired
-	private CorrespondenceDTO correspondenceDTOResponse;
-
-	@Autowired
-	private MedicalActDTO medicalActDTO;
-
-	@Autowired
-	private ActDTO actDTO;
-
-	@Autowired
-	private DiseaseDTO diseaseDTO;
-
-	@Autowired
-	private DiagnosisDTO diagnosisDTO;
-
-	@Autowired
-	private DiagnosisDTO diagnosisDTOResponse;
-
-	@Autowired
-	private MailDTO mailDTO;
-
-	@Autowired
-	private PrescriptionDTO prescriptionDTO;
-
-	@Autowired
-	private SymptomDTO symptomDTO;
-
-	@Autowired
-	private Specialty specialty1;
-
-	@Autowired
-	private Specialty specialty2;
-
-	@Autowired
-	private Disease disease1;
-
-	@Autowired
-	private Disease disease2;
-
-	@Autowired
-	private MedicalAct medicalAct1;
-
-	@Autowired
-	private MedicalAct medicalAct2;
-
-	@Autowired
-	private Doctor doctor1;
-
-	@Autowired
-	private Doctor doctor2;
-
-	@Autowired
-	private Doctor newDoctor;
-
-	@Autowired
-	private Address address;
-
-	@Autowired
-	private PatientFile persistentPatientFile;
-
-	@Autowired
-	private PatientFile savedPatientFile;
-
-	@Autowired
-	private PatientFile patientFile1;
-
-	@Autowired
-	private PatientFile patientFile2;
-
-	@Autowired
-	private Correspondence persistentCorrespondence;
-
-	@Autowired
-	private Correspondence savedCorrespondence;
-
-	@Autowired
-	private Correspondence foundCorrespondence1;
-
-	@Autowired
-	private Correspondence foundCorrespondence2;
-
-	@Autowired
-	private Act act;
-
-	@Autowired
-	private Diagnosis diagnosis;
-
-	@Autowired
-	private Mail mail;
-
-	@Autowired
-	private Prescription prescription;
-
-	@Autowired
-	private Symptom symptom;
-
-	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private final ArgumentCaptor<PatientFile> patientFileCaptor = ArgumentCaptor.forClass(PatientFile.class);
@@ -219,16 +105,79 @@ public class PatientFileServiceTest {
 
 	private final ArgumentCaptor<PatientFileItem> patientFileItemCaptor = ArgumentCaptor.forClass(PatientFileItem.class);
 
+	private PatientFileDTO patientFileDTO;
+
+	private PatientFileDTO patientFileDTOResponse;
+
+	private CorrespondenceDTO correspondenceDTO;
+
+	private CorrespondenceDTO correspondenceDTOResponse;
+
+	private MedicalActDTO medicalActDTO;
+
+	private ActDTO actDTO;
+
+	private DiseaseDTO diseaseDTO;
+
+	private DiagnosisDTO diagnosisDTO;
+
+	private MailDTO mailDTO;
+
+	private PrescriptionDTO prescriptionDTO;
+
+	private SymptomDTO symptomDTO;
+
+	private Disease disease1;
+
+	private Disease disease2;
+
+	private MedicalAct medicalAct1;
+
+	private MedicalAct medicalAct2;
+
+	private Doctor doctor1;
+
+	private Doctor doctor2;
+
+	private Doctor newDoctor;
+
+	private PatientFile persistentPatientFile;
+
+	private PatientFile savedPatientFile;
+
+	private PatientFile patientFile1;
+
+	private PatientFile patientFile2;
+
+	private Correspondence persistentCorrespondence;
+
+	private Correspondence foundCorrespondence1;
+
+	private Correspondence foundCorrespondence2;
+
+	private Act act;
+
+	private Diagnosis diagnosis;
+
+	private Mail mail;
+
+	private Prescription prescription;
+
+	private Symptom symptom;
+
 	private UUID uuid;
 
 	private LocalDate date;
 
 	@BeforeEach
 	public void setup() {
+		AddressDTO addressDTO = new AddressDTO();
 		addressDTO.setStreet1("1 Rue Lecourbe");
 		addressDTO.setZipcode("75015");
 		addressDTO.setCity("Paris");
 		addressDTO.setCountry("France");
+
+		patientFileDTO = new PatientFileDTO();
 		patientFileDTO.setId("P001");
 		patientFileDTO.setFirstname("Patrick");
 		patientFileDTO.setLastname("Dubois");
@@ -238,27 +187,44 @@ public class PatientFileServiceTest {
 		patientFileDTO.setAddressDTO(addressDTO);
 		patientFileDTO.setReferringDoctorId("D001");
 
+		Address address = new Address();
 		address.setStreet1("street 1");
 		address.setZipcode("zipcode");
 		address.setCity("City");
 		address.setCountry("Country");
+
+		Specialty specialty1 = new Specialty();
 		specialty1.setId("S001");
 		specialty1.setDescription("Specialty 1");
+		Specialty specialty2 = new Specialty();
 		specialty2.setId("S002");
 		specialty2.setDescription("Specialty 2");
+
+		disease1 = new Disease();
 		disease1.setId("DIS001");
 		disease1.setDescription("Disease 1");
+		disease2 = new Disease();
 		disease2.setId("DIS002");
 		disease2.setDescription("Disease 2");
+
+		medicalAct1 = new MedicalAct();
 		medicalAct1.setId("MA001");
 		medicalAct1.setDescription("Medical act 1");
+		medicalAct2 = new MedicalAct();
 		medicalAct2.setId("MA002");
 		medicalAct2.setDescription("Medical act 2");
+
+		doctor1 = new Doctor();
 		doctor1.setId("D001");
+		doctor2 = new Doctor();
 		doctor2.setId("D002");
 		doctor2.setFirstname("firstname");
 		doctor2.setLastname("lastname");
 		doctor2.setSpecialties(List.of(specialty1, specialty2));
+
+		newDoctor = new Doctor();
+
+		persistentPatientFile = new PatientFile();
 		persistentPatientFile.setId(patientFileDTO.getId());
 		persistentPatientFile.setFirstname("firstname");
 		persistentPatientFile.setLastname("lastname");
@@ -267,6 +233,7 @@ public class PatientFileServiceTest {
 		persistentPatientFile.setSecurityCode("securityCode");
 		persistentPatientFile.setReferringDoctor(doctor1);
 
+		patientFile1 =  new PatientFile();
 		patientFile1.setId("ID_1");
 		patientFile1.setFirstname("firstname_1");
 		patientFile1.setLastname("lastname_1");
@@ -275,6 +242,7 @@ public class PatientFileServiceTest {
 		patientFile1.setSecurityCode("securityCode_1");
 		patientFile1.setReferringDoctor(doctor1);
 
+		patientFile2 = new PatientFile();
 		patientFile2.setId("ID_2");
 		patientFile2.setFirstname("firstname_2");
 		patientFile2.setLastname("lastname_2");
@@ -283,26 +251,34 @@ public class PatientFileServiceTest {
 		patientFile2.setSecurityCode("securityCode_2");
 		patientFile2.setReferringDoctor(doctor1);
 
+		correspondenceDTO = new CorrespondenceDTO();
 		correspondenceDTO.setDateUntil(LocalDate.now().plusDays(1));
 		correspondenceDTO.setDoctorId("D002");
 		correspondenceDTO.setPatientFileId("ID_1");
 
 		date = LocalDate.now();
 
+		medicalActDTO = new MedicalActDTO();
 		medicalActDTO.setId("MA001");
+
+		actDTO = new ActDTO();
 		actDTO.setDate(date);
 		actDTO.setComments("act comment");
 		actDTO.setAuthoringDoctorId("D001");
 		actDTO.setPatientFileId("P001");
 		actDTO.setMedicalActDTO(medicalActDTO);
 
+		diseaseDTO = new DiseaseDTO();
 		diseaseDTO.setId("DIS001");
+
+		diagnosisDTO = new DiagnosisDTO();
 		diagnosisDTO.setDate(date);
 		diagnosisDTO.setComments("diagnosis comment");
 		diagnosisDTO.setAuthoringDoctorId("D001");
 		diagnosisDTO.setPatientFileId("P001");
 		diagnosisDTO.setDiseaseDTO(diseaseDTO);
 
+		mailDTO = new MailDTO();
 		mailDTO.setDate(date);
 		mailDTO.setComments("mail comment");
 		mailDTO.setAuthoringDoctorId("D001");
@@ -310,26 +286,31 @@ public class PatientFileServiceTest {
 		mailDTO.setText("texte du message");
 		mailDTO.setRecipientDoctorId("D002");
 
+		prescriptionDTO = new PrescriptionDTO();
 		prescriptionDTO.setDate(date);
 		prescriptionDTO.setComments("prescription comment");
 		prescriptionDTO.setAuthoringDoctorId("D001");
 		prescriptionDTO.setPatientFileId("P001");
 		prescriptionDTO.setDescription("prescription description");
 
+		symptomDTO = new SymptomDTO();
 		symptomDTO.setDate(date);
 		symptomDTO.setComments("symptom comment");
 		symptomDTO.setAuthoringDoctorId("D001");
 		symptomDTO.setPatientFileId("P001");
 		symptomDTO.setDescription("symptom description");
 
+		persistentCorrespondence = new Correspondence();
 		persistentCorrespondence.setDateUntil(LocalDate.of(2022, 7, 29));
 		persistentCorrespondence.setDoctor(doctor2);
 		persistentCorrespondence.setPatientFile(patientFile1);
 
+		foundCorrespondence1 = new Correspondence();
 		foundCorrespondence1.setId(UUID.randomUUID());
 		foundCorrespondence1.setDateUntil(LocalDate.of(2022, 8, 1));
 		foundCorrespondence1.setDoctor(doctor1);
 		foundCorrespondence1.setPatientFile(patientFile1);
+		foundCorrespondence2 = new Correspondence();
 		foundCorrespondence2.setId(UUID.randomUUID());
 		foundCorrespondence2.setDateUntil(LocalDate.of(2022, 9, 5));
 		foundCorrespondence2.setDoctor(doctor2);
@@ -337,6 +318,7 @@ public class PatientFileServiceTest {
 
 		uuid = UUID.randomUUID();
 
+		act = new Act();
 		act.setId(uuid);
 		act.setDate(actDTO.getDate());
 		act.setComments(actDTO.getComments());
@@ -344,6 +326,7 @@ public class PatientFileServiceTest {
 		act.setPatientFile(patientFile1);
 		act.setMedicalAct(medicalAct1);
 
+		diagnosis = new Diagnosis();
 		diagnosis.setId(uuid);
 		diagnosis.setDate(actDTO.getDate());
 		diagnosis.setComments(actDTO.getComments());
@@ -351,6 +334,7 @@ public class PatientFileServiceTest {
 		diagnosis.setPatientFile(patientFile1);
 		diagnosis.setDisease(disease1);
 
+		mail = new Mail();
 		mail.setId(uuid);
 		mail.setDate(actDTO.getDate());
 		mail.setComments(actDTO.getComments());
@@ -359,6 +343,7 @@ public class PatientFileServiceTest {
 		mail.setText("A text");
 		mail.setRecipientDoctor(doctor2);
 
+		prescription = new Prescription();
 		prescription.setId(uuid);
 		prescription.setDate(actDTO.getDate());
 		prescription.setComments(actDTO.getComments());
@@ -366,6 +351,7 @@ public class PatientFileServiceTest {
 		prescription.setPatientFile(patientFile1);
 		prescription.setDescription("A prescription description");
 
+		symptom = new Symptom();
 		symptom.setId(uuid);
 		symptom.setDate(actDTO.getDate());
 		symptom.setComments(actDTO.getComments());
@@ -520,7 +506,7 @@ public class PatientFileServiceTest {
 
 		assertTrue(patientFileItemDTO instanceof DiagnosisDTO);
 
-		diagnosisDTOResponse = (DiagnosisDTO) patientFileItemDTO;
+		DiagnosisDTO diagnosisDTOResponse = (DiagnosisDTO) patientFileItemDTO;
 
 		assertEquals(uuid, diagnosisDTOResponse.getId());
 		assertEquals(date, diagnosisDTOResponse.getDate());
@@ -645,8 +631,8 @@ public class PatientFileServiceTest {
 
 		assertEquals(2, patientFilesDTO.size());
 
-		patientFileDTO1 = patientFilesDTO.get(0);
-		patientFileDTO2 = patientFilesDTO.get(1);
+		PatientFileDTO patientFileDTO1 = patientFilesDTO.get(0);
+		PatientFileDTO patientFileDTO2 = patientFilesDTO.get(1);
 
 		assertEquals("ID_1", patientFileDTO1.getId());
 		assertEquals("2000-02-13", patientFileDTO1.getDateOfBirth().toString());
@@ -695,7 +681,7 @@ public class PatientFileServiceTest {
 
 		verify(correspondenceDAO, times(1)).save(any(Correspondence.class));
 
-		savedCorrespondence = correspondenceCaptor.getValue();
+		Correspondence savedCorrespondence = correspondenceCaptor.getValue();
 
 		assertEquals(correspondenceDTO.getDateUntil(), savedCorrespondence.getDateUntil());
 		assertEquals(correspondenceDTO.getDoctorId(), savedCorrespondence.getDoctor().getId());

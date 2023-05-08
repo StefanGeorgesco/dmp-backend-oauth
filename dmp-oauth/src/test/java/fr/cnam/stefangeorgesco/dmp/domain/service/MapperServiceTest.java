@@ -1,138 +1,77 @@
 package fr.cnam.stefangeorgesco.dmp.domain.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import fr.cnam.stefangeorgesco.dmp.domain.dto.*;
+import fr.cnam.stefangeorgesco.dmp.domain.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-import fr.cnam.stefangeorgesco.dmp.domain.dto.ActDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.AddressDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DiagnosisDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DiseaseDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.MailDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.MedicalActDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.SpecialtyDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.SymptomDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Act;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Address;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Diagnosis;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Disease;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Doctor;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Mail;
-import fr.cnam.stefangeorgesco.dmp.domain.model.MedicalAct;
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFile;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Symptom;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
 public class MapperServiceTest {
 
 	@Autowired
-	private Address address;
+	private MapperService mapperService;
 
-	@Autowired
 	private Specialty specialty1;
 
-	@Autowired
 	private Specialty specialty2;
 
-	@Autowired
 	private Doctor doctor1;
 
-	@Autowired
 	private Doctor doctor2;
 
-	@Autowired
 	private PatientFile patientFile;
 
-	@Autowired
-	private Mail mail;
-
-	@Autowired
 	private Disease disease;
 
-	@Autowired
-	private Diagnosis diagnosis;
-
-	@Autowired
 	private MedicalAct medicalAct;
 
-	@Autowired
 	private Act act;
 
-	@Autowired
+	private Diagnosis diagnosis;
+
+	private Mail mail;
+
 	private Symptom symptom;
 
-	@Autowired
-	private AddressDTO addressDTO;
-
-	@Autowired
-	private SpecialtyDTO specialtyDTO1;
-
-	@Autowired
-	private SpecialtyDTO specialtyDTO2;
-
-	@Autowired
-	private DoctorDTO doctorDTO;
-
-	@Autowired
-	private MailDTO mailDTO;
-
-	@Autowired
 	private DiseaseDTO diseaseDTO;
 
-	@Autowired
-	private DiagnosisDTO diagnosisDTO;
-
-	@Autowired
 	private MedicalActDTO medicalActDTO;
 
-	@Autowired
 	private ActDTO actDTO;
 
-	@Autowired
-	private SymptomDTO symptomDTO;
+	private DiagnosisDTO diagnosisDTO;
 
-	@Autowired
-	private MapperService mapperService;
+	private MailDTO mailDTO;
+
+	private SymptomDTO symptomDTO;
 
 	@BeforeEach
 	public void setup() {
-		addressDTO.setStreet1("1 Rue Lecourbe");
-		addressDTO.setZipcode("75015");
-		addressDTO.setCity("Paris");
-		addressDTO.setCountry("France");
-		specialtyDTO1.setId("S001");
-		specialtyDTO1.setDescription("First specialty");
-		specialtyDTO2.setId("S002");
-		specialtyDTO2.setDescription("Second specialty");
-		doctorDTO.setId("P001");
-		doctorDTO.setFirstname("Patrick");
-		doctorDTO.setLastname("Dubois");
-		doctorDTO.setPhone("9876543210");
-		doctorDTO.setEmail("patrick.dubois@mail.fr");
-		doctorDTO.setAddressDTO(addressDTO);
-		doctorDTO.setSpecialtiesDTO(List.of(specialtyDTO1, specialtyDTO2));
-		doctorDTO.setSecurityCode("code");
-
+		Address address = new Address();
 		address.setStreet1("1 Rue Lecourbe");
 		address.setZipcode("75015");
 		address.setCity("Paris");
 		address.setCountry("France");
+
+		specialty1 = new Specialty();
 		specialty1.setId("S001");
 		specialty1.setDescription("First specialty");
+		specialty2 = new Specialty();
 		specialty2.setId("S002");
 		specialty2.setDescription("Second specialty");
+
+		doctor1 = new Doctor();
 		doctor1.setId("D001");
 		doctor1.setFirstname("Patrick");
 		doctor1.setLastname("Dubois");
@@ -140,7 +79,27 @@ public class MapperServiceTest {
 		doctor1.setEmail("patrick.dubois@mail.fr");
 		doctor1.setAddress(address);
 		doctor1.setSpecialties(List.of(specialty1, specialty2));
+
+		doctor2 = new Doctor();
+
+		patientFile = new PatientFile();
 		patientFile.setId("P001");
+
+		disease = new Disease();
+		medicalAct = new MedicalAct();
+
+		act = new Act();
+		diagnosis = new Diagnosis();
+		mail = new Mail();
+		symptom = new Symptom();
+
+		diseaseDTO = new DiseaseDTO();
+		medicalActDTO = new MedicalActDTO();
+
+		actDTO = new ActDTO();
+		diagnosisDTO = new DiagnosisDTO();
+		mailDTO = new MailDTO();
+		symptomDTO = new SymptomDTO();
 	}
 
 	@Test
