@@ -46,87 +46,6 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
 public class ModelMapperTest {
 
 	@Autowired
-	private User user;
-
-	@Autowired
-	private Address address;
-
-	@Autowired
-	private Specialty specialty1;
-
-	@Autowired
-	private Specialty specialty2;
-
-	@Autowired
-	private Doctor doctor1;
-
-	@Autowired
-	private Doctor doctor2;
-
-	@Autowired
-	private PatientFile patientFile;
-
-	@Autowired
-	private Correspondence correspondence;
-
-	@Autowired
-	private Mail mail;
-
-	@Autowired
-	private Disease disease;
-
-	@Autowired
-	private Diagnosis diagnosis;
-
-	@Autowired
-	private MedicalAct medicalAct;
-
-	@Autowired
-	private Act act;
-
-	@Autowired
-	private Symptom symptom;
-
-	@Autowired
-	private UserDTO userDTO;
-
-	@Autowired
-	private AddressDTO addressDTO;
-
-	@Autowired
-	private SpecialtyDTO specialtyDTO1;
-
-	@Autowired
-	private SpecialtyDTO specialtyDTO2;
-
-	@Autowired
-	private DoctorDTO doctorDTO;
-
-	@Autowired
-	private PatientFileDTO patientFileDTO;
-
-	@Autowired
-	private CorrespondenceDTO correspondenceDTO;
-
-	@Autowired
-	private MailDTO mailDTO;
-
-	@Autowired
-	private DiseaseDTO diseaseDTO;
-
-	@Autowired
-	private DiagnosisDTO diagnosisDTO;
-
-	@Autowired
-	private MedicalActDTO medicalActDTO;
-
-	@Autowired
-	private ActDTO actDTO;
-
-	@Autowired
-	private SymptomDTO symptomDTO;
-
-	@Autowired
 	private ModelMapper commonModelMapper;
 
 	@Autowired
@@ -144,16 +63,72 @@ public class ModelMapperTest {
 	@Autowired
 	private ModelMapper actModelMapper;
 
+	private User user;
+
+	private Address address;
+
+	private Specialty specialty1;
+
+	private Specialty specialty2;
+
+	private Doctor doctor1;
+
+	private Doctor doctor2;
+
+	private PatientFile patientFile;
+
+	private Correspondence correspondence;
+
+	private Mail mail;
+
+	private Disease disease;
+
+	private Diagnosis diagnosis;
+
+	private MedicalAct medicalAct;
+
+	private Act act;
+
+	private Symptom symptom;
+
+	private UserDTO userDTO;
+
+	private AddressDTO addressDTO;
+
+	private DoctorDTO doctorDTO;
+
+	private PatientFileDTO patientFileDTO;
+
+	private CorrespondenceDTO correspondenceDTO;
+
+	private MailDTO mailDTO;
+
+	private DiseaseDTO diseaseDTO;
+
+	private DiagnosisDTO diagnosisDTO;
+
+	private MedicalActDTO medicalActDTO;
+
+	private ActDTO actDTO;
+
+	private SymptomDTO symptomDTO;
+
 	@BeforeEach
 	public void setup() {
+		addressDTO = new AddressDTO();
 		addressDTO.setStreet1("1 Rue Lecourbe");
 		addressDTO.setZipcode("75015");
 		addressDTO.setCity("Paris");
 		addressDTO.setCountry("France");
+
+		SpecialtyDTO specialtyDTO1 = new SpecialtyDTO();
 		specialtyDTO1.setId("S001");
 		specialtyDTO1.setDescription("First specialty");
+		SpecialtyDTO specialtyDTO2 = new SpecialtyDTO();
 		specialtyDTO2.setId("S002");
 		specialtyDTO2.setDescription("Second specialty");
+
+		doctorDTO = new DoctorDTO();
 		doctorDTO.setId("P001");
 		doctorDTO.setFirstname("Patrick");
 		doctorDTO.setLastname("Dubois");
@@ -163,14 +138,20 @@ public class ModelMapperTest {
 		doctorDTO.setSpecialtiesDTO(List.of(specialtyDTO1, specialtyDTO2));
 		doctorDTO.setSecurityCode("code");
 
+		address = new Address();
 		address.setStreet1("1 Rue Lecourbe");
 		address.setZipcode("75015");
 		address.setCity("Paris");
 		address.setCountry("France");
+
+		specialty1 = new Specialty();
 		specialty1.setId("S001");
 		specialty1.setDescription("First specialty");
+		specialty2 = new Specialty();
 		specialty2.setId("S002");
 		specialty2.setDescription("Second specialty");
+
+		doctor1 = new Doctor();
 		doctor1.setId("D001");
 		doctor1.setFirstname("Patrick");
 		doctor1.setLastname("Dubois");
@@ -178,7 +159,36 @@ public class ModelMapperTest {
 		doctor1.setEmail("patrick.dubois@mail.fr");
 		doctor1.setAddress(address);
 		doctor1.setSpecialties(List.of(specialty1, specialty2));
+
+		doctor2 = new Doctor();
+
+		patientFile = new PatientFile();
 		patientFile.setId("P001");
+
+		patientFileDTO = new PatientFileDTO();
+
+		correspondence = new Correspondence();
+		correspondenceDTO = new CorrespondenceDTO();
+
+		disease = new Disease();
+		medicalAct = new MedicalAct();
+
+		act = new Act();
+		diagnosis = new Diagnosis();
+		mail = new Mail();
+		symptom = new Symptom();
+
+		diseaseDTO = new DiseaseDTO();
+		medicalActDTO = new MedicalActDTO();
+
+		actDTO = new ActDTO();
+		diagnosisDTO = new DiagnosisDTO();
+		mailDTO = new MailDTO();
+		symptomDTO = new SymptomDTO();
+
+		user = new User();
+
+		userDTO = new UserDTO();
 	}
 
 	@Test
