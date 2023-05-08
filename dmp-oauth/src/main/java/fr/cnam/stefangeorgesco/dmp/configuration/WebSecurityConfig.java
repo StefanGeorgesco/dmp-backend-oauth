@@ -41,7 +41,6 @@ public class WebSecurityConfig {
 					return config;
 				}).and().csrf().disable()
 				.authorizeHttpRequests()
-						.mvcMatchers(HttpMethod.POST, "/user").permitAll()
 						.mvcMatchers(HttpMethod.POST, "/doctor").hasRole("ADMIN")
 						.mvcMatchers(HttpMethod.POST, "/patient-file").hasRole("DOCTOR")
 						.mvcMatchers(HttpMethod.GET, "/doctor/details").hasRole("DOCTOR")
@@ -71,7 +70,7 @@ public class WebSecurityConfig {
 						.mvcMatchers(HttpMethod.GET, "/disease").hasRole("DOCTOR")
 						.mvcMatchers(HttpMethod.GET, "/medical-act/{id}").hasRole("DOCTOR")
 						.mvcMatchers(HttpMethod.GET, "/medical-act").hasRole("DOCTOR")
-						.anyRequest().denyAll()
+						.anyRequest().permitAll()
 						.and().oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter);
 		
 		return http.build();
