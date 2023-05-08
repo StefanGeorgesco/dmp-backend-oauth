@@ -30,13 +30,13 @@ import static org.mockito.Mockito.*;
 
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
-public class UserServiceIntegrationTest {
+public class UserServiceImplIntegrationTest {
 
 	@MockBean
 	private KeycloakService keycloakService;
 
 	@Autowired
-	private UserService userService;
+	private UserServiceImpl userService;
 
 	@Autowired
 	private FileDAO fileDAO;

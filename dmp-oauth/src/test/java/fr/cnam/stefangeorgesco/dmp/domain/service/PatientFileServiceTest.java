@@ -25,7 +25,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserServiceImpl;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.CorrespondenceDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DiseaseDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
@@ -67,10 +67,10 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
 public class PatientFileServiceTest {
 
 	@MockBean
-	private RnippService rnippService;
+	private RnippServiceImpl rnippService;
 
 	@MockBean
-	private UserService userService;
+	private UserServiceImpl userService;
 
 	@MockBean
 	private PatientFileDAO patientFileDAO;

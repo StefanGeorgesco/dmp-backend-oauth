@@ -2,7 +2,7 @@ package fr.cnam.stefangeorgesco.dmp.api;
 
 import fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.SpecialtyDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.service.DoctorService;
+import fr.cnam.stefangeorgesco.dmp.domain.service.DoctorServiceImpl;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.CreateException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.DeleteException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
@@ -24,9 +24,9 @@ import java.util.List;
 @RestController
 public class DoctorController {
 
-	private final DoctorService doctorService;
+	private final DoctorServiceImpl doctorService;
 
-	public DoctorController(DoctorService doctorService) {
+	public DoctorController(DoctorServiceImpl doctorService) {
 		this.doctorService = doctorService;
 	}
 
@@ -63,7 +63,7 @@ public class DoctorController {
 	 *         représentant le dossier de médecin modifié, encapsulé dans un objet
 	 *         org.springframework.http.ResponseEntity.
 	 * @throws UpdateException le dossier de médecin n'a pas pu être modifié.
-	 * @see fr.cnam.stefangeorgesco.dmp.domain.service.DoctorService#updateDoctor(DoctorDTO)
+	 * @see DoctorServiceImpl#updateDoctor(DoctorDTO)
 	 */
 	@PutMapping("/doctor/details")
 	public ResponseEntity<DoctorDTO> updateDoctor(@Valid @RequestBody DoctorDTO doctorDTO, Principal principal)
@@ -135,7 +135,7 @@ public class DoctorController {
 	 *         {@link fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO} représentant
 	 *         le résultat de la recherche, encapsulée dans un objet
 	 *         org.springframework.http.ResponseEntity.
-	 * @see fr.cnam.stefangeorgesco.dmp.domain.service.DoctorService#findDoctorsByIdOrFirstnameOrLastname(String)
+	 * @see DoctorServiceImpl#findDoctorsByIdOrFirstnameOrLastname(String)
 	 */
 	@GetMapping("/doctor")
 	public ResponseEntity<List<DoctorDTO>> findDoctorsByIdOrFirstnameOrLastname(@RequestParam String q) {

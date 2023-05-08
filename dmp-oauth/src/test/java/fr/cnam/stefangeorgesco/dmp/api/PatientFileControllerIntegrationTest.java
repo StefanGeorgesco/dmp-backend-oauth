@@ -5,7 +5,7 @@ import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService
 import fr.cnam.stefangeorgesco.dmp.domain.dao.*;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.*;
 import fr.cnam.stefangeorgesco.dmp.domain.model.*;
-import fr.cnam.stefangeorgesco.dmp.domain.service.RnippService;
+import fr.cnam.stefangeorgesco.dmp.domain.service.RnippServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ public class PatientFileControllerIntegrationTest {
 	private ObjectMapper objectMapper;
 
 	@MockBean
-	private RnippService rnippService;
+	private RnippServiceImpl rnippService;
 
 	@Autowired
 	private PatientFileDAO patientFileDAO;

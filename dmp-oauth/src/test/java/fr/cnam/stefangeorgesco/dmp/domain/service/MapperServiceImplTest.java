@@ -17,10 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
-public class MapperServiceTest {
+public class MapperServiceImplTest {
 
 	@Autowired
-	private MapperService mapperService;
+	private MapperServiceImpl mapperService;
 
 	private Specialty specialty1;
 

@@ -1,7 +1,7 @@
 package fr.cnam.stefangeorgesco.dmp.domain.service;
 
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserServiceImpl;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.*;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.*;
 import fr.cnam.stefangeorgesco.dmp.domain.model.*;
@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
 @Service
 public class PatientFileService {
 
-	private final RnippService rnippService;
+	private final RnippServiceImpl rnippService;
 
-	private final UserService userService;
+	private final UserServiceImpl userService;
 
 	private final PatientFileDAO patientFileDAO;
 
@@ -48,11 +48,11 @@ public class PatientFileService {
 
 	private final ModelMapper patientFileModelMapper;
 
-	private final MapperService mapperService;
+	private final MapperServiceImpl mapperService;
 
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	public PatientFileService(RnippService rnippService, UserService userService, PatientFileDAO patientFileDAO, BCryptPasswordEncoder bCryptPasswordEncoder, MapperService mapperService, FileDAO fileDAO, DoctorDAO doctorDAO, CorrespondenceDAO correspondenceDAO, DiseaseDAO diseaseDAO, MedicalActDAO medicalActDAO, PatientFileItemDAO patientFileItemDAO, ModelMapper commonModelMapper, ModelMapper patientFileModelMapper) {
+	public PatientFileService(RnippServiceImpl rnippService, UserServiceImpl userService, PatientFileDAO patientFileDAO, BCryptPasswordEncoder bCryptPasswordEncoder, MapperServiceImpl mapperService, FileDAO fileDAO, DoctorDAO doctorDAO, CorrespondenceDAO correspondenceDAO, DiseaseDAO diseaseDAO, MedicalActDAO medicalActDAO, PatientFileItemDAO patientFileItemDAO, ModelMapper commonModelMapper, ModelMapper patientFileModelMapper) {
 		this.rnippService = rnippService;
 		this.userService = userService;
 		this.patientFileDAO = patientFileDAO;

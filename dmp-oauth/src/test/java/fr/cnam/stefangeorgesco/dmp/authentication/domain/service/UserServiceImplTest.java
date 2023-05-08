@@ -36,7 +36,7 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
 
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
-public class UserServiceTest {
+public class UserServiceImplTest {
 
 	@MockBean
 	private FileDAO fileDAO;
@@ -51,7 +51,7 @@ public class UserServiceTest {
 	private KeycloakService keycloakService;
 
 	@Autowired
-	private UserService userService;
+	private UserServiceImpl userService;
 
 	private UserDTO userDTO;
 
