@@ -53,37 +53,28 @@ public class UserControllerIntegrationTest {
 	private MockMvc mockMvc;
 
 	@Autowired
-	ObjectMapper objectMapper;
+	private ObjectMapper objectMapper;
 
 	@Autowired
-	UserDTO userDTO;
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@Autowired
 	private FileDAO fileDAO;
 
 	@Autowired
-	SpecialtyDAO specialtyDAO;
+	private SpecialtyDAO specialtyDAO;
 
-	@Autowired
-	private Address doctorAddress;
+	private UserDTO userDTO;
 
-	@Autowired
-	private Address patientFileAddress;
-
-	@Autowired
 	private Specialty specialty;
 
-	@Autowired
 	private Doctor doctor;
 
-	@Autowired
 	private PatientFile patientFile;
-
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@BeforeEach
 	public void setup() {
+		specialty = new Specialty();
 		specialty.setId("S001");
 		specialty.setDescription("A specialty");
 
@@ -92,11 +83,13 @@ public class UserControllerIntegrationTest {
 		List<Specialty> specialties = new ArrayList<>();
 		specialties.add(specialty);
 
+		Address doctorAddress = new Address();
 		doctorAddress.setStreet1("street");
 		doctorAddress.setCity("city");
 		doctorAddress.setZipcode("zip");
 		doctorAddress.setCountry("country");
 
+		doctor = new Doctor();
 		doctor.setId("doctorId");
 		doctor.setFirstname("firstname");
 		doctor.setLastname("lastname");
@@ -108,11 +101,13 @@ public class UserControllerIntegrationTest {
 
 		fileDAO.save(doctor);
 
+		Address patientFileAddress = new Address();
 		patientFileAddress.setStreet1("1 rue de la Paix");
 		patientFileAddress.setCity("Paris");
 		patientFileAddress.setZipcode("75001");
 		patientFileAddress.setCountry("France");
 
+		patientFile = new PatientFile();
 		patientFile.setId("patientFileId");
 		patientFile.setFirstname("Eric");
 		patientFile.setLastname("Martin");
@@ -125,6 +120,7 @@ public class UserControllerIntegrationTest {
 
 		fileDAO.save(patientFile);
 
+		userDTO = new UserDTO();
 		userDTO.setId("doctorId");
 		userDTO.setUsername("username");
 		userDTO.setPassword("password");

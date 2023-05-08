@@ -72,37 +72,18 @@ public class DoctorControllerIntegrationTest {
 	@Autowired
 	private SpecialtyDAO specialtyDAO;
 
-	@Autowired
-	private SpecialtyDTO specialtyDTO1;
-
-	@Autowired
-	private SpecialtyDTO specialtyDTO2;
-
-	@Autowired
-	private AddressDTO addressDTO;
-
-	@Autowired
 	private DoctorDTO doctorDTO;
 
-	@Autowired
-	private Specialty specialty1;
-
-	@Autowired
-	private Specialty specialty2;
-
-	@Autowired
-	private Address address;
-
-	@Autowired
 	private Doctor doctor;
 
-	@Autowired
 	private User user;
 
 	@BeforeEach
 	public void setupBeforeEach() {
+		SpecialtyDTO specialtyDTO1 = new SpecialtyDTO();
 		specialtyDTO1.setId("S001");
 		specialtyDTO1.setDescription("any");
+		SpecialtyDTO specialtyDTO2 = new SpecialtyDTO();
 		specialtyDTO2.setId("S002");
 		specialtyDTO2.setDescription("any");
 
@@ -110,11 +91,13 @@ public class DoctorControllerIntegrationTest {
 		specialtyDTOs.add(specialtyDTO1);
 		specialtyDTOs.add(specialtyDTO2);
 
+		AddressDTO addressDTO = new AddressDTO();
 		addressDTO.setStreet1("1 Rue Lecourbe");
 		addressDTO.setZipcode("75015");
 		addressDTO.setCity("Paris");
 		addressDTO.setCountry("France");
 
+		doctorDTO = new DoctorDTO();
 		doctorDTO.setId("D003");
 		doctorDTO.setFirstname("Pierre");
 		doctorDTO.setLastname("Martin");
@@ -123,18 +106,22 @@ public class DoctorControllerIntegrationTest {
 		doctorDTO.setSpecialtiesDTO(specialtyDTOs);
 		doctorDTO.setAddressDTO(addressDTO);
 
+		Specialty specialty1 = new Specialty();
 		specialty1.setId("S001");
+		Specialty specialty2 = new Specialty();
 		specialty2.setId("S002");
 
 		List<Specialty> specialties = new ArrayList<>();
 		specialties.add(specialty1);
 		specialties.add(specialty2);
 
+		Address address = new Address();
 		address.setStreet1("1 Rue Lecourbe");
 		address.setZipcode("75015");
 		address.setCity("Paris");
 		address.setCountry("France");
 
+		doctor = new Doctor();
 		doctor.setId("D003");
 		doctor.setFirstname("Pierre");
 		doctor.setLastname("Martin");
@@ -144,6 +131,7 @@ public class DoctorControllerIntegrationTest {
 		doctor.setAddress(address);
 		doctor.setSecurityCode("code");
 
+		user = new User();
 		user.setId("D002");
 		user.setUsername("username");
 		user.setPassword("password");

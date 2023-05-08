@@ -1,30 +1,11 @@
 package fr.cnam.stefangeorgesco.dmp.api;
 
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.hasLength;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
+import fr.cnam.stefangeorgesco.dmp.domain.dao.*;
+import fr.cnam.stefangeorgesco.dmp.domain.dto.*;
+import fr.cnam.stefangeorgesco.dmp.domain.model.*;
+import fr.cnam.stefangeorgesco.dmp.domain.service.RnippService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,34 +21,16 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.CorrespondenceDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.DiseaseDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.MedicalActDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.PatientFileDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.PatientFileItemDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.ActDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.AddressDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.CorrespondenceDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DiagnosisDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DiseaseDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.MailDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.MedicalActDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PrescriptionDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.SpecialtyDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.SymptomDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Act;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Address;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Doctor;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Mail;
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFile;
-import fr.cnam.stefangeorgesco.dmp.domain.service.RnippService;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @TestPropertySource("/application-test.properties")
 @AutoConfigureMockMvc
@@ -116,65 +79,29 @@ public class PatientFileControllerIntegrationTest {
 	@Autowired
 	private MedicalActDAO medicalActDAO;
 
-	@Autowired
-	private AddressDTO patientAddressDTO;
-
-	@Autowired
-	private AddressDTO doctorAddressDTO;
-
-	@Autowired
 	private PatientFileDTO patientFileDTO;
 
-	@Autowired
-	private SpecialtyDTO specialtyDTO;
-
-	@Autowired
 	private DoctorDTO doctorDTO;
 
-	@Autowired
 	private CorrespondenceDTO correspondenceDTO;
 
-	@Autowired
 	private MedicalActDTO medicalActDTO;
 
-	@Autowired
 	private ActDTO actDTO;
 
-	@Autowired
 	private MailDTO mailDTO;
 
-	@Autowired
 	private DiseaseDTO diseaseDTO;
 
-	@Autowired
 	private DiagnosisDTO diagnosisDTO;
 
-	@Autowired
 	private PrescriptionDTO prescriptionDTO;
 
-	@Autowired
 	private SymptomDTO symptomDTO;
 
-	@Autowired
-	private User user;
-
-	@Autowired
-	private Address address;
-
-	@Autowired
-	private Doctor doctor;
-
-	@Autowired
 	private Doctor authoringDoctor;
 
-	@Autowired
 	private PatientFile patientFile;
-
-	@Autowired
-	private Act act;
-
-	@Autowired
-	private Mail mail;
 
 	private long count;
 
@@ -188,10 +115,13 @@ public class PatientFileControllerIntegrationTest {
 
 	@BeforeEach
 	public void setup() {
+		AddressDTO patientAddressDTO = new AddressDTO();
 		patientAddressDTO.setStreet1("1 Rue Lecourbe");
 		patientAddressDTO.setZipcode("75015");
 		patientAddressDTO.setCity("Paris Cedex 15");
 		patientAddressDTO.setCountry("France-");
+
+		patientFileDTO = new PatientFileDTO();
 		patientFileDTO.setId("P002");
 		patientFileDTO.setFirstname("Patrick");
 		patientFileDTO.setLastname("Dubois");
@@ -200,13 +130,18 @@ public class PatientFileControllerIntegrationTest {
 		patientFileDTO.setEmail("patrick.dubois@mail.fr");
 		patientFileDTO.setAddressDTO(patientAddressDTO);
 
+		AddressDTO doctorAddressDTO = new AddressDTO();
 		doctorAddressDTO.setStreet1("street 1");
 		doctorAddressDTO.setZipcode("zipcode");
 		doctorAddressDTO.setCity("city");
 		doctorAddressDTO.setCountry("country");
-		doctorDTO.setAddressDTO(doctorAddressDTO);
+
+		SpecialtyDTO specialtyDTO = new SpecialtyDTO();
 		specialtyDTO.setId("id");
 		specialtyDTO.setDescription("description");
+
+		doctorDTO = new DoctorDTO();
+		doctorDTO.setAddressDTO(doctorAddressDTO);
 		doctorDTO.setSpecialtiesDTO(List.of(specialtyDTO));
 		doctorDTO.setId("D002");
 		doctorDTO.setFirstname("firstname");
@@ -214,11 +149,16 @@ public class PatientFileControllerIntegrationTest {
 		doctorDTO.setEmail("email@email.com");
 		doctorDTO.setPhone("0000000000");
 
+		Address address = new Address();
 		address.setStreet1("street 1");
 		address.setZipcode("zipcode");
 		address.setCity("City");
 		address.setCountry("Country");
+
+		Doctor doctor = new Doctor();
 		doctor.setId("D001");
+
+		patientFile = new PatientFile();
 		patientFile.setId("P002");
 		patientFile.setFirstname("Firstname");
 		patientFile.setLastname("Lastname");
@@ -229,16 +169,20 @@ public class PatientFileControllerIntegrationTest {
 		patientFile.setSecurityCode("securityCode");
 		patientFile.setReferringDoctor(doctor);
 
+		correspondenceDTO = new CorrespondenceDTO();
 		correspondenceDTO.setDateUntil(LocalDate.now().plusDays(1));
 		correspondenceDTO.setDoctorId("D002");
 
 		comment = "A comment";
 		text = "A text";
 
-		user.setId("D002");
-		user.setUsername("username");
-		user.setPassword("password");
-		user.setSecurityCode("code");
+		medicalActDTO = new MedicalActDTO();
+		actDTO = new ActDTO();
+		mailDTO = new MailDTO();
+		diseaseDTO = new DiseaseDTO();
+		diagnosisDTO = new DiagnosisDTO();
+		prescriptionDTO = new PrescriptionDTO();
+		symptomDTO = new SymptomDTO();
 	}
 
 	@Test
@@ -1280,7 +1224,7 @@ public class PatientFileControllerIntegrationTest {
 						is("Hémostase gingivoalvéolaire secondaire à une avulsion dentaire")))
 				.andExpect(jsonPath("$.patientFileId", is("P005")));
 
-		act = (Act) patientFileItemDAO.findById(uuid).orElseThrow();
+		Act act = (Act) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertEquals(comment, act.getComments());
 		assertEquals("2021-10-11", act.getDate().toString());
@@ -1324,7 +1268,7 @@ public class PatientFileControllerIntegrationTest {
 				.andExpect(jsonPath("$.recipientDoctorSpecialties[0]", is("gériatrie")))
 				.andExpect(jsonPath("$.patientFileId", is("P006")));
 
-		mail = (Mail) patientFileItemDAO.findById(uuid).orElseThrow();
+		Mail mail = (Mail) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertEquals(comment, mail.getComments());
 		assertEquals("2022-05-27", mail.getDate().toString());
