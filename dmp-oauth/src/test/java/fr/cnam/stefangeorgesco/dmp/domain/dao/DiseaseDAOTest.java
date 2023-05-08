@@ -1,33 +1,27 @@
 package fr.cnam.stefangeorgesco.dmp.domain.dao;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import fr.cnam.stefangeorgesco.dmp.domain.model.Disease;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlGroup;
-
-import fr.cnam.stefangeorgesco.dmp.domain.model.Disease;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestPropertySource("/application-test.properties")
-@SpringBootTest
+@DataJpaTest
 @SqlGroup({ @Sql(scripts = "/sql/create-diseases.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/delete-diseases.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD) })
 public class DiseaseDAOTest {
 
 	@Autowired
 	private DiseaseDAO diseaseDAO;
-
-	@Autowired
-	private Disease disease;
 
 	@Test
 	public void testDiseaseDAOFindByIdSuccess() {
@@ -36,7 +30,7 @@ public class DiseaseDAOTest {
 
 		assertTrue(optionalDisease.isPresent());
 
-		disease = optionalDisease.get();
+		Disease disease = optionalDisease.get();
 
 		assertEquals("J038", disease.getId());
 		assertEquals("Amygdalite aiguë due à d'autres micro-organismes précisés", disease.getDescription());

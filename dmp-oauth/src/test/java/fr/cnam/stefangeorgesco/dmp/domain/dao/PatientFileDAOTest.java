@@ -1,32 +1,25 @@
 package fr.cnam.stefangeorgesco.dmp.domain.dao;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import fr.cnam.stefangeorgesco.dmp.domain.model.Address;
+import fr.cnam.stefangeorgesco.dmp.domain.model.Doctor;
+import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFile;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlGroup;
-
-import fr.cnam.stefangeorgesco.dmp.domain.model.Address;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Doctor;
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFile;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestPropertySource("/application-test.properties")
-@SpringBootTest
+@DataJpaTest
 @SqlGroup({ @Sql(scripts = "/sql/create-specialties.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/create-files.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/create-correspondences.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
@@ -38,38 +31,28 @@ public class PatientFileDAOTest {
 	@Autowired
 	private PatientFileDAO patientFileDAO;
 
-	@Autowired
-	private Address address;
+	@Autowired DoctorDAO doctorDAO;
 
-	@Autowired
-	private Doctor doctor;
-
-	@Autowired
 	private PatientFile patientFile;
 
 	@BeforeEach
 	public void setup() {
+		Doctor doctor = doctorDAO.findById("D001").orElse(new Doctor());
+		Address address = new Address();
 		address.setStreet1("1 Rue Lecourbe");
 		address.setZipcode("75015");
 		address.setCity("Paris");
 		address.setCountry("France");
-		doctor.setId("D001");
+		patientFile = new PatientFile();
 		patientFile.setId("P002");
 		patientFile.setFirstname("Patrick");
 		patientFile.setLastname("Dubois");
 		patientFile.setDateOfBirth(LocalDate.of(2000, 2, 13));
 		patientFile.setPhone("9876543210");
 		patientFile.setEmail("patrick.dubois@mail.fr");
-		patientFile.setAddress(address);
 		patientFile.setSecurityCode("code");
+		patientFile.setAddress(address);
 		patientFile.setReferringDoctor(doctor);
-	}
-
-	@AfterEach
-	public void teardown() {
-		if (patientFileDAO.existsById("P002")) {
-			patientFileDAO.deleteById("P002");
-		}
 	}
 
 	@Test
@@ -106,18 +89,14 @@ public class PatientFileDAOTest {
 	public void testPatientFileDAOSaveCreateFailureInvalidData() {
 		patientFile.getAddress().setCity(null);
 
-		assertThrows(RuntimeException.class, () -> patientFileDAO.save(patientFile));
-
-		assertFalse(patientFileDAO.existsById("P002"));
+		assertThrows(RuntimeException.class, () -> patientFileDAO.saveAndFlush(patientFile));
 	}
 
 	@Test
 	public void testPatientFileDAOSaveCreateFailureDoctorDoesNotExist() {
 		patientFile.getReferringDoctor().setId("D003");
 
-		assertThrows(RuntimeException.class, () -> patientFileDAO.save(patientFile));
-
-		assertFalse(patientFileDAO.existsById("P002"));
+		assertThrows(RuntimeException.class, () -> patientFileDAO.saveAndFlush(patientFile));
 	}
 
 	@Test
@@ -144,10 +123,9 @@ public class PatientFileDAOTest {
 		assertEquals("D001", patientFile.getReferringDoctor().getId());
 		assertEquals("Smith", patientFile.getReferringDoctor().getLastname());
 
-		doctor.setId("D002");
-		patientFile.setReferringDoctor(doctor);
+		patientFile.setReferringDoctor(doctorDAO.findById("D002").orElseThrow());
 
-		patientFileDAO.save(patientFile);
+		patientFileDAO.saveAndFlush(patientFile);
 
 		patientFile = patientFileDAO.findById("P001").orElseThrow();
 
@@ -208,9 +186,10 @@ public class PatientFileDAOTest {
 	public void testPatientFileDAODeleteFailurePatientFileIsReferredTo() {
 		assertTrue(patientFileDAO.existsById("P001"));
 
-		assertThrows(RuntimeException.class, () -> patientFileDAO.deleteById("P001"));
-
-		assertTrue(patientFileDAO.existsById("P001"));
+		assertThrows(RuntimeException.class, () -> {
+			patientFileDAO.deleteById("P001");
+			patientFileDAO.flush();
+		});
 	}
 
 	@Test

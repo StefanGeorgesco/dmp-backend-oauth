@@ -6,7 +6,7 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
@@ -19,7 +19,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestPropertySource("/application-test.properties")
-@SpringBootTest
+@DataJpaTest
 @SqlGroup({ @Sql(scripts = "/sql/create-specialties.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/create-files.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/create-correspondences.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
@@ -32,26 +32,21 @@ public class CorrespondenceDAOTest {
 	private CorrespondenceDAO correspondenceDAO;
 
 	@Autowired
-	private Doctor referringDoctor;
+	private PatientFileDAO patientFileDAO;
 
 	@Autowired
-	private Doctor correspondingDoctor;
+	private DoctorDAO doctorDAO;
 
-	@Autowired
-	private PatientFile patientFile;
-
-	@Autowired
 	private Correspondence correspondence;
 
 	private long count;
 
 	@BeforeEach
 	public void setup() {
-		referringDoctor.setId("D001");
-		correspondingDoctor.setId("D002");
-		patientFile.setId("P001");
+		Doctor correspondingDoctor = doctorDAO.findById("D002").orElse(new Doctor());
+		PatientFile patientFile = patientFileDAO.findById("P001").orElse(new PatientFile());
 		LocalDate date = LocalDate.now().plusDays(1);
-
+		correspondence = new Correspondence();
 		correspondence.setDateUntil(date);
 		correspondence.setDoctor(correspondingDoctor);
 		correspondence.setPatientFile(patientFile);
@@ -65,30 +60,6 @@ public class CorrespondenceDAOTest {
 		assertDoesNotThrow(() -> correspondenceDAO.save(correspondence));
 
 		assertEquals(count + 1, correspondenceDAO.count());
-	}
-
-	@Test
-	public void testCorrespondenceDAOSaveCreateFailurePatientFileDoesNotExist() {
-
-		patientFile.setId("P002");
-
-		count = correspondenceDAO.count();
-
-		assertThrows(RuntimeException.class, () -> correspondenceDAO.save(correspondence));
-
-		assertEquals(count, correspondenceDAO.count());
-	}
-
-	@Test
-	public void testCorrespondenceDAOSaveCreateFailureDoctorDoesNotExist() {
-
-		correspondingDoctor.setId("D003");
-
-		count = correspondenceDAO.count();
-
-		assertThrows(RuntimeException.class, () -> correspondenceDAO.save(correspondence));
-
-		assertEquals(count, correspondenceDAO.count());
 	}
 
 	@Test

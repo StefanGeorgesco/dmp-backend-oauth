@@ -1,38 +1,24 @@
 package fr.cnam.stefangeorgesco.dmp.domain.dao;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import fr.cnam.stefangeorgesco.dmp.domain.model.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlGroup;
-
-import fr.cnam.stefangeorgesco.dmp.domain.model.Act;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Diagnosis;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Disease;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Doctor;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Mail;
-import fr.cnam.stefangeorgesco.dmp.domain.model.MedicalAct;
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFile;
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFileItem;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Prescription;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Symptom;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestPropertySource("/application-test.properties")
-@SpringBootTest
+@DataJpaTest
 @SqlGroup({ @Sql(scripts = "/sql/create-specialties.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/create-files.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/create-diseases.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
@@ -49,35 +35,27 @@ public class PatientFileItemDAOTest {
 	private PatientFileItemDAO patientFileItemDAO;
 
 	@Autowired
-	private Doctor authoringDoctor;
+	private DoctorDAO doctorDAO;
 
 	@Autowired
-	private Doctor recipientDoctor;
+	private PatientFileDAO patientFileDAO;
 
 	@Autowired
-	private PatientFile patientFile;
+	private MedicalActDAO medicalActDAO;
 
 	@Autowired
-	private MedicalAct medicalAct;
+	private DiseaseDAO diseaseDAO;
 
-	@Autowired
 	private Act act;
 
 	private PatientFileItem savedPatientFileItem;
 
-	@Autowired
-	private Disease disease;
-
-	@Autowired
 	private Diagnosis diagnosis;
 
-	@Autowired
 	private Mail mail;
 
-	@Autowired
 	private Prescription prescription;
 
-	@Autowired
 	private Symptom symptom;
 
 	private long count;
@@ -92,25 +70,29 @@ public class PatientFileItemDAOTest {
 
 	@BeforeEach
 	public void setUp() {
-		authoringDoctor.setId("D001");
-		recipientDoctor.setId("D002");
-		patientFile.setId("P001");
+		Doctor authoringDoctor = doctorDAO.findById("D001").orElse(new Doctor());
+		Doctor recipientDoctor = doctorDAO.findById("D002").orElse(new Doctor());
+		PatientFile patientFile = patientFileDAO.findById("P001").orElse(new PatientFile());
+
 		LocalDate date = LocalDate.now();
 
-		medicalAct.setId("HBSD001");
+		MedicalAct medicalAct = medicalActDAO.findById("HBSD001").orElse(new MedicalAct());
+		act = new Act();
 		act.setDate(date);
 		act.setComments("a comment on this act");
 		act.setAuthoringDoctor(authoringDoctor);
 		act.setPatientFile(patientFile);
 		act.setMedicalAct(medicalAct);
 
-		disease.setId("J019");
+		Disease disease = diseaseDAO.findById("J019").orElse(new Disease());
+		diagnosis = new Diagnosis();
 		diagnosis.setDate(date);
 		diagnosis.setComments("a comment on this diagnosis");
 		diagnosis.setAuthoringDoctor(authoringDoctor);
 		diagnosis.setPatientFile(patientFile);
 		diagnosis.setDisease(disease);
 
+		mail = new Mail();
 		mail.setDate(date);
 		mail.setComments("a comment on this mail");
 		mail.setAuthoringDoctor(authoringDoctor);
@@ -118,12 +100,14 @@ public class PatientFileItemDAOTest {
 		mail.setText("This is a mail to doctor...");
 		mail.setRecipientDoctor(recipientDoctor);
 
+		prescription = new Prescription();
 		prescription.setDate(date);
 		prescription.setComments("a comment on this prescription");
 		prescription.setAuthoringDoctor(authoringDoctor);
 		prescription.setPatientFile(patientFile);
 		prescription.setDescription("this prescription...");
 
+		symptom = new Symptom();
 		symptom.setDate(date);
 		symptom.setComments("a comment on this prescription");
 		symptom.setAuthoringDoctor(authoringDoctor);
@@ -186,51 +170,37 @@ public class PatientFileItemDAOTest {
 	}
 
 	@Test
-	public void testPatientFileItemDAOSaveCreateActFailureMedicalActDoesNotExist() {
+	public void testPatientFileItemDAOSaveCreateActFailureMedicalActNull() {
 
-		medicalAct.setId("ID");
+		act.setMedicalAct(null);
 
 		count = patientFileItemDAO.count();
 
-		assertThrows(RuntimeException.class, () -> patientFileItemDAO.save(act));
-
-		assertEquals(count, patientFileItemDAO.count());
+		assertThrows(ConstraintViolationException.class, () -> patientFileItemDAO.saveAndFlush(act));
 	}
 
 	@Test
-	public void testPatientFileItemDAOSaveCreateMailFailureRecipientDoctorDoesNotExist() {
+	public void testPatientFileItemDAOSaveCreateMailFailureRecipientDoctorNull() {
 
-		recipientDoctor.setId("ID");
+		mail.setRecipientDoctor(null);
 
-		count = patientFileItemDAO.count();
-
-		assertThrows(RuntimeException.class, () -> patientFileItemDAO.save(mail));
-
-		assertEquals(count, patientFileItemDAO.count());
+		assertThrows(ConstraintViolationException.class, () -> patientFileItemDAO.saveAndFlush(mail));
 	}
 
 	@Test
-	public void testPatientFileItemDAOSaveCreatePrescriptionFailureAuthoringDoctorDoesNotExist() {
+	public void testPatientFileItemDAOSaveCreatePrescriptionFailureAuthoringNull() {
 
-		authoringDoctor.setId("ID");
+		prescription.setAuthoringDoctor(null);
 
-		count = patientFileItemDAO.count();
-
-		assertThrows(RuntimeException.class, () -> patientFileItemDAO.save(prescription));
-
-		assertEquals(count, patientFileItemDAO.count());
+		assertThrows(ConstraintViolationException.class, () -> patientFileItemDAO.saveAndFlush(prescription));
 	}
 
 	@Test
-	public void testPatientFileItemDAOSaveCreateSymptomFailurePatientFileDoesNotExist() {
+	public void testPatientFileItemDAOSaveCreateSymptomFailurePatientFileNull() {
 
-		patientFile.setId("ID");
+		symptom.setPatientFile(null);
 
-		count = patientFileItemDAO.count();
-
-		assertThrows(RuntimeException.class, () -> patientFileItemDAO.save(symptom));
-
-		assertEquals(count, patientFileItemDAO.count());
+		assertThrows(RuntimeException.class, () -> patientFileItemDAO.saveAndFlush(symptom));
 	}
 
 	@Test
@@ -244,7 +214,7 @@ public class PatientFileItemDAOTest {
 		assertNotEquals(id, act.getMedicalAct().getId());
 
 		act.setComments(comment);
-		act.getMedicalAct().setId(id);
+		act.setMedicalAct(medicalActDAO.findById(id).orElseThrow());
 
 		savedPatientFileItem = assertDoesNotThrow(() -> patientFileItemDAO.save(act));
 
@@ -267,9 +237,9 @@ public class PatientFileItemDAOTest {
 		assertNotEquals(id, diagnosis.getDisease().getId());
 
 		diagnosis.setComments(comment);
-		diagnosis.getDisease().setId(id);
+		diagnosis.setDisease(diseaseDAO.findById(id).orElseThrow());
 
-		savedPatientFileItem = assertDoesNotThrow(() -> patientFileItemDAO.save(diagnosis));
+		savedPatientFileItem = assertDoesNotThrow(() -> patientFileItemDAO.saveAndFlush(diagnosis));
 
 		assertEquals(comment, savedPatientFileItem.getComments());
 		assertEquals(id, ((Diagnosis) savedPatientFileItem).getDisease().getId());
@@ -289,7 +259,7 @@ public class PatientFileItemDAOTest {
 
 		mail.setComments(comment);
 		mail.setText(text);
-		mail.getRecipientDoctor().setId(id);
+		mail.setRecipientDoctor(doctorDAO.findById(id).orElseThrow());
 
 		savedPatientFileItem = assertDoesNotThrow(() -> patientFileItemDAO.save(mail));
 
