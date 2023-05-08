@@ -1,45 +1,44 @@
 package fr.cnam.stefangeorgesco.dmp.domain.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.time.LocalDate;
-import java.util.Set;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.time.LocalDate;
+import java.util.Set;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@TestPropertySource("/application-test.properties")
-@SpringBootTest
 public class SymptomTest {
 
+	private static ValidatorFactory validatorFactory;
 	private static Validator validator;
 	private LocalDate futureDate;
 	private LocalDate pastDate;
 
-	@Autowired
 	private Symptom symptom;
-
-	@Autowired
-	private Doctor authoringDoctor;
-
-	@Autowired
-	private PatientFile patientFile;
 
 	@BeforeAll
 	public static void setupAll() {
-		validator = Validation.buildDefaultValidatorFactory().getValidator();
+		validatorFactory = Validation.buildDefaultValidatorFactory();
+		validator = validatorFactory.getValidator();
+	}
+
+	@AfterAll
+	static void afterAll() {
+		validatorFactory.close();
 	}
 
 	@BeforeEach
 	public void setupEach() {
+		Doctor authoringDoctor = new Doctor();
+		PatientFile patientFile = new PatientFile();
+		symptom = new Symptom();
 		LocalDate now = LocalDate.now();
 		pastDate = now.minusDays(1);
 		futureDate = now.plusDays(1);

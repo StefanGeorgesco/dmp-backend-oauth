@@ -1,56 +1,50 @@
 package fr.cnam.stefangeorgesco.dmp.domain.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
+import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.TestPropertySource;
+import static org.junit.jupiter.api.Assertions.*;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
-
-@TestPropertySource("/application-test.properties")
-@SpringBootTest
 public class DoctorTest {
 
+	private static ValidatorFactory validatorFactory;
 	private static Validator validator;
 
-	@Autowired
 	private Doctor doctor;
 
-	@Autowired
-	private Address address;
-
-	@Autowired
-	private Specialty specialty;
-
-	@Autowired
 	private User user;
 
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
 	@BeforeAll
 	public static void setupAll() {
-		validator = Validation.buildDefaultValidatorFactory().getValidator();
+		validatorFactory = Validation.buildDefaultValidatorFactory();
+		validator = validatorFactory.getValidator();
+	}
+
+	@AfterAll
+	static void afterAll() {
+		validatorFactory.close();
 	}
 
 	@BeforeEach
 	public void setupEach() {
+		Address address = new Address();
+		Specialty specialty = new Specialty();
+		doctor = new Doctor();
 		specialty.setId("specialtyId");
 		specialty.setDescription("A specialty");
 
@@ -71,6 +65,7 @@ public class DoctorTest {
 		doctor.setSpecialties(specialties);
 		doctor.setSecurityCode(bCryptPasswordEncoder.encode("12345678"));
 
+		user = new User();
 		user.setId("id");
 		user.setSecurityCode("12345678");
 

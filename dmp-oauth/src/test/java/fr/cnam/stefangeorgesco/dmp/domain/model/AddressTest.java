@@ -1,36 +1,39 @@
 package fr.cnam.stefangeorgesco.dmp.domain.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Set;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.util.Set;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@TestPropertySource("/application-test.properties")
-@SpringBootTest
 public class AddressTest {
 
+	private static ValidatorFactory validatorFactory;
 	private static Validator validator;
 
-	@Autowired
 	private Address address;
 
 	@BeforeAll
 	public static void setupAll() {
-		validator = Validation.buildDefaultValidatorFactory().getValidator();
+		validatorFactory = Validation.buildDefaultValidatorFactory();
+		validator = validatorFactory.getValidator();
+	}
+
+	@AfterAll
+	static void afterAll() {
+		validatorFactory.close();
 	}
 
 	@BeforeEach
 	public void setupEach() {
+		address = new Address();
 		address.setStreet1("street");
 		address.setCity("city");
 		address.setZipcode("zip");

@@ -1,57 +1,51 @@
 package fr.cnam.stefangeorgesco.dmp.domain.model;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.time.LocalDate;
-import java.util.Set;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
+import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.time.LocalDate;
+import java.util.Set;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.TestPropertySource;
+import static org.junit.jupiter.api.Assertions.*;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
-
-@TestPropertySource("/application-test.properties")
-@SpringBootTest
 public class PatientFileTest {
 
+	private static ValidatorFactory validatorFactory;
 	private static Validator validator;
 	private LocalDate futureDate;
 	private LocalDate pastDate;
 
-	@Autowired
 	private PatientFile patientFile;
 
-	@Autowired
-	private Address address;
-
-	@Autowired
-	private Doctor doctor;
-
-	@Autowired
 	private User user;
 
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
 	@BeforeAll
 	public static void setupAll() {
-		validator = Validation.buildDefaultValidatorFactory().getValidator();
+		validatorFactory = Validation.buildDefaultValidatorFactory();
+		validator = validatorFactory.getValidator();
+	}
+
+	@AfterAll
+	static void afterAll() {
+		validatorFactory.close();
 	}
 
 	@BeforeEach
 	public void setupEach() {
+		Address address = new Address();
+		Doctor doctor = new Doctor();
+		patientFile = new PatientFile();
 		LocalDate now = LocalDate.now();
 		pastDate = now.minusDays(1);
 		futureDate = now.plusDays(1);
@@ -71,6 +65,7 @@ public class PatientFileTest {
 		patientFile.setSecurityCode(bCryptPasswordEncoder.encode("12345678"));
 		patientFile.setReferringDoctor(doctor);
 
+		user = new User();
 		user.setId("id");
 		user.setSecurityCode("12345678");
 

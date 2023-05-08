@@ -4,38 +4,36 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.util.Set;
 
-import static javax.validation.Validation.buildDefaultValidatorFactory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@TestPropertySource("/application-test.properties")
-@SpringBootTest
 public class UserTest {
 
+	private static ValidatorFactory validatorFactory;
 	private static Validator validator;
 
-	@Autowired
 	private User user;
 
 	@BeforeAll
 	public static void setupAll() {
-		validator = buildDefaultValidatorFactory().getValidator();
+		validatorFactory = Validation.buildDefaultValidatorFactory();
+		validator = validatorFactory.getValidator();
 	}
 
 	@AfterAll
 	static void afterAll() {
-		buildDefaultValidatorFactory().close();
+		validatorFactory.close();
 	}
 
 	@BeforeEach
 	public void setupEach() {
+		user = new User();
 		user.setId("A");
 		user.setUsername("a");
 		user.setPassword("1234");
@@ -58,7 +56,6 @@ public class UserTest {
 
 		assertEquals(1, violations.size());
 		assertEquals("L'identifiant est obligatoire.", violations.iterator().next().getMessage());
-
 	}
 
 	@Test
@@ -70,7 +67,6 @@ public class UserTest {
 
 		assertEquals(1, violations.size());
 		assertEquals("Le non utilisateur est obligatoire.", violations.iterator().next().getMessage());
-
 	}
 
 	@Test
@@ -82,7 +78,6 @@ public class UserTest {
 
 		assertEquals(1, violations.size());
 		assertEquals("L'identifiant est obligatoire.", violations.iterator().next().getMessage());
-
 	}
 
 	@Test
@@ -94,7 +89,6 @@ public class UserTest {
 
 		assertEquals(1, violations.size());
 		assertEquals("Le non utilisateur est obligatoire.", violations.iterator().next().getMessage());
-
 	}
 
 }
