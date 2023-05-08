@@ -1,1 +1,1 @@
-delete from t_correspondence
+delete from t_correspondence where 1;

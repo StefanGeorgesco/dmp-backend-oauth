@@ -1,1 +1,1 @@
-delete from t_specialty
+delete from t_specialty where 1;

@@ -1,53 +1,21 @@
 package fr.cnam.stefangeorgesco.dmp.domain.service;
 
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
+import fr.cnam.stefangeorgesco.dmp.domain.dao.*;
+import fr.cnam.stefangeorgesco.dmp.domain.dto.*;
+import fr.cnam.stefangeorgesco.dmp.domain.model.*;
+import fr.cnam.stefangeorgesco.dmp.exception.domain.*;
+import fr.cnam.stefangeorgesco.dmp.utils.SecurityCodeGenerator;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.CorrespondenceDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.DiseaseDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.FileDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.MedicalActDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.PatientFileDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.PatientFileItemDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.ActDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.CorrespondenceDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DiagnosisDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DiseaseDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.MailDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.MedicalActDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileItemDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PrescriptionDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.SymptomDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Act;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Correspondence;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Diagnosis;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Disease;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Doctor;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Mail;
-import fr.cnam.stefangeorgesco.dmp.domain.model.MedicalAct;
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFile;
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFileItem;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Prescription;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Symptom;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.CreateException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.DeleteException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.DuplicateKeyException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.UpdateException;
-import fr.cnam.stefangeorgesco.dmp.utils.SecurityCodeGenerator;
 
 /**
  * Classe de service pour la gestion des dossiers patients et objets rattachés.
@@ -58,44 +26,47 @@ import fr.cnam.stefangeorgesco.dmp.utils.SecurityCodeGenerator;
 @Service
 public class PatientFileService {
 
-	@Autowired
-	private RnippService rnippService;
+	private final RnippService rnippService;
 
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
 
-	@Autowired
-	private PatientFileDAO patientFileDAO;
+	private final PatientFileDAO patientFileDAO;
 
-	@Autowired
-	private FileDAO fileDAO;
+	private final FileDAO fileDAO;
 
-	@Autowired
-	private DoctorDAO doctorDAO;
+	private final DoctorDAO doctorDAO;
 
-	@Autowired
-	private CorrespondenceDAO correspondenceDAO;
+	private final CorrespondenceDAO correspondenceDAO;
 
-	@Autowired
-	private DiseaseDAO diseaseDAO;
+	private final DiseaseDAO diseaseDAO;
 
-	@Autowired
-	private MedicalActDAO medicalActDAO;
+	private final MedicalActDAO medicalActDAO;
 
-	@Autowired
-	private PatientFileItemDAO patientFileItemDAO;
+	private final PatientFileItemDAO patientFileItemDAO;
 
-	@Autowired
-	private ModelMapper commonModelMapper;
+	private final ModelMapper commonModelMapper;
 
-	@Autowired
-	private ModelMapper patientFileModelMapper;
+	private final ModelMapper patientFileModelMapper;
 
-	@Autowired
-	private MapperService mapperService;
+	private final MapperService mapperService;
 
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+	public PatientFileService(RnippService rnippService, UserService userService, PatientFileDAO patientFileDAO, BCryptPasswordEncoder bCryptPasswordEncoder, MapperService mapperService, FileDAO fileDAO, DoctorDAO doctorDAO, CorrespondenceDAO correspondenceDAO, DiseaseDAO diseaseDAO, MedicalActDAO medicalActDAO, PatientFileItemDAO patientFileItemDAO, ModelMapper commonModelMapper, ModelMapper patientFileModelMapper) {
+		this.rnippService = rnippService;
+		this.userService = userService;
+		this.patientFileDAO = patientFileDAO;
+		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+		this.mapperService = mapperService;
+		this.fileDAO = fileDAO;
+		this.doctorDAO = doctorDAO;
+		this.correspondenceDAO = correspondenceDAO;
+		this.diseaseDAO = diseaseDAO;
+		this.medicalActDAO = medicalActDAO;
+		this.patientFileItemDAO = patientFileItemDAO;
+		this.commonModelMapper = commonModelMapper;
+		this.patientFileModelMapper = patientFileModelMapper;
+	}
 
 	/**
 	 * Service de création d'un dossier patient. Le service vérifie qu'un dossier
@@ -168,7 +139,7 @@ public class PatientFileService {
 	 */
 	public PatientFileDTO updatePatientFile(PatientFileDTO patientFileDTO) throws UpdateException {
 
-		PatientFile patientFile = patientFileDAO.findById(patientFileDTO.getId()).get();
+		PatientFile patientFile = patientFileDAO.findById(patientFileDTO.getId()).orElseThrow();
 
 		patientFile.setPhone(patientFileDTO.getPhone());
 		patientFile.setEmail(patientFileDTO.getEmail());
@@ -190,9 +161,7 @@ public class PatientFileService {
 		userDTO.setEmail(patientFileDTO.getEmail());
 		userService.updateUser(userDTO);
 
-		PatientFileDTO response = patientFileModelMapper.map(patientFile, PatientFileDTO.class);
-
-		return response;
+		return patientFileModelMapper.map(patientFile, PatientFileDTO.class);
 	}
 
 	/**
@@ -208,7 +177,7 @@ public class PatientFileService {
 	 *                       médecin du nouveau médecin référent.
 	 * @return l'objet {@link fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileDTO}
 	 *         représentant le dossier patient modifié.
-	 * @throws FinderException le dossier patient n'a pas été trouvé ou le dossier
+	 * @throws FinderException le dossier patient n'a pas été trouvé ou bien le dossier
 	 *                         de médecin référent n'a pas été trouvé.
 	 * @throws UpdateException le dossier patient n'a pas pu être modifié.
 	 */
@@ -237,9 +206,7 @@ public class PatientFileService {
 			throw new UpdateException("Le dossier patient n'a pas pu être modifié (médecin référent).");
 		}
 
-		PatientFileDTO response = patientFileModelMapper.map(patientFile, PatientFileDTO.class);
-
-		return response;
+		return patientFileModelMapper.map(patientFile, PatientFileDTO.class);
 	}
 
 	/**
@@ -254,20 +221,18 @@ public class PatientFileService {
 	public List<PatientFileDTO> findPatientFilesByIdOrFirstnameOrLastname(String q) {
 
 		if ("".equals(q)) {
-			return new ArrayList<PatientFileDTO>();
+			return new ArrayList<>();
 		}
 
 		Iterable<PatientFile> patientFiles = patientFileDAO.findByIdOrFirstnameOrLastname(q);
 
-		List<PatientFileDTO> response = ((List<PatientFile>) patientFiles).stream()
+		return ((List<PatientFile>) patientFiles).stream()
 				.map(patientFile -> patientFileModelMapper.map(patientFile, PatientFileDTO.class))
 				.collect(Collectors.toList());
-
-		return response;
 	}
 
 	/**
-	 * Service de création d'un correspondance.
+	 * Service de création d'une correspondance.
 	 * 
 	 * @param correspondenceDTO l'objet
 	 *                          {@link fr.cnam.stefangeorgesco.dmp.domain.dto.CorrespondenceDTO}
@@ -287,15 +252,13 @@ public class PatientFileService {
 			throw new CreateException("La correspondance n'a pas pu être créé.");
 		}
 
-		correspondence = correspondenceDAO.findById(correspondence.getId()).get();
+		correspondence = correspondenceDAO.findById(correspondence.getId()).orElseThrow();
 
-		CorrespondenceDTO response = commonModelMapper.map(correspondence, CorrespondenceDTO.class);
-
-		return response;
+		return commonModelMapper.map(correspondence, CorrespondenceDTO.class);
 	}
 
 	/**
-	 * Service de suppression d'une correpondance désignée par son identifiant.
+	 * Service de suppression d'une correspondance désignée par son identifiant.
 	 * 
 	 * @param uuid l'identifiant de la correspondance à supprimer.
 	 */
@@ -337,11 +300,9 @@ public class PatientFileService {
 
 		Iterable<Correspondence> correspondences = correspondenceDAO.findByPatientFileId(patientFileId);
 
-		List<CorrespondenceDTO> correspondencesDTO = ((List<Correspondence>) correspondences).stream()
+		return ((List<Correspondence>) correspondences).stream()
 				.map(correspondence -> commonModelMapper.map(correspondence, CorrespondenceDTO.class))
 				.collect(Collectors.toList());
-
-		return correspondencesDTO;
 	}
 
 	/**
@@ -399,10 +360,8 @@ public class PatientFileService {
 
 		Iterable<Disease> diseases = diseaseDAO.findByIdOrDescription(q, limit);
 
-		List<DiseaseDTO> diseasesDTO = ((List<Disease>) diseases).stream()
+		return ((List<Disease>) diseases).stream()
 				.map(disease -> commonModelMapper.map(disease, DiseaseDTO.class)).collect(Collectors.toList());
-
-		return diseasesDTO;
 	}
 
 	/**
@@ -422,10 +381,8 @@ public class PatientFileService {
 
 		Iterable<MedicalAct> medicalActs = medicalActDAO.findByIdOrDescription(q, limit);
 
-		List<MedicalActDTO> medicalActsDTO = ((List<MedicalAct>) medicalActs).stream()
+		return ((List<MedicalAct>) medicalActs).stream()
 				.map(medicalAct -> commonModelMapper.map(medicalAct, MedicalActDTO.class)).collect(Collectors.toList());
-
-		return medicalActsDTO;
 	}
 
 	/**
@@ -449,11 +406,9 @@ public class PatientFileService {
 			throw new CreateException("L'élément médical n'a pas pu être créé.");
 		}
 
-		patientFileItem = patientFileItemDAO.findById(patientFileItem.getId()).get();
+		patientFileItem = patientFileItemDAO.findById(patientFileItem.getId()).orElseThrow();
 
-		PatientFileItemDTO respsonse = mapperService.mapToDTO(patientFileItem);
-
-		return respsonse;
+		return mapperService.mapToDTO(patientFileItem);
 	}
 
 	/**
@@ -488,10 +443,8 @@ public class PatientFileService {
 
 		Iterable<PatientFileItem> patientFileItems = patientFileItemDAO.findByPatientFileId(patientFileId);
 
-		List<PatientFileItemDTO> patientFileItemsDTO = ((List<PatientFileItem>) patientFileItems).stream()
-				.map(item -> mapperService.mapToDTO(item)).collect(Collectors.toList());
-
-		return patientFileItemsDTO;
+		return ((List<PatientFileItem>) patientFileItems).stream()
+				.map(mapperService::mapToDTO).collect(Collectors.toList());
 	}
 
 	/**
@@ -546,9 +499,7 @@ public class PatientFileService {
 			throw new UpdateException("L'élément médical n'a pas pu être modifié.");
 		}
 
-		PatientFileItemDTO response = mapperService.mapToDTO(patientFileItem);
-
-		return response;
+		return mapperService.mapToDTO(patientFileItem);
 	}
 
 	/**
@@ -563,7 +514,7 @@ public class PatientFileService {
 
 	/**
 	 * Service de suppression d'un dossier patient désigné par son identifiant. Les
-	 * éventuels correspondances, éléments médicaux et compte utilisateur associés
+	 * éventuelles correspondances, éléments médicaux et compte utilisateur associés
 	 * au dossier sont également supprimés.
 	 * 
 	 * @param patientFileId l'identifiant du dossier à supprimer.

@@ -21,7 +21,6 @@ import org.springframework.test.context.TestPropertySource;
 public class SymptomTest {
 
 	private static Validator validator;
-	private LocalDate now;
 	private LocalDate futureDate;
 	private LocalDate pastDate;
 
@@ -41,7 +40,7 @@ public class SymptomTest {
 
 	@BeforeEach
 	public void setupEach() {
-		now = LocalDate.now();
+		LocalDate now = LocalDate.now();
 		pastDate = now.minusDays(1);
 		futureDate = now.plusDays(1);
 		symptom.setDate(now);
@@ -81,7 +80,7 @@ public class SymptomTest {
 	}
 
 	@Test
-	public void symptomValidationInvalidDesciptionBlank() {
+	public void symptomValidationInvalidDescriptionBlank() {
 
 		symptom.setDescription("");
 
@@ -125,7 +124,7 @@ public class SymptomTest {
 	}
 
 	@Test
-	public void symptomValidationInvalidDesciptionNull() {
+	public void symptomValidationInvalidDescriptionNull() {
 
 		symptom.setDescription(null);
 

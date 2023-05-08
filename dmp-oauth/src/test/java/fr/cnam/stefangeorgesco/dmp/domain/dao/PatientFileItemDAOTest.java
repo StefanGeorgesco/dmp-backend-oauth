@@ -80,8 +80,6 @@ public class PatientFileItemDAOTest {
 	@Autowired
 	private Symptom symptom;
 
-	private LocalDate date;
-
 	private long count;
 
 	private String comment;
@@ -92,14 +90,12 @@ public class PatientFileItemDAOTest {
 
 	private String id;
 
-	private UUID uuid;
-
 	@BeforeEach
 	public void setUp() {
 		authoringDoctor.setId("D001");
 		recipientDoctor.setId("D002");
 		patientFile.setId("P001");
-		date = LocalDate.now();
+		LocalDate date = LocalDate.now();
 
 		medicalAct.setId("HBSD001");
 		act.setDate(date);
@@ -242,7 +238,7 @@ public class PatientFileItemDAOTest {
 
 		id = "HBQK389";
 
-		act = (Act) patientFileItemDAO.findById(UUID.fromString("1b57e70f-8eb0-4a97-99c6-5d44f138c22c")).get();
+		act = (Act) patientFileItemDAO.findById(UUID.fromString("1b57e70f-8eb0-4a97-99c6-5d44f138c22c")).orElseThrow();
 
 		assertNotEquals(comment, act.getComments());
 		assertNotEquals(id, act.getMedicalAct().getId());
@@ -265,7 +261,7 @@ public class PatientFileItemDAOTest {
 		id = "J011";
 
 		diagnosis = (Diagnosis) patientFileItemDAO.findById(UUID.fromString("707b71f1-0bbd-46ec-b79c-c9717bd6b2cd"))
-				.get();
+				.orElseThrow();
 
 		assertNotEquals(comment, diagnosis.getComments());
 		assertNotEquals(id, diagnosis.getDisease().getId());
@@ -285,7 +281,7 @@ public class PatientFileItemDAOTest {
 
 		id = "D013";
 
-		mail = (Mail) patientFileItemDAO.findById(UUID.fromString("3ab3d311-585c-498e-aaca-728c00beb86e")).get();
+		mail = (Mail) patientFileItemDAO.findById(UUID.fromString("3ab3d311-585c-498e-aaca-728c00beb86e")).orElseThrow();
 
 		assertNotEquals(comment, mail.getComments());
 		assertNotEquals(text, mail.getText());
@@ -306,7 +302,7 @@ public class PatientFileItemDAOTest {
 	public void testPatientFileItemDAOSaveUpdatePrescriptionSuccess() {
 
 		prescription = (Prescription) patientFileItemDAO
-				.findById(UUID.fromString("31571533-a9d4-4b10-ac46-8afe0247e6cd")).get();
+				.findById(UUID.fromString("31571533-a9d4-4b10-ac46-8afe0247e6cd")).orElseThrow();
 
 		assertNotEquals(comment, prescription.getComments());
 		assertNotEquals(description, prescription.getDescription());
@@ -323,7 +319,7 @@ public class PatientFileItemDAOTest {
 	@Test
 	public void testPatientFileItemDAOSaveUpdateSymptomSuccess() {
 
-		symptom = (Symptom) patientFileItemDAO.findById(UUID.fromString("142763cf-6eeb-47a5-b8f8-8ec85f0025c4")).get();
+		symptom = (Symptom) patientFileItemDAO.findById(UUID.fromString("142763cf-6eeb-47a5-b8f8-8ec85f0025c4")).orElseThrow();
 
 		assertNotEquals(comment, symptom.getComments());
 		assertNotEquals(description, symptom.getDescription());
@@ -340,7 +336,7 @@ public class PatientFileItemDAOTest {
 	@Test
 	public void testPatientFileItemDAODeleteByIdSuccess() {
 
-		uuid = UUID.fromString("c793da7f-5ca8-41f5-a0f0-1cc77b34b6fe");
+		UUID uuid = UUID.fromString("c793da7f-5ca8-41f5-a0f0-1cc77b34b6fe");
 
 		count = patientFileItemDAO.count();
 

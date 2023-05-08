@@ -1,24 +1,12 @@
 package fr.cnam.stefangeorgesco.dmp.domain.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import fr.cnam.stefangeorgesco.dmp.domain.dto.*;
+import fr.cnam.stefangeorgesco.dmp.domain.model.*;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.cnam.stefangeorgesco.dmp.domain.dto.ActDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DiagnosisDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.MailDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileItemDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PrescriptionDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.SymptomDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Act;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Diagnosis;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Mail;
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFileItem;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Prescription;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Symptom;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Classe de service pour la conversion des objets
@@ -32,22 +20,17 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.Symptom;
 @Service
 public class MapperService {
 
-	@Autowired
-	private ModelMapper commonModelMapper;
+	private final ModelMapper commonModelMapper;
 
-	@Autowired
-	private ModelMapper diagnosisModelMapper;
+	private final ModelMapper diagnosisModelMapper;
 
-	@Autowired
-	private ModelMapper actModelMapper;
+	private final ModelMapper actModelMapper;
 
-	private Map<Class<? extends PatientFileItem>, Class<? extends PatientFileItemDTO>> returnDTOTypes;
+	private final Map<Class<? extends PatientFileItem>, Class<? extends PatientFileItemDTO>> returnDTOTypes;
 
-	private Map<Class<? extends PatientFileItemDTO>, Class<? extends PatientFileItem>> returnEntityTypes;
+	private final Map<Class<? extends PatientFileItemDTO>, Class<? extends PatientFileItem>> returnEntityTypes;
 
-	private ModelMapper modelMapper;
-
-	public MapperService() {
+	public MapperService(ModelMapper commonModelMapper, ModelMapper diagnosisModelMapper, ModelMapper actModelMapper) {
 
 		returnDTOTypes = new HashMap<>();
 
@@ -64,6 +47,10 @@ public class MapperService {
 		returnEntityTypes.put(ActDTO.class, Act.class);
 		returnEntityTypes.put(PrescriptionDTO.class, Prescription.class);
 		returnEntityTypes.put(SymptomDTO.class, Symptom.class);
+
+		this.commonModelMapper = commonModelMapper;
+		this.diagnosisModelMapper = diagnosisModelMapper;
+		this.actModelMapper = actModelMapper;
 	}
 
 	/**
@@ -80,7 +67,7 @@ public class MapperService {
 	 */
 	public PatientFileItemDTO mapToDTO(PatientFileItem item) {
 
-		modelMapper = commonModelMapper;
+		ModelMapper modelMapper = commonModelMapper;
 
 		if (item instanceof Diagnosis) {
 			modelMapper = diagnosisModelMapper;

@@ -1,25 +1,19 @@
 package fr.cnam.stefangeorgesco.dmp.authentication.domain.service;
 
-import java.util.Optional;
-
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
+import fr.cnam.stefangeorgesco.dmp.domain.dao.FileDAO;
+import fr.cnam.stefangeorgesco.dmp.domain.model.Doctor;
+import fr.cnam.stefangeorgesco.dmp.domain.model.File;
+import fr.cnam.stefangeorgesco.dmp.exception.domain.*;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.FileDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Doctor;
-import fr.cnam.stefangeorgesco.dmp.domain.model.File;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.CreateException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.DeleteException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.DuplicateKeyException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
+import java.util.Optional;
 
 /**
  * Classe de service pour la gestion des utilisateurs.
@@ -31,20 +25,20 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
 @Validated
 public class UserService {
 
-	@Autowired
-	private KeycloakService keycloakService;
+	private final KeycloakService keycloakService;
 
-	@Autowired
-	private FileDAO fileDAO;
+	private final FileDAO fileDAO;
 
-	@Autowired
-	ModelMapper commonModelMapper;
+	private final ModelMapper commonModelMapper;
 
-	@Autowired
-	ModelMapper userModelMapper;
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	public UserService(KeycloakService keycloakService, FileDAO fileDAO, ModelMapper commonModelMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
+		this.keycloakService = keycloakService;
+		this.fileDAO = fileDAO;
+		this.commonModelMapper = commonModelMapper;
+		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+	}
 
 	/**
 	 * Service de création d'un compte utilisateur. Le service vérifie qu'un compte

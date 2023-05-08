@@ -43,18 +43,14 @@ public class CorrespondenceDAOTest {
 	@Autowired
 	private Correspondence correspondence;
 
-	private LocalDate date;
-
 	private long count;
-
-	private UUID uuid;
 
 	@BeforeEach
 	public void setup() {
 		referringDoctor.setId("D001");
 		correspondingDoctor.setId("D002");
 		patientFile.setId("P001");
-		date = LocalDate.now().plusDays(1);
+		LocalDate date = LocalDate.now().plusDays(1);
 
 		correspondence.setDateUntil(date);
 		correspondence.setDoctor(correspondingDoctor);
@@ -98,7 +94,7 @@ public class CorrespondenceDAOTest {
 	@Test
 	public void testCorrespondenceDAODeleteByIdSuccess() {
 
-		uuid = UUID.fromString("3d80bbeb-997e-4354-82d3-68cea80256d6");
+		UUID uuid = UUID.fromString("3d80bbeb-997e-4354-82d3-68cea80256d6");
 
 		count = correspondenceDAO.count();
 

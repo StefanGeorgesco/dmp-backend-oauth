@@ -1,5 +1,6 @@
 package fr.cnam.stefangeorgesco.dmp.domain.service;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -14,13 +15,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.mockito.ArgumentCaptor;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -126,8 +120,6 @@ public class PatientFileServiceTest {
 	@Autowired
 	private MedicalActDTO medicalActDTO;
 
-	private PatientFileItemDTO patientFileItemDTO;
-
 	@Autowired
 	private ActDTO actDTO;
 
@@ -221,11 +213,11 @@ public class PatientFileServiceTest {
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	private ArgumentCaptor<PatientFile> patientFileCaptor = ArgumentCaptor.forClass(PatientFile.class);
+	private final ArgumentCaptor<PatientFile> patientFileCaptor = ArgumentCaptor.forClass(PatientFile.class);
 
-	private ArgumentCaptor<Correspondence> correspondenceCaptor = ArgumentCaptor.forClass(Correspondence.class);
+	private final ArgumentCaptor<Correspondence> correspondenceCaptor = ArgumentCaptor.forClass(Correspondence.class);
 
-	private ArgumentCaptor<PatientFileItem> patientFileItemCaptor = ArgumentCaptor.forClass(PatientFileItem.class);
+	private final ArgumentCaptor<PatientFileItem> patientFileItemCaptor = ArgumentCaptor.forClass(PatientFileItem.class);
 
 	private UUID uuid;
 
@@ -330,16 +322,16 @@ public class PatientFileServiceTest {
 		symptomDTO.setPatientFileId("P001");
 		symptomDTO.setDescription("symptom description");
 
-		persistentCorrespondence.setDateUntil(LocalDate.of(2022, 07, 29));
+		persistentCorrespondence.setDateUntil(LocalDate.of(2022, 7, 29));
 		persistentCorrespondence.setDoctor(doctor2);
 		persistentCorrespondence.setPatientFile(patientFile1);
 
 		foundCorrespondence1.setId(UUID.randomUUID());
-		foundCorrespondence1.setDateUntil(LocalDate.of(2022, 8, 01));
+		foundCorrespondence1.setDateUntil(LocalDate.of(2022, 8, 1));
 		foundCorrespondence1.setDoctor(doctor1);
 		foundCorrespondence1.setPatientFile(patientFile1);
 		foundCorrespondence2.setId(UUID.randomUUID());
-		foundCorrespondence2.setDateUntil(LocalDate.of(2022, 9, 05));
+		foundCorrespondence2.setDateUntil(LocalDate.of(2022, 9, 5));
 		foundCorrespondence2.setDoctor(doctor2);
 		foundCorrespondence2.setPatientFile(patientFile2);
 
@@ -468,7 +460,7 @@ public class PatientFileServiceTest {
 		assertEquals(persistentPatientFile.getId(), patientFileDTOResponse.getId());
 		assertEquals(persistentPatientFile.getFirstname(), patientFileDTOResponse.getFirstname());
 		assertEquals(persistentPatientFile.getLastname(), patientFileDTOResponse.getLastname());
-		assertEquals(null, patientFileDTOResponse.getSecurityCode());
+		assertNull(patientFileDTOResponse.getSecurityCode());
 		assertEquals(persistentPatientFile.getReferringDoctor().getId(), patientFileDTOResponse.getReferringDoctorId());
 
 		// updated - compared to response DTO object
@@ -492,14 +484,14 @@ public class PatientFileServiceTest {
 		assertEquals("P001", patientFileDTOResponse.getId());
 		assertEquals("firstname", patientFileDTOResponse.getFirstname());
 		assertEquals("lastname", patientFileDTOResponse.getLastname());
-		assertEquals(null, patientFileDTOResponse.getSecurityCode());
+		assertNull(patientFileDTOResponse.getSecurityCode());
 		assertEquals("D001", patientFileDTOResponse.getReferringDoctorId());
 		assertEquals("2000-02-13", patientFileDTOResponse.getDateOfBirth().toString());
 	}
 
 	@Test
-	public void testFindPatientFileFailurePatientFileDoesNotExist() throws FinderException {
-		when(patientFileDAO.findById("P003")).thenReturn(Optional.ofNullable(null));
+	public void testFindPatientFileFailurePatientFileDoesNotExist() {
+		when(patientFileDAO.findById("P003")).thenReturn(Optional.empty());
 
 		FinderException ex = assertThrows(FinderException.class, () -> patientFileService.findPatientFile("P003"));
 
@@ -522,7 +514,7 @@ public class PatientFileServiceTest {
 
 		when(patientFileItemDAO.findById(uuid)).thenReturn(Optional.of(diagnosis));
 
-		patientFileItemDTO = assertDoesNotThrow(() -> patientFileService.findPatientFileItem(uuid));
+		PatientFileItemDTO patientFileItemDTO = assertDoesNotThrow(() -> patientFileService.findPatientFileItem(uuid));
 
 		verify(patientFileItemDAO, times(1)).findById(uuid);
 
@@ -544,7 +536,7 @@ public class PatientFileServiceTest {
 	@Test
 	public void testFindPatientFileItemFailurePatientFileItemDoesNotExist() {
 
-		when(patientFileItemDAO.findById(uuid)).thenReturn(Optional.ofNullable(null));
+		when(patientFileItemDAO.findById(uuid)).thenReturn(Optional.empty());
 
 		FinderException ex = assertThrows(FinderException.class, () -> patientFileService.findPatientFileItem(uuid));
 
@@ -589,7 +581,7 @@ public class PatientFileServiceTest {
 		assertEquals(persistentPatientFile.getId(), patientFileDTOResponse.getId());
 		assertEquals(persistentPatientFile.getFirstname(), patientFileDTOResponse.getFirstname());
 		assertEquals(persistentPatientFile.getLastname(), patientFileDTOResponse.getLastname());
-		assertEquals(null, patientFileDTOResponse.getSecurityCode());
+		assertNull(patientFileDTOResponse.getSecurityCode());
 		assertEquals(persistentPatientFile.getId(), patientFileDTOResponse.getId());
 		assertEquals(persistentPatientFile.getPhone(), patientFileDTOResponse.getPhone());
 		assertEquals(persistentPatientFile.getEmail(), patientFileDTOResponse.getEmail());
@@ -614,7 +606,7 @@ public class PatientFileServiceTest {
 	public void testUpdateReferringDoctorFailurePatientFileDoesNotExist() {
 		patientFileDTO.setReferringDoctorId("D002");
 
-		when(patientFileDAO.findById(patientFileDTO.getId())).thenReturn(Optional.ofNullable(null));
+		when(patientFileDAO.findById(patientFileDTO.getId())).thenReturn(Optional.empty());
 
 		FinderException ex = assertThrows(FinderException.class,
 				() -> patientFileService.updateReferringDoctor(patientFileDTO));
@@ -631,7 +623,7 @@ public class PatientFileServiceTest {
 		patientFileDTO.setReferringDoctorId("D002");
 
 		when(patientFileDAO.findById(patientFileDTO.getId())).thenReturn(Optional.ofNullable(persistentPatientFile));
-		when(doctorDAO.findById(patientFileDTO.getReferringDoctorId())).thenReturn(Optional.ofNullable(null));
+		when(doctorDAO.findById(patientFileDTO.getReferringDoctorId())).thenReturn(Optional.empty());
 
 		FinderException ex = assertThrows(FinderException.class,
 				() -> patientFileService.updateReferringDoctor(patientFileDTO));
@@ -757,10 +749,10 @@ public class PatientFileServiceTest {
 	}
 
 	@Test
-	public void testFindCorrespondenceFailureCorrespondenceDoesNotExist() throws FinderException {
+	public void testFindCorrespondenceFailureCorrespondenceDoesNotExist() {
 		uuid = UUID.randomUUID();
 
-		when(correspondenceDAO.findById(uuid)).thenReturn(Optional.ofNullable(null));
+		when(correspondenceDAO.findById(uuid)).thenReturn(Optional.empty());
 
 		FinderException ex = assertThrows(FinderException.class,
 				() -> patientFileService.findCorrespondence(uuid.toString()));
@@ -869,7 +861,7 @@ public class PatientFileServiceTest {
 
 		PatientFileItem savedPatientFileItem = patientFileItemCaptor.getValue();
 
-		assertEquals(null, savedPatientFileItem.getId());
+		assertNull(savedPatientFileItem.getId());
 		assertEquals(actDTO.getDate(), savedPatientFileItem.getDate());
 		assertEquals(actDTO.getComments(), savedPatientFileItem.getComments());
 		assertEquals(actDTO.getAuthoringDoctorId(), savedPatientFileItem.getAuthoringDoctor().getId());
@@ -1163,7 +1155,7 @@ public class PatientFileServiceTest {
 	}
 
 	@Test
-	public void testDeletePatientFileSuccessNoUser() throws DeleteException, FinderException {
+	public void testDeletePatientFileSuccessNoUser() throws DeleteException {
 		when(correspondenceDAO.deleteAllByPatientFileId("P001")).thenReturn(3);
 		when(patientFileItemDAO.deleteAllByPatientFileId("P001")).thenReturn(9);
 		doNothing().when(patientFileDAO).deleteById("P001");
@@ -1178,7 +1170,7 @@ public class PatientFileServiceTest {
 	}
 
 	@Test
-	public void testDeletePatientFileSuccessUserPresent() throws DeleteException, FinderException {
+	public void testDeletePatientFileSuccessUserPresent() throws DeleteException {
 		when(correspondenceDAO.deleteAllByPatientFileId("P001")).thenReturn(3);
 		when(patientFileItemDAO.deleteAllByPatientFileId("P001")).thenReturn(9);
 		doNothing().when(patientFileDAO).deleteById("P001");
@@ -1193,7 +1185,7 @@ public class PatientFileServiceTest {
 	}
 
 	@Test
-	public void testDeletePatientFileFailurePatientFileDoesNotExist() throws DeleteException, FinderException {
+	public void testDeletePatientFileFailurePatientFileDoesNotExist() throws DeleteException {
 		when(correspondenceDAO.deleteAllByPatientFileId("P001")).thenReturn(0);
 		when(patientFileItemDAO.deleteAllByPatientFileId("P001")).thenReturn(0);
 		doThrow(new RuntimeException("")).when(patientFileDAO).deleteById("P001");

@@ -1,12 +1,10 @@
 package fr.cnam.stefangeorgesco.dmp.domain.dao;
 
-import java.util.UUID;
+import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFileItem;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.transaction.Transactional;
-
-import org.springframework.data.repository.CrudRepository;
-
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFileItem;
+import java.util.UUID;
 
 /**
  * Repository pour les objets
@@ -16,7 +14,7 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFileItem;
  *
  */
 @Transactional
-public interface PatientFileItemDAO extends CrudRepository<PatientFileItem, UUID> {
+public interface PatientFileItemDAO extends JpaRepository<PatientFileItem, UUID> {
 
 	Iterable<PatientFileItem> findByPatientFileId(String patientFileId);
 

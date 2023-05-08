@@ -1,13 +1,8 @@
 package fr.cnam.stefangeorgesco.dmp.authentication.domain.service;
 
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -17,9 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
 import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class KeycloakService {
@@ -39,8 +38,11 @@ public class KeycloakService {
 	@Value("${keycloak.realm}")
 	private String realm;
 
-	@Autowired
-	WebClient keyCloakClient;
+	private final WebClient keyCloakClient;
+
+	public KeycloakService(WebClient keyCloakClient) {
+		this.keyCloakClient = keyCloakClient;
+	}
 
 	/**
 	 * Service indiquant si un utilisateur existe, recherche par nom d'utilisateur.
@@ -55,7 +57,7 @@ public class KeycloakService {
 				.uri("/admin/realms/" + realm + "/users?username=" + username + "&exact=true")
 				.header("Authorization", "Bearer " + token).retrieve().bodyToMono(UserRepresentation[].class).block();
 
-		return ur.length > 0;
+		return ur != null && ur.length > 0;
 	}
 
 	/**
@@ -70,7 +72,7 @@ public class KeycloakService {
 		UserRepresentation[] ur = keyCloakClient.get().uri("/admin/realms/" + realm + "/users?q=id:" + id)
 				.header("Authorization", "Bearer " + token).retrieve().bodyToMono(UserRepresentation[].class).block();
 
-		return ur.length > 0;
+		return ur != null && ur.length > 0;
 	}
 
 	/**
@@ -79,7 +81,7 @@ public class KeycloakService {
 	 * 
 	 * @param userDTO objet UserDTO comportant les données de l'utilisateur.
 	 * @return statut HttpStatus (valeur) retourné par la requête WebClient.
-	 * @throws WebClientResponseException
+	 * @throws WebClientResponseException erreur de communication avec Keycloak
 	 */
 	public HttpStatus createUser(UserDTO userDTO) throws WebClientResponseException {
 		String token = getAdminToken();
@@ -107,7 +109,8 @@ public class KeycloakService {
 				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.header("Authorization", "Bearer " + token).body(Mono.just(user), UserRepresentation.class).retrieve()
 				.toBodilessEntity().block();
-		return resp.getStatusCode();
+
+		return Objects.requireNonNull(resp).getStatusCode();
 	}
 
 	/**
@@ -116,7 +119,7 @@ public class KeycloakService {
 	 * 
 	 * @param userDTO les données à mettre à jour.
 	 * @return statut HttpStatus (valeur) retourné par la requête WebClient.
-	 * @throws WebClientResponseException
+	 * @throws WebClientResponseException erreur de communication avec Keycloak
 	 */
 	public HttpStatus updateUser(UserDTO userDTO) throws WebClientResponseException {
 		String token = getAdminToken();
@@ -131,7 +134,8 @@ public class KeycloakService {
 				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.header("Authorization", "Bearer " + token).body(Mono.just(user), UserRepresentation.class).retrieve()
 				.toBodilessEntity().block();
-		return resp.getStatusCode();
+
+		return Objects.requireNonNull(resp).getStatusCode();
 	}
 
 	/**
@@ -148,17 +152,17 @@ public class KeycloakService {
 		ResponseEntity<Void> resp = keyCloakClient.delete().uri("/admin/realms/" + realm + "/users/" + userId)
 				.header("Authorization", "Bearer " + token).retrieve().toBodilessEntity().block();
 
-		return resp.getStatusCode();
+		return Objects.requireNonNull(resp).getStatusCode();
 	}
 
 	private String getUserIdById(String token, String id) {
 		UserRepresentation[] ur = keyCloakClient.get().uri("/admin/realms/" + realm + "/users?q=id:" + id)
 				.header("Authorization", "Bearer " + token).retrieve().bodyToMono(UserRepresentation[].class).block();
 		try {
-			return ur[0].getId();
+			return Objects.requireNonNull(ur)[0].getId();
 		} catch (ArrayIndexOutOfBoundsException e) {
+			return "unknown";
 		}
-		return "unknown";
 	}
 
 	private String getAdminToken() {
@@ -170,8 +174,8 @@ public class KeycloakService {
 				.body(Mono.just(postData), byte[].class).retrieve()
 				.bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {
 				}).block();
-		String token = result.get("access_token");
-		return token;
+
+		return Objects.requireNonNull(result).get("access_token");
 	}
 
 }

@@ -1,1 +1,1 @@
-delete from t_medical_act
+delete from t_medical_act where 1;

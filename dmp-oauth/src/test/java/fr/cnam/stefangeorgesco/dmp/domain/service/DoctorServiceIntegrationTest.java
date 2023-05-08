@@ -84,15 +84,11 @@ public class DoctorServiceIntegrationTest {
 	@Autowired
 	private User user;
 
-	private List<SpecialtyDTO> specialtyDTOs;
-
-	private List<Specialty> specialties;
-
 	@BeforeEach
 	public void setupBeforeEach() {
 		specialtyDTO.setId("S001");
 		specialtyDTO.setDescription("A specialty");
-		specialtyDTOs = new ArrayList<SpecialtyDTO>();
+		List<SpecialtyDTO> specialtyDTOs = new ArrayList<>();
 		specialtyDTOs.add(specialtyDTO);
 		addressDTO.setStreet1("1 Rue Lecourbe");
 		addressDTO.setZipcode("75015");
@@ -108,7 +104,7 @@ public class DoctorServiceIntegrationTest {
 
 		specialty.setId("S001");
 		specialty.setDescription("A specialty");
-		specialties = new ArrayList<Specialty>();
+		List<Specialty> specialties = new ArrayList<>();
 		specialties.add(specialty);
 		address.setStreet1("1 Rue Lecourbe");
 		address.setZipcode("75015");
@@ -165,7 +161,7 @@ public class DoctorServiceIntegrationTest {
 		response = assertDoesNotThrow(() -> doctorService.updateDoctor(doctorDTO));
 
 		verify(keycloakService, times(1)).updateUser(any(UserDTO.class));
-		savedDoctor = doctorDAO.findById("D001").get();
+		savedDoctor = doctorDAO.findById("D001").orElseThrow();
 
 		// no change in saved object
 		assertEquals("D001", savedDoctor.getId());
@@ -194,13 +190,13 @@ public class DoctorServiceIntegrationTest {
 		assertEquals("D001", response.getId());
 		assertEquals("John", response.getFirstname());
 		assertEquals("Smith", response.getLastname());
-		assertEquals(null, response.getSecurityCode());
+		assertNull(response.getSecurityCode());
 		assertEquals(2, response.getSpecialtiesDTO().size());
-		Iterator<SpecialtyDTO> itspDTO = response.getSpecialtiesDTO().iterator();
-		SpecialtyDTO spDTO = itspDTO.next();
+		Iterator<SpecialtyDTO> itsDTO = response.getSpecialtiesDTO().iterator();
+		SpecialtyDTO spDTO = itsDTO.next();
 		assertEquals("S001", spDTO.getId());
 		assertEquals("allergologie", spDTO.getDescription());
-		spDTO = itspDTO.next();
+		spDTO = itsDTO.next();
 		assertEquals("S024", spDTO.getId());
 		assertEquals("médecine générale", spDTO.getDescription());
 
@@ -220,7 +216,7 @@ public class DoctorServiceIntegrationTest {
 
 		assertEquals("D002", doctorDTO.getId());
 		assertEquals("15 rue de Vaugirard", doctorDTO.getAddressDTO().getStreet1());
-		assertEquals(2, ((List<SpecialtyDTO>) doctorDTO.getSpecialtiesDTO()).size());
+		assertEquals(2, doctorDTO.getSpecialtiesDTO().size());
 		assertEquals("S012", ((List<SpecialtyDTO>) doctorDTO.getSpecialtiesDTO()).get(0).getId());
 		assertEquals("chirurgie vasculaire",
 				((List<SpecialtyDTO>) doctorDTO.getSpecialtiesDTO()).get(0).getDescription());

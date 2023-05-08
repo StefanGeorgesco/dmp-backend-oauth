@@ -6,7 +6,6 @@ package fr.cnam.stefangeorgesco.dmp.exception.domain;
  * @author Stéfan Georgesco
  *
  */
-@SuppressWarnings("serial")
 public abstract class ApplicationException extends Exception {
 
 	protected ApplicationException(final String message) {

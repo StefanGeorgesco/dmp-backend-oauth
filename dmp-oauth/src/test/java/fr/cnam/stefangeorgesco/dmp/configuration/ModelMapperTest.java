@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -206,8 +207,8 @@ public class ModelMapperTest {
 
 		assertEquals(user.getId(), userDTO.getId());
 		assertEquals(user.getUsername(), userDTO.getUsername());
-		assertEquals(null, userDTO.getPassword());
-		assertEquals(null, userDTO.getSecurityCode());
+		assertNull(userDTO.getPassword());
+		assertNull(userDTO.getSecurityCode());
 	}
 
 	@Test
@@ -261,7 +262,7 @@ public class ModelMapperTest {
 		spDTO = itDTO.next();
 		assertEquals(sp.getId(), spDTO.getId());
 		assertEquals(sp.getDescription(), spDTO.getDescription());
-		assertEquals(null, doctorDTO.getSecurityCode());
+		assertNull(doctorDTO.getSecurityCode());
 	}
 
 	@Test
@@ -322,7 +323,7 @@ public class ModelMapperTest {
 				patientFile.getReferringDoctor().getSpecialties().stream().map(Specialty::getDescription)
 						.collect(Collectors.toList()).toString(),
 				patientFileDTO.getReferringDoctorSpecialties().toString());
-		assertEquals(null, patientFileDTO.getSecurityCode());
+		assertNull(patientFileDTO.getSecurityCode());
 	}
 
 	@Test
@@ -362,8 +363,8 @@ public class ModelMapperTest {
 	@Test
 	public void testModelMapperMailDTO2Mail() {
 		mailDTO.setId(UUID.randomUUID());
-		mailDTO.setDate(LocalDate.of(2022, 07, 22));
-		mailDTO.setComments("A commment");
+		mailDTO.setDate(LocalDate.of(2022, 7, 22));
+		mailDTO.setComments("A comment");
 		mailDTO.setAuthoringDoctorId("DOO1");
 		mailDTO.setPatientFileId("P001");
 		mailDTO.setText("mail text");
@@ -387,8 +388,8 @@ public class ModelMapperTest {
 		doctor2.setLastname("lastname_2");
 		doctor2.setSpecialties(List.of(specialty2, specialty1));
 		mail.setId(UUID.randomUUID());
-		mail.setDate(LocalDate.of(2022, 07, 22));
-		mail.setComments("A commment");
+		mail.setDate(LocalDate.of(2022, 7, 22));
+		mail.setComments("A comment");
 		mail.setAuthoringDoctor(doctor1);
 		mail.setPatientFile(patientFile);
 		mail.setText("mail text");
@@ -418,8 +419,8 @@ public class ModelMapperTest {
 		diseaseDTO.setId("DIS001");
 		diseaseDTO.setDescription("A disease");
 		diagnosisDTO.setId(UUID.randomUUID());
-		diagnosisDTO.setDate(LocalDate.of(2022, 07, 22));
-		diagnosisDTO.setComments("A commment");
+		diagnosisDTO.setDate(LocalDate.of(2022, 7, 22));
+		diagnosisDTO.setComments("A comment");
 		diagnosisDTO.setAuthoringDoctorId("DOO1");
 		diagnosisDTO.setPatientFileId("P001");
 		diagnosisDTO.setDiseaseDTO(diseaseDTO);
@@ -440,8 +441,8 @@ public class ModelMapperTest {
 		disease.setId("DIS001");
 		disease.setDescription("A disease");
 		diagnosis.setId(UUID.randomUUID());
-		diagnosis.setDate(LocalDate.of(2022, 07, 22));
-		diagnosis.setComments("A commment");
+		diagnosis.setDate(LocalDate.of(2022, 7, 22));
+		diagnosis.setComments("A comment");
 		diagnosis.setAuthoringDoctor(doctor1);
 		diagnosis.setPatientFile(patientFile);
 		diagnosis.setDisease(disease);
@@ -466,8 +467,8 @@ public class ModelMapperTest {
 		medicalActDTO.setId("MA001");
 		medicalActDTO.setDescription("A medical act");
 		actDTO.setId(UUID.randomUUID());
-		actDTO.setDate(LocalDate.of(2022, 07, 22));
-		actDTO.setComments("A commment");
+		actDTO.setDate(LocalDate.of(2022, 7, 22));
+		actDTO.setComments("A comment");
 		actDTO.setAuthoringDoctorId("DOO1");
 		actDTO.setPatientFileId("P001");
 		actDTO.setMedicalActDTO(medicalActDTO);
@@ -488,8 +489,8 @@ public class ModelMapperTest {
 		medicalAct.setId("MA001");
 		medicalAct.setDescription("A disease");
 		act.setId(UUID.randomUUID());
-		act.setDate(LocalDate.of(2022, 07, 22));
-		act.setComments("A commment");
+		act.setDate(LocalDate.of(2022, 7, 22));
+		act.setComments("A comment");
 		act.setAuthoringDoctor(doctor1);
 		act.setPatientFile(patientFile);
 		act.setMedicalAct(medicalAct);
@@ -512,8 +513,8 @@ public class ModelMapperTest {
 	@Test
 	public void testModelMapperSymptomDTO2Symptom() {
 		symptomDTO.setId(UUID.randomUUID());
-		symptomDTO.setDate(LocalDate.of(2022, 07, 22));
-		symptomDTO.setComments("A commment");
+		symptomDTO.setDate(LocalDate.of(2022, 7, 22));
+		symptomDTO.setComments("A comment");
 		symptomDTO.setAuthoringDoctorId("DOO1");
 		symptomDTO.setPatientFileId("P001");
 		symptomDTO.setDescription("Symptom description");
@@ -531,8 +532,8 @@ public class ModelMapperTest {
 	@Test
 	public void testModelMapperSymptom2SymptomDTO() {
 		symptom.setId(UUID.randomUUID());
-		symptom.setDate(LocalDate.of(2022, 07, 22));
-		symptom.setComments("A commment");
+		symptom.setDate(LocalDate.of(2022, 7, 22));
+		symptom.setComments("A comment");
 		symptom.setAuthoringDoctor(doctor1);
 		symptom.setPatientFile(patientFile);
 		symptom.setDescription("Symptom description");

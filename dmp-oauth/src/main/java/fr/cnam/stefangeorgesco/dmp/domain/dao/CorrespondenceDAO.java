@@ -1,11 +1,10 @@
 package fr.cnam.stefangeorgesco.dmp.domain.dao;
 
-import java.util.UUID;
+import fr.cnam.stefangeorgesco.dmp.domain.model.Correspondence;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.transaction.Transactional;
-
-import org.springframework.data.repository.CrudRepository;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Correspondence;
+import java.util.UUID;
 
 /**
  * Repository pour les objets
@@ -15,7 +14,7 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.Correspondence;
  *
  */
 @Transactional
-public interface CorrespondenceDAO extends CrudRepository<Correspondence, UUID> {
+public interface CorrespondenceDAO extends JpaRepository<Correspondence, UUID> {
 
 	Iterable<Correspondence> findByPatientFileId(String patientFileId);
 

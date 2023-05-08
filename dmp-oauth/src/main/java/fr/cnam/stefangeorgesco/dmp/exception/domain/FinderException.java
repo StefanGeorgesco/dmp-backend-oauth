@@ -6,7 +6,6 @@ package fr.cnam.stefangeorgesco.dmp.exception.domain;
  * @author Stéfan Georgesco
  *
  */
-@SuppressWarnings("serial")
 public class FinderException extends ApplicationException {
 
 	public FinderException(String message) {

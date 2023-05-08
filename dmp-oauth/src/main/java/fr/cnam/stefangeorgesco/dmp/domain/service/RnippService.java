@@ -1,18 +1,15 @@
 package fr.cnam.stefangeorgesco.dmp.domain.service;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileDTO;
+import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileDTO;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
 import reactor.core.publisher.Mono;
+
+import javax.validation.Valid;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Classe de service d'interrogation du service REST externe RNIPP.
@@ -23,8 +20,11 @@ import reactor.core.publisher.Mono;
 @Service
 public class RnippService {
 
-	@Autowired
-	private WebClient rnippClient;
+	private final WebClient rnippClient;
+
+	public RnippService(WebClient rnippClient) {
+		this.rnippClient = rnippClient;
+	}
 
 	/**
 	 * Service vérifiant que les données identifiant, nom, prénom et date de

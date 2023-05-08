@@ -79,8 +79,6 @@ public class UserControllerIntegrationTest {
 	@Autowired
 	private PatientFile patientFile;
 
-	private List<Specialty> specialties;
-
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -91,7 +89,7 @@ public class UserControllerIntegrationTest {
 
 		specialtyDAO.save(specialty);
 
-		specialties = new ArrayList<>();
+		List<Specialty> specialties = new ArrayList<>();
 		specialties.add(specialty);
 
 		doctorAddress.setStreet1("street");

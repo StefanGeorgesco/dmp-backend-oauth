@@ -1,23 +1,5 @@
 package fr.cnam.stefangeorgesco.dmp.api;
 
-import java.security.Principal;
-import java.util.List;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.SpecialtyDTO;
 import fr.cnam.stefangeorgesco.dmp.domain.service.DoctorService;
@@ -25,6 +7,13 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.CreateException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.DeleteException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.UpdateException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.List;
 
 /**
  * Contrôleur REST dédié aux médecins et aux spécialités des médecins.
@@ -35,11 +24,11 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.UpdateException;
 @RestController
 public class DoctorController {
 
-	@Autowired
-	UserService userService;
+	private final DoctorService doctorService;
 
-	@Autowired
-	DoctorService doctorService;
+	public DoctorController(DoctorService doctorService) {
+		this.doctorService = doctorService;
+	}
 
 	/**
 	 * Gestionnaire des requêtes POST de création des dossiers de médecins.
@@ -73,13 +62,12 @@ public class DoctorController {
 	 * @return l'objet {@link fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO}
 	 *         représentant le dossier de médecin modifié, encapsulé dans un objet
 	 *         org.springframework.http.ResponseEntity.
-	 * @throws FinderException le compte utilisateur n'a pas été trouvé.
 	 * @throws UpdateException le dossier de médecin n'a pas pu être modifié.
 	 * @see fr.cnam.stefangeorgesco.dmp.domain.service.DoctorService#updateDoctor(DoctorDTO)
 	 */
 	@PutMapping("/doctor/details")
 	public ResponseEntity<DoctorDTO> updateDoctor(@Valid @RequestBody DoctorDTO doctorDTO, Principal principal)
-			throws FinderException, UpdateException {
+			throws UpdateException {
 
 		doctorDTO.setId(principal.getName());
 

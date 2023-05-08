@@ -27,7 +27,6 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
 public class PatientFileTest {
 
 	private static Validator validator;
-	private LocalDate now;
 	private LocalDate futureDate;
 	private LocalDate pastDate;
 
@@ -53,7 +52,7 @@ public class PatientFileTest {
 
 	@BeforeEach
 	public void setupEach() {
-		now = LocalDate.now();
+		LocalDate now = LocalDate.now();
 		pastDate = now.minusDays(1);
 		futureDate = now.plusDays(1);
 
@@ -78,7 +77,7 @@ public class PatientFileTest {
 	}
 
 	@Test
-	public void PatientFileValidationPatientFileVAlid() {
+	public void PatientFileValidationPatientFileValid() {
 
 		Set<ConstraintViolation<PatientFile>> violations = validator.validate(patientFile);
 

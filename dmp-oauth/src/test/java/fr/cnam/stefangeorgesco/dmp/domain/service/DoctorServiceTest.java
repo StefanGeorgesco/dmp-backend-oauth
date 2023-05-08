@@ -1,5 +1,6 @@
 package fr.cnam.stefangeorgesco.dmp.domain.service;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -16,11 +17,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -106,18 +102,16 @@ public class DoctorServiceTest {
 	@Autowired
 	private Doctor foundDoctor2;
 
-	private Set<SpecialtyDTO> specialtyDTOs;
-
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	private ArgumentCaptor<Doctor> doctorCaptor = ArgumentCaptor.forClass(Doctor.class);
+	private final ArgumentCaptor<Doctor> doctorCaptor = ArgumentCaptor.forClass(Doctor.class);
 
 	@BeforeEach
 	public void setupBeforeEach() {
 		specialtyDTO1.setId("S001");
 		specialtyDTO2.setId("S002");
-		specialtyDTOs = new HashSet<SpecialtyDTO>();
+		Set<SpecialtyDTO> specialtyDTOs = new HashSet<>();
 		specialtyDTOs.add(specialtyDTO1);
 		specialtyDTOs.add(specialtyDTO2);
 		addressDTO.setStreet1("1 Rue Lecourbe");
@@ -260,7 +254,7 @@ public class DoctorServiceTest {
 		assertEquals(persistentDoctor.getId(), response.getId());
 		assertEquals(persistentDoctor.getFirstname(), response.getFirstname());
 		assertEquals(persistentDoctor.getLastname(), response.getLastname());
-		assertEquals(null, response.getSecurityCode());
+		assertNull(response.getSecurityCode());
 		assertEquals(persistentDoctor.getSpecialties().size(), response.getSpecialtiesDTO().size());
 		itPersistentSp = persistentDoctor.getSpecialties().iterator();
 		Iterator<SpecialtyDTO> itSpDTO = response.getSpecialtiesDTO().iterator();
@@ -294,7 +288,7 @@ public class DoctorServiceTest {
 		assertEquals("D001", response.getId());
 		assertEquals("firstname", response.getFirstname());
 		assertEquals("lastname", response.getLastname());
-		assertEquals(null, response.getSecurityCode());
+		assertNull(response.getSecurityCode());
 		assertEquals(2, response.getSpecialtiesDTO().size());
 		Iterator<SpecialtyDTO> itSpDTO = response.getSpecialtiesDTO().iterator();
 		SpecialtyDTO spDTO = itSpDTO.next();
@@ -306,8 +300,8 @@ public class DoctorServiceTest {
 	}
 
 	@Test
-	public void testFindDoctorFailureDoctorDoesNotExist() throws FinderException {
-		when(doctorDAO.findById("D003")).thenReturn(Optional.ofNullable(null));
+	public void testFindDoctorFailureDoctorDoesNotExist() {
+		when(doctorDAO.findById("D003")).thenReturn(Optional.empty());
 
 		FinderException ex = assertThrows(FinderException.class, () -> doctorService.findDoctor("D001"));
 
@@ -317,7 +311,7 @@ public class DoctorServiceTest {
 	}
 
 	@Test
-	public void testDeleteDoctorSuccessNoUser() throws DeleteException, FinderException {
+	public void testDeleteDoctorSuccessNoUser() throws DeleteException {
 		doNothing().when(doctorDAO).deleteById("D002");
 		doThrow(new DeleteException("")).when(userService).deleteUser("D002");
 
@@ -328,7 +322,7 @@ public class DoctorServiceTest {
 	}
 
 	@Test
-	public void testDeleteDoctorSuccessUserPresent() throws DeleteException, FinderException {
+	public void testDeleteDoctorSuccessUserPresent() throws DeleteException {
 		doNothing().when(doctorDAO).deleteById("D001");
 		doNothing().when(userService).deleteUser("D001");
 
@@ -339,7 +333,7 @@ public class DoctorServiceTest {
 	}
 
 	@Test
-	public void testDeleteDoctorFailureDoctorDoesNotExist() throws DeleteException, FinderException {
+	public void testDeleteDoctorFailureDoctorDoesNotExist() throws DeleteException {
 		doThrow(new RuntimeException("")).when(doctorDAO).deleteById("D003");
 		doThrow(new DeleteException("")).when(userService).deleteUser("D003");
 
@@ -413,7 +407,7 @@ public class DoctorServiceTest {
 	@Test
 	void testFindSpecialtyFailureSpecialtyDoesNotExist() {
 
-		when(specialtyDAO.findById(specialty1.getId())).thenReturn(Optional.ofNullable(null));
+		when(specialtyDAO.findById(specialty1.getId())).thenReturn(Optional.empty());
 
 		FinderException ex = assertThrows(FinderException.class, () -> doctorService.findSpecialty(specialty1.getId()));
 

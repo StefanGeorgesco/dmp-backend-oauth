@@ -1,15 +1,5 @@
 package fr.cnam.stefangeorgesco.dmp.domain.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
@@ -19,12 +9,16 @@ import fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.SpecialtyDTO;
 import fr.cnam.stefangeorgesco.dmp.domain.model.Doctor;
 import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.CreateException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.DeleteException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.DuplicateKeyException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.UpdateException;
+import fr.cnam.stefangeorgesco.dmp.exception.domain.*;
 import fr.cnam.stefangeorgesco.dmp.utils.SecurityCodeGenerator;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Classe de service pour la gestion des dossiers de médecins et des spécialités
@@ -36,26 +30,29 @@ import fr.cnam.stefangeorgesco.dmp.utils.SecurityCodeGenerator;
 @Service
 public class DoctorService {
 
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
 
-	@Autowired
-	private FileDAO fileDAO;
+	private final FileDAO fileDAO;
 
-	@Autowired
-	private DoctorDAO doctorDAO;
+	private final DoctorDAO doctorDAO;
 
-	@Autowired
-	private ModelMapper commonModelMapper;
+	private final ModelMapper commonModelMapper;
 
-	@Autowired
-	private ModelMapper doctorModelMapper;
+	private final ModelMapper doctorModelMapper;
 
-	@Autowired
-	private SpecialtyDAO specialtyDAO;
+	private final SpecialtyDAO specialtyDAO;
 
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+	public DoctorService(UserService userService, FileDAO fileDAO, DoctorDAO doctorDAO, ModelMapper commonModelMapper, ModelMapper doctorModelMapper, SpecialtyDAO specialtyDAO, BCryptPasswordEncoder bCryptPasswordEncoder) {
+		this.userService = userService;
+		this.fileDAO = fileDAO;
+		this.doctorDAO = doctorDAO;
+		this.commonModelMapper = commonModelMapper;
+		this.doctorModelMapper = doctorModelMapper;
+		this.specialtyDAO = specialtyDAO;
+		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+	}
 
 	/**
 	 * Service de création d'un dossier de médecin. Le service vérifie qu'un dossier
@@ -132,15 +129,13 @@ public class DoctorService {
 	public List<DoctorDTO> findDoctorsByIdOrFirstnameOrLastname(String q) {
 
 		if ("".equals(q)) {
-			return new ArrayList<DoctorDTO>();
+			return new ArrayList<>();
 		}
 
 		Iterable<Doctor> doctors = doctorDAO.findByIdOrFirstnameOrLastname(q);
 
-		List<DoctorDTO> doctorsDTO = ((List<Doctor>) doctors).stream()
+		return ((List<Doctor>) doctors).stream()
 				.map(doctor -> doctorModelMapper.map(doctor, DoctorDTO.class)).collect(Collectors.toList());
-
-		return doctorsDTO;
 	}
 
 	/**
@@ -156,7 +151,7 @@ public class DoctorService {
 	 */
 	public DoctorDTO updateDoctor(DoctorDTO doctorDTO) throws UpdateException {
 
-		Doctor doctor = doctorDAO.findById(doctorDTO.getId()).get();
+		Doctor doctor = doctorDAO.findById(doctorDTO.getId()).orElseThrow();
 
 		doctor.setPhone(doctorDTO.getPhone());
 		doctor.setEmail(doctorDTO.getEmail());
@@ -178,9 +173,7 @@ public class DoctorService {
 		userDTO.setEmail(doctorDTO.getEmail());
 		userService.updateUser(userDTO);
 
-		DoctorDTO response = doctorModelMapper.map(doctor, DoctorDTO.class);
-
-		return response;
+		return doctorModelMapper.map(doctor, DoctorDTO.class);
 	}
 
 	/**
@@ -242,10 +235,8 @@ public class DoctorService {
 
 		Iterable<Specialty> specialties = specialtyDAO.findByIdOrDescription(q);
 
-		List<SpecialtyDTO> specialtiesDTO = ((List<Specialty>) specialties).stream()
+		return ((List<Specialty>) specialties).stream()
 				.map(specialty -> commonModelMapper.map(specialty, SpecialtyDTO.class)).collect(Collectors.toList());
-
-		return specialtiesDTO;
 	}
 
 	/**
@@ -256,12 +247,10 @@ public class DoctorService {
 	 *         représentant troutes les spécialités.
 	 */
 	public List<SpecialtyDTO> findAllSpecialties() {
-		Iterable<Specialty> specialties = specialtyDAO.findAll();
+		List<Specialty> specialties = specialtyDAO.findAll();
 
-		List<SpecialtyDTO> specialtiesDTO = ((List<Specialty>) specialties).stream()
+		return specialties.stream()
 				.map(specialty -> commonModelMapper.map(specialty, SpecialtyDTO.class)).collect(Collectors.toList());
-
-		return specialtiesDTO;
 	}
 
 }

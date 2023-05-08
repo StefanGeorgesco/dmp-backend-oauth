@@ -1,1 +1,1 @@
-delete from t_disease
+delete from t_disease where 1;

@@ -1,17 +1,19 @@
 package fr.cnam.stefangeorgesco.dmp.authentication.domain.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.util.Set;
+
+import static javax.validation.Validation.buildDefaultValidatorFactory;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
@@ -24,7 +26,12 @@ public class UserTest {
 
 	@BeforeAll
 	public static void setupAll() {
-		validator = Validation.buildDefaultValidatorFactory().getValidator();
+		validator = buildDefaultValidatorFactory().getValidator();
+	}
+
+	@AfterAll
+	static void afterAll() {
+		buildDefaultValidatorFactory().close();
 	}
 
 	@BeforeEach

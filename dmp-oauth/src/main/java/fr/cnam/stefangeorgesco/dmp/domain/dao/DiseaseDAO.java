@@ -1,10 +1,9 @@
 package fr.cnam.stefangeorgesco.dmp.domain.dao;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
-
 import fr.cnam.stefangeorgesco.dmp.domain.model.Disease;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Repository pour les objets
@@ -13,7 +12,7 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.Disease;
  * @author Stéfan Georgesco
  *
  */
-public interface DiseaseDAO extends CrudRepository<Disease, String> {
+public interface DiseaseDAO extends JpaRepository<Disease, String> {
 
 	/**
 	 * Recherche les maladies par recherche insensible à la casse de la présence
@@ -28,6 +27,6 @@ public interface DiseaseDAO extends CrudRepository<Disease, String> {
 	@Query(nativeQuery = true, value = "select distinct * from t_disease "
 			+ "where lower(t_disease.id) like lower(concat('%', :keyword,'%')) "
 			+ "or lower(t_disease.description) like lower(concat('%', :keyword,'%')) limit :limit")
-	public Iterable<Disease> findByIdOrDescription(@Param("keyword") String keyword, @Param("limit") int limit);
+	Iterable<Disease> findByIdOrDescription(@Param("keyword") String keyword, @Param("limit") int limit);
 
 }

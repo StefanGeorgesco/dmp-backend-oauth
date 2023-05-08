@@ -1,5 +1,8 @@
 package fr.cnam.stefangeorgesco.dmp.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
@@ -15,6 +18,12 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "t_patient_file_item")
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
+@JsonSubTypes({ @JsonSubTypes.Type(value = Act.class, name = "act"),
+		@JsonSubTypes.Type(value = Diagnosis.class, name = "diagnosis"),
+		@JsonSubTypes.Type(value = Mail.class, name = "mail"),
+		@JsonSubTypes.Type(value = Prescription.class, name = "prescription"),
+		@JsonSubTypes.Type(value = Symptom.class, name = "symptom") })
 public abstract class PatientFileItem extends UuidIdBaseEntity {
 
 	/**

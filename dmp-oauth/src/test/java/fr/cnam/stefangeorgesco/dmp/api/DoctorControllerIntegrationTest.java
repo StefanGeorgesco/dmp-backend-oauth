@@ -99,10 +99,6 @@ public class DoctorControllerIntegrationTest {
 	@Autowired
 	private User user;
 
-	private List<SpecialtyDTO> specialtyDTOs;
-
-	private List<Specialty> specialties;
-
 	@BeforeEach
 	public void setupBeforeEach() {
 		specialtyDTO1.setId("S001");
@@ -110,7 +106,7 @@ public class DoctorControllerIntegrationTest {
 		specialtyDTO2.setId("S002");
 		specialtyDTO2.setDescription("any");
 
-		specialtyDTOs = new ArrayList<>();
+		List<SpecialtyDTO> specialtyDTOs = new ArrayList<>();
 		specialtyDTOs.add(specialtyDTO1);
 		specialtyDTOs.add(specialtyDTO2);
 
@@ -130,7 +126,7 @@ public class DoctorControllerIntegrationTest {
 		specialty1.setId("S001");
 		specialty2.setId("S002");
 
-		specialties = new ArrayList<>();
+		List<Specialty> specialties = new ArrayList<>();
 		specialties.add(specialty1);
 		specialties.add(specialty2);
 
@@ -544,7 +540,7 @@ public class DoctorControllerIntegrationTest {
 
 	@Test
 	@WithMockUser(roles={"ADMIN"})
-	public void testGetSpecialtyByIdFailureUserIsAdminSPecialtyDoesNotExist() throws Exception {
+	public void testGetSpecialtyByIdFailureUserIsAdminSpecialtyDoesNotExist() throws Exception {
 
 		assertFalse(specialtyDAO.existsById("S103"));
 

@@ -270,7 +270,7 @@ public class PatientFileServiceIntegrationTest {
 		patientFileDTOResponse = assertDoesNotThrow(() -> patientFileService.updatePatientFile(patientFileDTO));
 
 		verify(keycloakService, times(1)).updateUser(any(UserDTO.class));
-		savedPatientFile = patientFileDAO.findById("P001").get();
+		savedPatientFile = patientFileDAO.findById("P001").orElseThrow();
 
 		// no change in saved object
 		assertEquals("P001", savedPatientFile.getId());
@@ -292,7 +292,7 @@ public class PatientFileServiceIntegrationTest {
 		assertEquals("P001", patientFileDTOResponse.getId());
 		assertEquals("Eric", patientFileDTOResponse.getFirstname());
 		assertEquals("Martin", patientFileDTOResponse.getLastname());
-		assertEquals(null, patientFileDTOResponse.getSecurityCode());
+		assertNull(patientFileDTOResponse.getSecurityCode());
 		assertEquals("D001", patientFileDTOResponse.getReferringDoctorId());
 
 		assertEquals(patientFileDTO.getId(), patientFileDTOResponse.getId());
@@ -328,14 +328,14 @@ public class PatientFileServiceIntegrationTest {
 	public void testUpdateReferringDoctorSuccess() {
 		patientFileDTO.setId("P001");
 
-		persistentPatientFile = patientFileDAO.findById("P001").get();
+		persistentPatientFile = patientFileDAO.findById("P001").orElseThrow();
 		assertEquals("D001", persistentPatientFile.getReferringDoctor().getId());
 
 		patientFileDTO.setReferringDoctorId("D002");
 
 		patientFileDTOResponse = assertDoesNotThrow(() -> patientFileService.updateReferringDoctor(patientFileDTO));
 
-		savedPatientFile = patientFileDAO.findById("P001").get();
+		savedPatientFile = patientFileDAO.findById("P001").orElseThrow();
 
 		assertEquals("D002", savedPatientFile.getReferringDoctor().getId());
 		assertEquals("D002", patientFileDTOResponse.getReferringDoctorId());
@@ -408,7 +408,7 @@ public class PatientFileServiceIntegrationTest {
 
 		assertNull(correspondenceDTO.getId());
 
-		doctor = doctorDAO.findById(correspondenceDTO.getDoctorId()).get();
+		doctor = doctorDAO.findById(correspondenceDTO.getDoctorId()).orElseThrow();
 
 		correspondenceDTOResponse = assertDoesNotThrow(
 				() -> patientFileService.createCorrespondence(correspondenceDTO));
@@ -621,8 +621,8 @@ public class PatientFileServiceIntegrationTest {
 		mailDTO.setText("text of this mail");
 		mailDTO.setRecipientDoctorId("D002");
 
-		authoringDoctor = doctorDAO.findById(mailDTO.getAuthoringDoctorId()).get();
-		recipientDoctor = doctorDAO.findById(mailDTO.getRecipientDoctorId()).get();
+		authoringDoctor = doctorDAO.findById(mailDTO.getAuthoringDoctorId()).orElseThrow();
+		recipientDoctor = doctorDAO.findById(mailDTO.getRecipientDoctorId()).orElseThrow();
 
 		PatientFileItemDTO patientFileItemDTOResponse = assertDoesNotThrow(
 				() -> patientFileService.createPatientFileItem(mailDTO));
@@ -676,7 +676,7 @@ public class PatientFileServiceIntegrationTest {
 		actDTO.setPatientFileId("P001");
 		actDTO.setMedicalActDTO(medicalActDTO);
 
-		act = (Act) patientFileItemDAO.findById(uuid).get();
+		act = (Act) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertNotEquals(comment, act.getComments());
 		assertNotEquals(id, act.getMedicalAct().getId());
@@ -685,7 +685,7 @@ public class PatientFileServiceIntegrationTest {
 
 		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileService.updatePatientFileItem(actDTO));
 
-		act = (Act) patientFileItemDAO.findById(uuid).get();
+		act = (Act) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertEquals(comment, act.getComments());
 		assertEquals(id, act.getMedicalAct().getId());
@@ -787,7 +787,7 @@ public class PatientFileServiceIntegrationTest {
 		diagnosisDTO.setPatientFileId("P001");
 		diagnosisDTO.setDiseaseDTO(diseaseDTO);
 
-		diagnosis = (Diagnosis) patientFileItemDAO.findById(uuid).get();
+		diagnosis = (Diagnosis) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertNotEquals(comment, diagnosis.getComments());
 		assertNotEquals(id, diagnosis.getDisease().getId());
@@ -796,7 +796,7 @@ public class PatientFileServiceIntegrationTest {
 
 		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileService.updatePatientFileItem(diagnosisDTO));
 
-		diagnosis = (Diagnosis) patientFileItemDAO.findById(uuid).get();
+		diagnosis = (Diagnosis) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertEquals(comment, diagnosis.getComments());
 		assertEquals(id, diagnosis.getDisease().getId());
@@ -840,7 +840,7 @@ public class PatientFileServiceIntegrationTest {
 		mailDTO.setDate(LocalDate.now());
 		mailDTO.setPatientFileId("P001");
 
-		mail = (Mail) patientFileItemDAO.findById(uuid).get();
+		mail = (Mail) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertNotEquals(comment, mail.getComments());
 		assertNotEquals(text, mail.getText());
@@ -852,7 +852,7 @@ public class PatientFileServiceIntegrationTest {
 
 		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileService.updatePatientFileItem(mailDTO));
 
-		mail = (Mail) patientFileItemDAO.findById(uuid).get();
+		mail = (Mail) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertEquals(comment, mail.getComments());
 		assertEquals(id, mail.getRecipientDoctor().getId());
@@ -891,7 +891,7 @@ public class PatientFileServiceIntegrationTest {
 		prescriptionDTO.setDate(LocalDate.now());
 		prescriptionDTO.setPatientFileId("P001");
 
-		prescription = (Prescription) patientFileItemDAO.findById(uuid).get();
+		prescription = (Prescription) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertNotEquals(comment, prescription.getComments());
 		assertNotEquals(description, prescription.getDescription());
@@ -902,7 +902,7 @@ public class PatientFileServiceIntegrationTest {
 		patientFileItemDTOResponse = assertDoesNotThrow(
 				() -> patientFileService.updatePatientFileItem(prescriptionDTO));
 
-		prescription = (Prescription) patientFileItemDAO.findById(uuid).get();
+		prescription = (Prescription) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertEquals(comment, prescription.getComments());
 		assertEquals(description, prescription.getDescription());
@@ -936,7 +936,7 @@ public class PatientFileServiceIntegrationTest {
 		symptomDTO.setDate(LocalDate.now());
 		symptomDTO.setPatientFileId("P001");
 
-		symptom = (Symptom) patientFileItemDAO.findById(uuid).get();
+		symptom = (Symptom) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertNotEquals(comment, symptom.getComments());
 		assertNotEquals(description, symptom.getDescription());
@@ -946,7 +946,7 @@ public class PatientFileServiceIntegrationTest {
 
 		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileService.updatePatientFileItem(symptomDTO));
 
-		symptom = (Symptom) patientFileItemDAO.findById(uuid).get();
+		symptom = (Symptom) patientFileItemDAO.findById(uuid).orElseThrow();
 
 		assertEquals(comment, symptom.getComments());
 		assertEquals(description, symptom.getDescription());

@@ -123,7 +123,7 @@ public class PatientFileDAOTest {
 	@Test
 	public void testPatientFileDAOSaveUpdateEmailSuccess() {
 
-		patientFile = patientFileDAO.findById("P001").get();
+		patientFile = patientFileDAO.findById("P001").orElseThrow();
 
 		assertNotEquals("mail@mail.com", patientFile.getEmail());
 
@@ -131,7 +131,7 @@ public class PatientFileDAOTest {
 
 		patientFileDAO.save(patientFile);
 
-		patientFile = patientFileDAO.findById("P001").get();
+		patientFile = patientFileDAO.findById("P001").orElseThrow();
 
 		assertEquals("mail@mail.com", patientFile.getEmail());
 	}
@@ -139,7 +139,7 @@ public class PatientFileDAOTest {
 	@Test
 	public void testPatientFileDAOSaveUpdateReferringDoctorSuccess() {
 
-		patientFile = patientFileDAO.findById("P001").get();
+		patientFile = patientFileDAO.findById("P001").orElseThrow();
 
 		assertEquals("D001", patientFile.getReferringDoctor().getId());
 		assertEquals("Smith", patientFile.getReferringDoctor().getLastname());
@@ -149,14 +149,14 @@ public class PatientFileDAOTest {
 
 		patientFileDAO.save(patientFile);
 
-		patientFile = patientFileDAO.findById("P001").get();
+		patientFile = patientFileDAO.findById("P001").orElseThrow();
 
 		assertEquals("D002", patientFile.getReferringDoctor().getId());
 		assertEquals("Dupont", patientFile.getReferringDoctor().getLastname());
 	}
 
 	@Test
-	public void testPatientFileDAOfindByIdOrFirstnameOrLastnameFound4() {
+	public void testPatientFileDAOFindByIdOrFirstnameOrLastnameFound4() {
 
 		List<PatientFile> patientFilesList = new ArrayList<>();
 
@@ -172,7 +172,7 @@ public class PatientFileDAOTest {
 	}
 
 	@Test
-	public void testPatientFileDAOfindByIdOrFirstnameOrLastnameFound11() {
+	public void testPatientFileDAOFindByIdOrFirstnameOrLastnameFound11() {
 
 		List<PatientFile> patientFilesList = new ArrayList<>();
 
@@ -184,7 +184,7 @@ public class PatientFileDAOTest {
 	}
 
 	@Test
-	public void testPatientFileDAOfindByIdOrFirstnameOrLastnameFound0() {
+	public void testPatientFileDAOFindByIdOrFirstnameOrLastnameFound0() {
 
 		List<PatientFile> patientFilesList = new ArrayList<>();
 

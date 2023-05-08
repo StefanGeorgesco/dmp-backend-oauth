@@ -59,9 +59,7 @@ public class UserServiceTest {
 	@Autowired
 	private User user;
 
-	private String username;
-
-	private ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+	private final ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
 	@BeforeEach
 	public void setup() {
@@ -70,7 +68,7 @@ public class UserServiceTest {
 		userDTO.setPassword("password");
 		userDTO.setSecurityCode("securityCode");
 
-		username = "nom_utilisateur";
+		String username = "nom_utilisateur";
 		user.setUsername(username);
 	}
 
@@ -136,7 +134,7 @@ public class UserServiceTest {
 	public void testCreateAccountFailureFileDoesNotExist() {
 		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(false);
 		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(false);
-		when(fileDAO.findById(userDTO.getId())).thenReturn(Optional.ofNullable(null));
+		when(fileDAO.findById(userDTO.getId())).thenReturn(Optional.empty());
 
 		FinderException ex = assertThrows(FinderException.class, () -> userService.createUser(userDTO));
 

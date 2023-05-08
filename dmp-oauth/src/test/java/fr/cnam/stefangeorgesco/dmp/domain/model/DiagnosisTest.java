@@ -21,7 +21,6 @@ import org.springframework.test.context.TestPropertySource;
 public class DiagnosisTest {
 
 	private static Validator validator;
-	private LocalDate now;
 	private LocalDate futureDate;
 	private LocalDate pastDate;
 
@@ -46,7 +45,7 @@ public class DiagnosisTest {
 	public void setupEach() {
 		disease.setId("diseaseId");
 		disease.setDescription("A disease");
-		now = LocalDate.now();
+		LocalDate now = LocalDate.now();
 		pastDate = now.minusDays(1);
 		futureDate = now.plusDays(1);
 		diagnosis.setDate(now);

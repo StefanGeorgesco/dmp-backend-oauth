@@ -22,7 +22,6 @@ public class CorrespondenceTest {
 
 	private static Validator validator;
 	private LocalDate now;
-	private LocalDate futureDate;
 	private LocalDate pastDate;
 
 	@Autowired
@@ -43,14 +42,14 @@ public class CorrespondenceTest {
 	public void setupEach() {
 		now = LocalDate.now();
 		pastDate = now.minusDays(1);
-		futureDate = now.plusDays(1);
+		LocalDate futureDate = now.plusDays(1);
 		correspondence.setDateUntil(futureDate);
 		correspondence.setDoctor(doctor);
 		correspondence.setPatientFile(patientFile);
 	}
 
 	@Test
-	public void correspondenceValidationCorrespondaceValid() {
+	public void correspondenceValidationCorrespondanceValid() {
 
 		Set<ConstraintViolation<Correspondence>> violations = validator.validate(correspondence);
 

@@ -35,8 +35,6 @@ public class DoctorTest {
 	@Autowired
 	private Address address;
 
-	private List<Specialty> specialties;
-
 	@Autowired
 	private Specialty specialty;
 
@@ -56,7 +54,7 @@ public class DoctorTest {
 		specialty.setId("specialtyId");
 		specialty.setDescription("A specialty");
 
-		specialties = new ArrayList<>();
+		List<Specialty> specialties = new ArrayList<>();
 		specialties.add(specialty);
 
 		address.setStreet1("street");
@@ -79,7 +77,7 @@ public class DoctorTest {
 	}
 
 	@Test
-	public void doctorValidationDoctorVAlid() {
+	public void doctorValidationDoctorValid() {
 
 		Set<ConstraintViolation<Doctor>> violations = validator.validate(doctor);
 

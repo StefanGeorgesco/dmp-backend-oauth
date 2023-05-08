@@ -55,13 +55,11 @@ public class DoctorDAOTest {
 	@Autowired
 	private Doctor doctor;
 
-	private List<Specialty> specialties;
-
 	@BeforeEach
 	public void setup() {
 		specialty1.setId("S001");
 		specialty2.setId("S002");
-		specialties = new ArrayList<>();
+		List<Specialty> specialties = new ArrayList<>();
 		specialties.add(specialty1);
 		specialties.add(specialty2);
 		doctorAddress.setStreet1("street");
@@ -131,7 +129,7 @@ public class DoctorDAOTest {
 	@Test
 	public void testDoctorDAOSaveUpdateSuccess() {
 
-		doctor = doctorDAO.findById("D001").get();
+		doctor = doctorDAO.findById("D001").orElseThrow();
 
 		assertNotEquals("mail@mail.com", doctor.getEmail());
 
@@ -139,7 +137,7 @@ public class DoctorDAOTest {
 
 		doctorDAO.save(doctor);
 
-		doctor = doctorDAO.findById("D001").get();
+		doctor = doctorDAO.findById("D001").orElseThrow();
 
 		assertEquals("mail@mail.com", doctor.getEmail());
 	}
@@ -203,7 +201,7 @@ public class DoctorDAOTest {
 	}
 
 	@Test
-	public void testDoctorDAOfindByIdOrFirstnameOrLastnameFound2() {
+	public void testDoctorDAOFindByIdOrFirstnameOrLastnameFound2() {
 
 		List<Doctor> doctorsList = new ArrayList<>();
 
@@ -217,7 +215,7 @@ public class DoctorDAOTest {
 	}
 
 	@Test
-	public void testDoctorDAOfindByIdOrFirstnameOrLastnameFound12() {
+	public void testDoctorDAOFindByIdOrFirstnameOrLastnameFound12() {
 
 		List<Doctor> doctorsList = new ArrayList<>();
 
@@ -229,7 +227,7 @@ public class DoctorDAOTest {
 	}
 
 	@Test
-	public void testDoctorDAOfindByIdOrFirstnameOrLastnameFound0() {
+	public void testDoctorDAOFindByIdOrFirstnameOrLastnameFound0() {
 
 		List<Doctor> doctorsList = new ArrayList<>();
 

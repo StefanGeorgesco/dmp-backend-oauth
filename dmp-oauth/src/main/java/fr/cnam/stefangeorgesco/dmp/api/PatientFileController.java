@@ -1,37 +1,18 @@
 package fr.cnam.stefangeorgesco.dmp.api;
 
+import fr.cnam.stefangeorgesco.dmp.domain.dto.*;
+import fr.cnam.stefangeorgesco.dmp.domain.service.PatientFileService;
+import fr.cnam.stefangeorgesco.dmp.exception.domain.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import fr.cnam.stefangeorgesco.dmp.domain.dto.CorrespondenceDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DiseaseDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.MedicalActDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileItemDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.service.PatientFileService;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.CreateException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.DeleteException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.UpdateException;
 
 /**
  * Contrôleur REST dédié aux dossiers patients et objets rattachés.
@@ -42,8 +23,11 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.UpdateException;
 @RestController
 public class PatientFileController {
 
-	@Autowired
-	private PatientFileService patientFileService;
+	private final PatientFileService patientFileService;
+
+	public PatientFileController(PatientFileService patientFileService) {
+		this.patientFileService = patientFileService;
+	}
 
 	/**
 	 * Gestionnaire des requêtes POST de création des dossiers patients.
@@ -59,13 +43,12 @@ public class PatientFileController {
 	 *         représentant le dossier patient créé, encapsulé dans un objet
 	 *         org.springframework.http.ResponseEntity avec le statut
 	 *         {@link org.springframework.http.HttpStatus#CREATED} en cas de succès.
-	 * @throws FinderException le compte utilisateur n'a pas été trouvé.
 	 * @throws CheckException  le dossier patient n'existe pas au RNIPP.
 	 * @throws CreateException le dossier patient n'a pas pu être créé.
 	 */
 	@PostMapping("/patient-file")
 	public ResponseEntity<PatientFileDTO> createPatientFile(@Valid @RequestBody PatientFileDTO patientFileDTO,
-			Principal principal) throws FinderException, CheckException, CreateException {
+			Principal principal) throws CheckException, CreateException {
 
 		patientFileDTO.setReferringDoctorId(principal.getName());
 
@@ -84,13 +67,12 @@ public class PatientFileController {
 	 * @return l'objet {@link fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileDTO}
 	 *         représentant le dossier patient modifié, encapsulé dans un objet
 	 *         org.springframework.http.ResponseEntity.
-	 * @throws FinderException le compte utilisateur n'a pas été trouvé.
 	 * @throws UpdateException le dossier patient n'a pas pu être modifié.
 	 * @see PatientFileService#updatePatientFile(PatientFileDTO)
 	 */
 	@PutMapping("/patient-file/details")
 	public ResponseEntity<PatientFileDTO> updatePatientFile(@Valid @RequestBody PatientFileDTO patientFileDTO,
-			Principal principal) throws FinderException, UpdateException {
+			Principal principal) throws UpdateException {
 
 		patientFileDTO.setId(principal.getName());
 
@@ -122,11 +104,9 @@ public class PatientFileController {
 	 *         {@link fr.cnam.stefangeorgesco.dmp.domain.dto.CorrespondenceDTO}
 	 *         représentant les correspondances demandées, encapsulée dans un objet
 	 *         org.springframework.http.ResponseEntity.
-	 * @throws FinderException le compte utilisateur n'a pas été trouvé.
 	 */
 	@GetMapping("/patient-file/details/correspondence")
-	public ResponseEntity<List<CorrespondenceDTO>> findPatientCorrespondences(Principal principal)
-			throws FinderException {
+	public ResponseEntity<List<CorrespondenceDTO>> findPatientCorrespondences(Principal principal) {
 
 		String userId = principal.getName();
 
@@ -142,11 +122,9 @@ public class PatientFileController {
 	 *         {@link fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileItemDTO}
 	 *         représentant les éléments médicaux demandés, encapsulée dans un objet
 	 *         org.springframework.http.ResponseEntity.
-	 * @throws FinderException le compte utilisateur n'a pas été trouvé.
 	 */
 	@GetMapping("/patient-file/details/item")
-	public ResponseEntity<List<PatientFileItemDTO>> findPatientPatientFileItems(Principal principal)
-			throws FinderException {
+	public ResponseEntity<List<PatientFileItemDTO>> findPatientPatientFileItems(Principal principal) {
 
 		String userId = principal.getName();
 
@@ -314,7 +292,7 @@ public class PatientFileController {
 		boolean userIsReferringDoctor = userId.equals(referringDoctorId);
 
 		boolean userIsCorrespondingDoctor = correspondencesDTO.stream()
-				.filter(correspondence -> correspondence.getDateUntil().compareTo(now) >= 0)
+				.filter(correspondence -> !correspondence.getDateUntil().isBefore(now))
 				.map(CorrespondenceDTO::getDoctorId).collect(Collectors.toList()).contains(userId);
 
 		if (!userIsReferringDoctor && !userIsCorrespondingDoctor) {
@@ -360,7 +338,7 @@ public class PatientFileController {
 		boolean userIsReferringDoctor = userId.equals(referringDoctorId);
 
 		boolean userIsCorrespondingDoctor = correspondencesDTO.stream()
-				.filter(correspondence -> correspondence.getDateUntil().compareTo(now) >= 0)
+				.filter(correspondence -> !correspondence.getDateUntil().isBefore(now))
 				.map(CorrespondenceDTO::getDoctorId).collect(Collectors.toList()).contains(userId);
 
 		if (!userIsReferringDoctor && !userIsCorrespondingDoctor) {
@@ -403,7 +381,7 @@ public class PatientFileController {
 		boolean userIsReferringDoctor = userId.equals(referringDoctorId);
 
 		boolean userIsCorrespondingDoctor = correspondencesDTO.stream()
-				.filter(correspondence -> correspondence.getDateUntil().compareTo(now) >= 0)
+				.filter(correspondence -> !correspondence.getDateUntil().isBefore(now))
 				.map(CorrespondenceDTO::getDoctorId).collect(Collectors.toList()).contains(userId);
 
 		if (!userIsReferringDoctor && !userIsCorrespondingDoctor) {
@@ -471,7 +449,7 @@ public class PatientFileController {
 		boolean userIsReferringDoctor = userId.equals(referringDoctorId);
 
 		boolean userIsCorrespondingDoctor = correspondencesDTO.stream()
-				.filter(correspondence -> correspondence.getDateUntil().compareTo(now) >= 0)
+				.filter(correspondence -> !correspondence.getDateUntil().isBefore(now))
 				.map(CorrespondenceDTO::getDoctorId).collect(Collectors.toList()).contains(userId);
 
 		if (!userIsReferringDoctor && !userIsCorrespondingDoctor) {
@@ -576,7 +554,7 @@ public class PatientFileController {
 		boolean userIsReferringDoctor = userId.equals(referringDoctorId);
 
 		boolean userIsCorrespondingDoctor = correspondencesDTO.stream()
-				.filter(correspondence -> correspondence.getDateUntil().compareTo(now) >= 0)
+				.filter(correspondence -> !correspondence.getDateUntil().isBefore(now))
 				.map(CorrespondenceDTO::getDoctorId).collect(Collectors.toList()).contains(userId);
 
 		if (!userIsReferringDoctor && !userIsCorrespondingDoctor) {

@@ -7,7 +7,6 @@ package fr.cnam.stefangeorgesco.dmp.exception.domain;
  * @author Stéfan Georgesco
  *
  */
-@SuppressWarnings("serial")
 public class DuplicateKeyException extends CreateException {
 
 	public DuplicateKeyException(String message) {

@@ -69,10 +69,6 @@ public class UserServiceIntegrationTest {
 
 	@Autowired
 	private User user;
-	
-	private String username;
-
-	private List<Specialty> specialties;
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -84,7 +80,7 @@ public class UserServiceIntegrationTest {
 
 		specialtyDAO.save(specialty);
 
-		specialties = new ArrayList<>();
+		List<Specialty> specialties = new ArrayList<>();
 		specialties.add(specialty);
 
 		doctorAddress.setStreet1("street");
@@ -124,8 +120,8 @@ public class UserServiceIntegrationTest {
 		userDTO.setUsername("username");
 		userDTO.setPassword("password");
 		userDTO.setSecurityCode("12345678");
-		
-		username = "nom_utilisateur";
+
+		String username = "nom_utilisateur";
 		user.setUsername(username);
 	}
 

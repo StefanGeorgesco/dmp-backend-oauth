@@ -8,7 +8,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * @author Baeldung
- *         <a>https://www.baeldung.com/java-generate-secure-password</a>
+ *         <a href="https://www.baeldung.com/java-generate-secure-password">...</a>
  *
  */
 public class SecurityCodeGenerator {
@@ -22,8 +22,8 @@ public class SecurityCodeGenerator {
 				.concat(totalChars);
 		List<Character> codeChars = combinedChars.chars().mapToObj(c -> (char) c).collect(Collectors.toList());
 		Collections.shuffle(codeChars);
-		String code = codeChars.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+
+		return codeChars.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
 				.toString();
-		return code;
 	}
 }

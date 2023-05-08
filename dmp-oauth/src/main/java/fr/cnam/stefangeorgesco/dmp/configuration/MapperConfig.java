@@ -1,5 +1,6 @@
 package fr.cnam.stefangeorgesco.dmp.configuration;
 
+import fr.cnam.stefangeorgesco.dmp.domain.model.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.context.annotation.Bean;
@@ -11,10 +12,6 @@ import fr.cnam.stefangeorgesco.dmp.domain.dto.ActDTO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.DiagnosisDTO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Act;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Diagnosis;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Doctor;
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFile;
 
 /**
  * Classe de configuration des mappeurs de conversion entre les objets entités
@@ -50,8 +47,8 @@ public class MapperConfig {
 		TypeMap<Doctor, DoctorDTO> typeMap = modelMapper.createTypeMap(Doctor.class, DoctorDTO.class);
 		modelMapper.getConfiguration().setSkipNullEnabled(true);
 		typeMap.addMappings(mapper -> mapper.skip(DoctorDTO::setSecurityCode));
-		typeMap.addMapping(src -> src.getSpecialties(), DoctorDTO::setSpecialtiesDTO);
-		typeMap.addMapping(src -> src.getAddress(), DoctorDTO::setAddressDTO);
+		typeMap.addMapping(Doctor::getSpecialties, DoctorDTO::setSpecialtiesDTO);
+		typeMap.addMapping(File::getAddress, DoctorDTO::setAddressDTO);
 
 		return modelMapper;
 	}
@@ -70,7 +67,7 @@ public class MapperConfig {
 				PatientFileDTO.class);
 		modelMapper.getConfiguration().setSkipNullEnabled(true);
 		typeMap.addMappings(mapper -> mapper.skip(PatientFileDTO::setSecurityCode));
-		typeMap.addMapping(src -> src.getAddress(), PatientFileDTO::setAddressDTO);
+		typeMap.addMapping(File::getAddress, PatientFileDTO::setAddressDTO);
 
 		return modelMapper;
 	}
@@ -86,7 +83,7 @@ public class MapperConfig {
 	public ModelMapper diagnosisModelMapper() {
 		ModelMapper modelMapper = new ModelMapper();
 		TypeMap<Diagnosis, DiagnosisDTO> typeMap = modelMapper.createTypeMap(Diagnosis.class, DiagnosisDTO.class);
-		typeMap.addMapping(src -> src.getDisease(), DiagnosisDTO::setDiseaseDTO);
+		typeMap.addMapping(Diagnosis::getDisease, DiagnosisDTO::setDiseaseDTO);
 
 		return modelMapper;
 	}
@@ -102,7 +99,7 @@ public class MapperConfig {
 	public ModelMapper actModelMapper() {
 		ModelMapper modelMapper = new ModelMapper();
 		TypeMap<Act, ActDTO> typeMap = modelMapper.createTypeMap(Act.class, ActDTO.class);
-		typeMap.addMapping(src -> src.getMedicalAct(), ActDTO::setMedicalActDTO);
+		typeMap.addMapping(Act::getMedicalAct, ActDTO::setMedicalActDTO);
 
 		return modelMapper;
 	}

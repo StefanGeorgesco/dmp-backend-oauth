@@ -1,10 +1,9 @@
 package fr.cnam.stefangeorgesco.dmp.domain.dao;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
-
 import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Repository pour les objets
@@ -13,7 +12,7 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
  * @author Stéfan Georgesco
  *
  */
-public interface SpecialtyDAO extends CrudRepository<Specialty, String> {
+public interface SpecialtyDAO extends JpaRepository<Specialty, String> {
 
 	/**
 	 * Recherche les spécialités médicales par recherche insensible à la casse de la
@@ -28,5 +27,5 @@ public interface SpecialtyDAO extends CrudRepository<Specialty, String> {
 	@Query("select distinct specialty from Specialty specialty "
 			+ "where lower(specialty.id) like lower(concat('%', :keyword,'%')) "
 			+ "or lower(specialty.description) like lower(concat('%', :keyword,'%'))")
-	public Iterable<Specialty> findByIdOrDescription(@Param("keyword") String keyword);
+	Iterable<Specialty> findByIdOrDescription(@Param("keyword") String keyword);
 }

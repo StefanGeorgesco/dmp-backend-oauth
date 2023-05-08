@@ -21,7 +21,6 @@ import org.springframework.test.context.TestPropertySource;
 public class MailTest {
 
 	private static Validator validator;
-	private LocalDate now;
 	private LocalDate futureDate;
 	private LocalDate pastDate;
 
@@ -44,7 +43,7 @@ public class MailTest {
 
 	@BeforeEach
 	public void setupEach() {
-		now = LocalDate.now();
+		LocalDate now = LocalDate.now();
 		pastDate = now.minusDays(1);
 		futureDate = now.plusDays(1);
 		mail.setDate(now);

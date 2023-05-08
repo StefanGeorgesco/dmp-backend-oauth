@@ -1,1 +1,1 @@
-delete from t_patient_file_item;
+delete from t_patient_file_item where 1;

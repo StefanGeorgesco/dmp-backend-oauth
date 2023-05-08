@@ -1,8 +1,7 @@
 package fr.cnam.stefangeorgesco.dmp.domain.dao;
 
-import org.springframework.data.repository.CrudRepository;
-
 import fr.cnam.stefangeorgesco.dmp.domain.model.File;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * Repository pour les objets
@@ -11,6 +10,6 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.File;
  * @author Stéfan Georgesco
  *
  */
-public interface FileDAO extends CrudRepository<File, String> {
+public interface FileDAO extends JpaRepository<File, String> {
 
 }

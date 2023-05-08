@@ -1,10 +1,9 @@
 package fr.cnam.stefangeorgesco.dmp.domain.dao;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
-
 import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFile;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Repository pour les objets
@@ -13,7 +12,7 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFile;
  * @author Stéfan Georgesco
  *
  */
-public interface PatientFileDAO extends CrudRepository<PatientFile, String> {
+public interface PatientFileDAO extends JpaRepository<PatientFile, String> {
 
 	/**
 	 * Recherche les dossiers patients par recherche insensible à la casse de la
