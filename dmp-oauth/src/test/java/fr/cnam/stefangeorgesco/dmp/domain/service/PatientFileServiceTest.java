@@ -1,12 +1,20 @@
 package fr.cnam.stefangeorgesco.dmp.domain.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
+import fr.cnam.stefangeorgesco.dmp.domain.dao.*;
+import fr.cnam.stefangeorgesco.dmp.domain.dto.*;
+import fr.cnam.stefangeorgesco.dmp.domain.model.*;
+import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
+import fr.cnam.stefangeorgesco.dmp.exception.domain.DeleteException;
+import fr.cnam.stefangeorgesco.dmp.exception.domain.DuplicateKeyException;
+import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,55 +22,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.mockito.ArgumentCaptor;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.TestPropertySource;
-
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.CorrespondenceDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.DiseaseDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.FileDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.MedicalActDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.PatientFileDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dao.PatientFileItemDAO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.ActDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.AddressDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.CorrespondenceDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DiagnosisDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.DiseaseDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.MailDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.MedicalActDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PatientFileItemDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.PrescriptionDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.SymptomDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Act;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Address;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Correspondence;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Diagnosis;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Disease;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Doctor;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Mail;
-import fr.cnam.stefangeorgesco.dmp.domain.model.MedicalAct;
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFile;
-import fr.cnam.stefangeorgesco.dmp.domain.model.PatientFileItem;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Prescription;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
-import fr.cnam.stefangeorgesco.dmp.domain.model.Symptom;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.DeleteException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.DuplicateKeyException;
-import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
-
-@TestPropertySource("/application-test.properties")
 @SpringBootTest
 public class PatientFileServiceTest {
 
