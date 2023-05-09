@@ -1,7 +1,7 @@
 package fr.cnam.stefangeorgesco.dmp.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.IAMService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.*;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.*;
 import fr.cnam.stefangeorgesco.dmp.domain.model.*;
@@ -50,7 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PatientFileControllerIntegrationTest {
 
 	@MockBean
-	private KeycloakService keycloakService;
+	private IAMService IAMService;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -1758,7 +1758,7 @@ public class PatientFileControllerIntegrationTest {
 	@WithMockUser(roles={"ADMIN"})
 	public void testDeletePatientFileSuccessNoUser() throws Exception {
 		id = "P005";
-		when(keycloakService.userExistsById(id)).thenReturn(false);
+		when(IAMService.userExistsById(id)).thenReturn(false);
 
 		assertTrue(patientFileDAO.existsById(id));
 
@@ -1773,8 +1773,8 @@ public class PatientFileControllerIntegrationTest {
 	@WithMockUser(roles={"ADMIN"})
 	public void testDeletePatientFileSuccessUserPresent() throws Exception {
 		id = "P005";
-		when(keycloakService.userExistsById(id)).thenReturn(true);
-		when(keycloakService.deleteUser(id)).thenReturn(HttpStatus.NO_CONTENT);
+		when(IAMService.userExistsById(id)).thenReturn(true);
+		when(IAMService.deleteUser(id)).thenReturn(HttpStatus.NO_CONTENT);
 
 		assertTrue(patientFileDAO.existsById(id));
 
@@ -1782,8 +1782,8 @@ public class PatientFileControllerIntegrationTest {
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.status", is(200)))
 				.andExpect(jsonPath("$.message", is("Le dossier patient a bien été supprimé.")));
 
-		verify(keycloakService, times(1)).userExistsById(id);
-		verify(keycloakService, times(1)).deleteUser(id);
+		verify(IAMService, times(1)).userExistsById(id);
+		verify(IAMService, times(1)).deleteUser(id);
 		assertFalse(patientFileDAO.existsById(id));
 	}
 

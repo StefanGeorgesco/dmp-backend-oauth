@@ -2,6 +2,7 @@ package fr.cnam.stefangeorgesco.dmp.api;
 
 import fr.cnam.stefangeorgesco.dmp.domain.dto.*;
 import fr.cnam.stefangeorgesco.dmp.domain.service.PatientFileService;
+import fr.cnam.stefangeorgesco.dmp.domain.service.PatientFileServiceImpl;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +69,7 @@ public class PatientFileController {
 	 *         représentant le dossier patient modifié, encapsulé dans un objet
 	 *         org.springframework.http.ResponseEntity.
 	 * @throws UpdateException le dossier patient n'a pas pu être modifié.
-	 * @see PatientFileService#updatePatientFile(PatientFileDTO)
+	 * @see PatientFileServiceImpl#updatePatientFile(PatientFileDTO)
 	 */
 	@PutMapping("/patient-file/details")
 	public ResponseEntity<PatientFileDTO> updatePatientFile(@Valid @RequestBody PatientFileDTO patientFileDTO,

@@ -33,7 +33,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.IAMService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.FileDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.SpecialtyDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.model.Address;
@@ -47,7 +47,7 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
 public class UserControllerIntegrationTest {
 
 	@MockBean
-	private KeycloakService keycloakService;
+	private IAMService IAMService;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -137,20 +137,20 @@ public class UserControllerIntegrationTest {
 	@Test
 	public void testCreateDoctorAccountSuccess() throws Exception {
 
-		when(keycloakService.createUser(any(UserDTO.class))).thenReturn(HttpStatus.CREATED);
+		when(IAMService.createUser(any(UserDTO.class))).thenReturn(HttpStatus.CREATED);
 
 		mockMvc.perform(
 				post("/user").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO)))
 				.andExpect(status().isCreated()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Le compte utilisateur a été créé.")));
 
-		verify(keycloakService, times(1)).createUser(any(UserDTO.class));
+		verify(IAMService, times(1)).createUser(any(UserDTO.class));
 	}
 
 	@Test
 	public void testCreatePatientAccountSuccess() throws Exception {
 
-		when(keycloakService.createUser(any(UserDTO.class))).thenReturn(HttpStatus.CREATED);
+		when(IAMService.createUser(any(UserDTO.class))).thenReturn(HttpStatus.CREATED);
 
 		userDTO.setId("patientFileId");
 		userDTO.setSecurityCode("7890");
@@ -160,7 +160,7 @@ public class UserControllerIntegrationTest {
 				.andExpect(status().isCreated()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Le compte utilisateur a été créé.")));
 
-		verify(keycloakService, times(1)).createUser(any(UserDTO.class));
+		verify(IAMService, times(1)).createUser(any(UserDTO.class));
 	}
 
 	@Test
@@ -181,27 +181,27 @@ public class UserControllerIntegrationTest {
 	@Test
 	public void testCreateDoctorAccountFailureUserAccountAlreadyExistsById() throws Exception {
 
-		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(true);
+		when(IAMService.userExistsById(userDTO.getId())).thenReturn(true);
 
 		mockMvc.perform(
 				post("/user").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO)))
 				.andExpect(status().isConflict()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Le compte utilisateur existe déjà.")));
 
-		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
+		verify(IAMService, times(1)).userExistsById(userDTO.getId());
 	}
 
 	@Test
 	public void testCreateDoctorAccountFailureUserAccountAlreadyExistsByUsername() throws Exception {
 
-		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
+		when(IAMService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
 		
 		mockMvc.perform(
 				post("/user").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO)))
 				.andExpect(status().isConflict()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.message", is("Le nom d'utilisateur existe déjà.")));
 
-		verify(keycloakService, times(1)).userExistsByUsername(userDTO.getUsername());
+		verify(IAMService, times(1)).userExistsByUsername(userDTO.getUsername());
 	}
 
 	@Test

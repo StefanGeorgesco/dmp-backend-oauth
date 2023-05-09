@@ -48,7 +48,7 @@ public class UserServiceTest {
 	private PatientFile patientFile;
 
 	@MockBean
-	private KeycloakService keycloakService;
+	private IAMService IAMService;
 
 	@Autowired
 	private UserService userService;
@@ -75,79 +75,79 @@ public class UserServiceTest {
 	@Test
 	public void testCreateDoctorAccountSuccess() throws CheckException {
 		doNothing().when(doctor).checkUserData(any(User.class), any(PasswordEncoder.class));
-		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(false);
-		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(false);
+		when(IAMService.userExistsById(userDTO.getId())).thenReturn(false);
+		when(IAMService.userExistsByUsername(userDTO.getUsername())).thenReturn(false);
 		when(fileDAO.findById(userDTO.getId())).thenReturn(Optional.of(doctor));
-		when(keycloakService.createUser(userDTO)).thenReturn(HttpStatus.CREATED);
+		when(IAMService.createUser(userDTO)).thenReturn(HttpStatus.CREATED);
 
 		assertDoesNotThrow(() -> userService.createUser(userDTO));
 
 		verify(doctor, times(1)).checkUserData(any(User.class), any(PasswordEncoder.class));
-		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
-		verify(keycloakService, times(1)).userExistsByUsername(userDTO.getUsername());
+		verify(IAMService, times(1)).userExistsById(userDTO.getId());
+		verify(IAMService, times(1)).userExistsByUsername(userDTO.getUsername());
 		verify(fileDAO, times(1)).findById(userDTO.getId());
-		verify(keycloakService, times(1)).createUser(userDTO);
+		verify(IAMService, times(1)).createUser(userDTO);
 	}
 
 	@Test
 	public void testCreatePatientAccountSuccess() throws CheckException {
 		doNothing().when(patientFile).checkUserData(any(User.class), any(PasswordEncoder.class));
-		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(false);
-		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(false);
+		when(IAMService.userExistsById(userDTO.getId())).thenReturn(false);
+		when(IAMService.userExistsByUsername(userDTO.getUsername())).thenReturn(false);
 		when(fileDAO.findById(userDTO.getId())).thenReturn(Optional.of(patientFile));
-		when(keycloakService.createUser(userDTO)).thenReturn(HttpStatus.CREATED);
+		when(IAMService.createUser(userDTO)).thenReturn(HttpStatus.CREATED);
 
 		assertDoesNotThrow(() -> userService.createUser(userDTO));
 
 		verify(patientFile, times(1)).checkUserData(any(User.class), any(PasswordEncoder.class));
-		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
-		verify(keycloakService, times(1)).userExistsByUsername(userDTO.getUsername());
+		verify(IAMService, times(1)).userExistsById(userDTO.getId());
+		verify(IAMService, times(1)).userExistsByUsername(userDTO.getUsername());
 		verify(fileDAO, times(1)).findById(userDTO.getId());
-		verify(keycloakService, times(1)).createUser(userDTO);
+		verify(IAMService, times(1)).createUser(userDTO);
 	}
 
 	@Test
 	public void testCreateAccountFailureUserAccountAlreadyExistsById() {
-		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(true);
+		when(IAMService.userExistsById(userDTO.getId())).thenReturn(true);
 
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
 
-		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
-		verify(keycloakService, times(0)).createUser(any(UserDTO.class));
+		verify(IAMService, times(1)).userExistsById(userDTO.getId());
+		verify(IAMService, times(0)).createUser(any(UserDTO.class));
 		assertEquals("Le compte utilisateur existe déjà.", ex.getMessage());
 	}
 
 	@Test
 	public void testCreateAccountFailureUserAccountAlreadyExistsByUsername() {
-		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(false);
-		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
+		when(IAMService.userExistsById(userDTO.getId())).thenReturn(false);
+		when(IAMService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
 
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
 
-		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
-		verify(keycloakService, times(1)).userExistsByUsername(userDTO.getUsername());
-		verify(keycloakService, times(0)).createUser(any(UserDTO.class));
+		verify(IAMService, times(1)).userExistsById(userDTO.getId());
+		verify(IAMService, times(1)).userExistsByUsername(userDTO.getUsername());
+		verify(IAMService, times(0)).createUser(any(UserDTO.class));
 		assertEquals("Le nom d'utilisateur existe déjà.", ex.getMessage());
 	}
 
 	@Test
 	public void testCreateAccountFailureFileDoesNotExist() {
-		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(false);
-		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(false);
+		when(IAMService.userExistsById(userDTO.getId())).thenReturn(false);
+		when(IAMService.userExistsByUsername(userDTO.getUsername())).thenReturn(false);
 		when(fileDAO.findById(userDTO.getId())).thenReturn(Optional.empty());
 
 		FinderException ex = assertThrows(FinderException.class, () -> userService.createUser(userDTO));
 
-		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
-		verify(keycloakService, times(1)).userExistsByUsername(userDTO.getUsername());
-		verify(keycloakService, times(0)).createUser(any(UserDTO.class));
+		verify(IAMService, times(1)).userExistsById(userDTO.getId());
+		verify(IAMService, times(1)).userExistsByUsername(userDTO.getUsername());
+		verify(IAMService, times(0)).createUser(any(UserDTO.class));
 		assertEquals("Le dossier n'existe pas.", ex.getMessage());
 	}
 
 	@Test
 	public void testCreateDoctorAccountFailureCheckUserDataError() throws CheckException {
-		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(false);
-		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(false);
+		when(IAMService.userExistsById(userDTO.getId())).thenReturn(false);
+		when(IAMService.userExistsByUsername(userDTO.getUsername())).thenReturn(false);
 		when(fileDAO.findById(userDTO.getId())).thenReturn(Optional.of(doctor));
 		doThrow(new CheckException("Les données ne correspondent pas.")).when(doctor)
 				.checkUserData(userCaptor.capture(), any(PasswordEncoder.class));
@@ -156,11 +156,11 @@ public class UserServiceTest {
 
 		assertEquals("Les données ne correspondent pas.", ex.getMessage());
 
-		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
-		verify(keycloakService, times(1)).userExistsByUsername(userDTO.getUsername());
+		verify(IAMService, times(1)).userExistsById(userDTO.getId());
+		verify(IAMService, times(1)).userExistsByUsername(userDTO.getUsername());
 		verify(fileDAO, times(1)).findById(userDTO.getId());
 		verify(doctor, times(1)).checkUserData(any(User.class), any(PasswordEncoder.class));
-		verify(keycloakService, times(0)).createUser(any(UserDTO.class));
+		verify(IAMService, times(0)).createUser(any(UserDTO.class));
 
 		user = userCaptor.getValue();
 
@@ -171,8 +171,8 @@ public class UserServiceTest {
 
 	@Test
 	public void testCreatePatientAccountFailureCheckUserDataError() throws CheckException {
-		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(false);
-		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(false);
+		when(IAMService.userExistsById(userDTO.getId())).thenReturn(false);
+		when(IAMService.userExistsByUsername(userDTO.getUsername())).thenReturn(false);
 		when(fileDAO.findById(userDTO.getId())).thenReturn(Optional.of(patientFile));
 		doThrow(new CheckException("Les données ne correspondent pas.")).when(patientFile)
 				.checkUserData(userCaptor.capture(), any(PasswordEncoder.class));
@@ -181,11 +181,11 @@ public class UserServiceTest {
 
 		assertEquals("Les données ne correspondent pas.", ex.getMessage());
 
-		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
-		verify(keycloakService, times(1)).userExistsByUsername(userDTO.getUsername());
+		verify(IAMService, times(1)).userExistsById(userDTO.getId());
+		verify(IAMService, times(1)).userExistsByUsername(userDTO.getUsername());
 		verify(fileDAO, times(1)).findById(userDTO.getId());
 		verify(patientFile, times(1)).checkUserData(any(User.class), any(PasswordEncoder.class));
-		verify(keycloakService, times(0)).createUser(any(UserDTO.class));
+		verify(IAMService, times(0)).createUser(any(UserDTO.class));
 
 		user = userCaptor.getValue();
 
@@ -196,46 +196,46 @@ public class UserServiceTest {
 
 	@Test
 	public void testDeleteUserSuccess() {
-		when(keycloakService.userExistsById("P001")).thenReturn(true);
-		when(keycloakService.deleteUser("P001")).thenReturn(HttpStatus.NO_CONTENT);
+		when(IAMService.userExistsById("P001")).thenReturn(true);
+		when(IAMService.deleteUser("P001")).thenReturn(HttpStatus.NO_CONTENT);
 
 		assertDoesNotThrow(() -> userService.deleteUser("P001"));
 
-		verify(keycloakService, times(1)).userExistsById("P001");
-		verify(keycloakService, times(1)).deleteUser("P001");
+		verify(IAMService, times(1)).userExistsById("P001");
+		verify(IAMService, times(1)).deleteUser("P001");
 	}
 
 	@Test
 	public void testDeleteUserFailureUserDoesNotExist() {
-		when(keycloakService.userExistsById("P001")).thenReturn(false);
+		when(IAMService.userExistsById("P001")).thenReturn(false);
 
 		DeleteException ex = assertThrows(DeleteException.class, () -> userService.deleteUser("P001"));
 
-		verify(keycloakService, times(1)).userExistsById("P001");
+		verify(IAMService, times(1)).userExistsById("P001");
 		assertEquals("Compte utilisateur non trouvé.", ex.getMessage());
 	}
 
 	@Test
 	public void testDeleteUserFailureKeycloakServiceException() {
-		when(keycloakService.userExistsById("P001")).thenReturn(true);
-		doThrow(new WebClientResponseException(0, "", null, null, null)).when(keycloakService).deleteUser("P001");
+		when(IAMService.userExistsById("P001")).thenReturn(true);
+		doThrow(new WebClientResponseException(0, "", null, null, null)).when(IAMService).deleteUser("P001");
 
 		DeleteException ex = assertThrows(DeleteException.class, () -> userService.deleteUser("P001"));
 
-		verify(keycloakService, times(1)).userExistsById("P001");
-		verify(keycloakService, times(1)).deleteUser("P001");
+		verify(IAMService, times(1)).userExistsById("P001");
+		verify(IAMService, times(1)).deleteUser("P001");
 		assertEquals("Le compte utilisateur n'a pas pu être supprimé (erreur webclient Keycloak).", ex.getMessage());
 	}
 
 	@Test
 	public void testDeleteUserFailureKeycloakServiceReturnsWrongHttpStatus() {
-		when(keycloakService.userExistsById("P001")).thenReturn(true);
-		when(keycloakService.deleteUser("P001")).thenReturn(HttpStatus.BAD_REQUEST);
+		when(IAMService.userExistsById("P001")).thenReturn(true);
+		when(IAMService.deleteUser("P001")).thenReturn(HttpStatus.BAD_REQUEST);
 
 		DeleteException ex = assertThrows(DeleteException.class, () -> userService.deleteUser("P001"));
 
-		verify(keycloakService, times(1)).userExistsById("P001");
-		verify(keycloakService, times(1)).deleteUser("P001");
+		verify(IAMService, times(1)).userExistsById("P001");
+		verify(IAMService, times(1)).deleteUser("P001");
 		assertTrue(ex.getMessage()
 				.startsWith("Le compte utilisateur n'a pas pu être supprimé (erreur Keycloak, HTTPStatus : "));
 	}

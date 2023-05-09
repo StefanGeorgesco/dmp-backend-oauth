@@ -31,7 +31,7 @@ import org.springframework.test.context.jdbc.SqlGroup;
 
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.IAMService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.CorrespondenceDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.MedicalActDAO;
@@ -81,7 +81,7 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.UpdateException;
 public class PatientFileServiceIntegrationTest {
 
 	@MockBean
-	private KeycloakService keycloakService;
+	private IAMService IAMService;
 	
 	@MockBean
 	private RnippService rnippService;
@@ -236,12 +236,12 @@ public class PatientFileServiceIntegrationTest {
 	public void testUpdatePatientFileSuccess() {
 		patientFileDTO.setReferringDoctorId("D002"); // try to change doctor
 		patientFileDTO.setId("P001"); // file exists
-		when(keycloakService.updateUser(any(UserDTO.class))).thenReturn(HttpStatus.ACCEPTED);
+		when(IAMService.updateUser(any(UserDTO.class))).thenReturn(HttpStatus.ACCEPTED);
 		assertTrue(patientFileDAO.existsById("P001"));
 
 		patientFileDTOResponse = assertDoesNotThrow(() -> patientFileService.updatePatientFile(patientFileDTO));
 
-		verify(keycloakService, times(1)).updateUser(any(UserDTO.class));
+		verify(IAMService, times(1)).updateUser(any(UserDTO.class));
 		savedPatientFile = patientFileDAO.findById("P001").orElseThrow();
 
 		// no change in saved object
@@ -1022,7 +1022,7 @@ public class PatientFileServiceIntegrationTest {
 
 		id = "P005";
 
-		when(keycloakService.userExistsById(id)).thenReturn(false);
+		when(IAMService.userExistsById(id)).thenReturn(false);
 
 		assertTrue(patientFileDAO.existsById(id));
 
@@ -1034,7 +1034,7 @@ public class PatientFileServiceIntegrationTest {
 
 		assertDoesNotThrow(() -> patientFileService.deletePatientFile(id));
 
-		verify(keycloakService, times(1)).userExistsById(id);
+		verify(IAMService, times(1)).userExistsById(id);
 		assertFalse(patientFileDAO.existsById(id));
 
 		correspondenceDTOs = patientFileService.findCorrespondencesByPatientFileId(id);
@@ -1049,8 +1049,8 @@ public class PatientFileServiceIntegrationTest {
 
 		id = "P005";
 
-		when(keycloakService.userExistsById(id)).thenReturn(true);
-		when(keycloakService.deleteUser(id)).thenReturn(HttpStatus.NO_CONTENT);
+		when(IAMService.userExistsById(id)).thenReturn(true);
+		when(IAMService.deleteUser(id)).thenReturn(HttpStatus.NO_CONTENT);
 
 		user.setId(id);
 		assertTrue(patientFileDAO.existsById(id));
@@ -1063,8 +1063,8 @@ public class PatientFileServiceIntegrationTest {
 
 		assertDoesNotThrow(() -> patientFileService.deletePatientFile(id));
 
-		verify(keycloakService, times(1)).userExistsById(id);
-		verify(keycloakService, times(1)).deleteUser(id);
+		verify(IAMService, times(1)).userExistsById(id);
+		verify(IAMService, times(1)).deleteUser(id);
 		assertFalse(patientFileDAO.existsById(id));
 
 		correspondenceDTOs = patientFileService.findCorrespondencesByPatientFileId(id);

@@ -1,7 +1,7 @@
 package fr.cnam.stefangeorgesco.dmp.domain.service;
 
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.IAMService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.AddressDTO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
 public class DoctorServiceIntegrationTest {
 
 	@MockBean
-	private KeycloakService keycloakService;
+	private IAMService IAMService;
 	
 	@Autowired
 	private DoctorDAO doctorDAO;
@@ -132,12 +132,12 @@ public class DoctorServiceIntegrationTest {
 	@Test
 	public void testUpdateDoctorSuccess() {
 		doctorDTO.setId("D001"); // file exists
-		when(keycloakService.updateUser(any(UserDTO.class))).thenReturn(HttpStatus.ACCEPTED);
+		when(IAMService.updateUser(any(UserDTO.class))).thenReturn(HttpStatus.ACCEPTED);
 		assertTrue(doctorDAO.existsById("D001"));
 
 		DoctorDTO response = assertDoesNotThrow(() -> doctorService.updateDoctor(doctorDTO));
 
-		verify(keycloakService, times(1)).updateUser(any(UserDTO.class));
+		verify(IAMService, times(1)).updateUser(any(UserDTO.class));
 		Doctor savedDoctor = doctorDAO.findById("D001").orElseThrow();
 
 		// no change in saved object
@@ -213,26 +213,26 @@ public class DoctorServiceIntegrationTest {
 	@Test
 	public void testDeleteDoctorSuccessNoUser() {
 
-		when(keycloakService.userExistsById("D002")).thenReturn(false);
+		when(IAMService.userExistsById("D002")).thenReturn(false);
 		assertTrue(doctorDAO.existsById("D002"));
 
 		assertDoesNotThrow(() -> doctorService.deleteDoctor("D002"));
 
-		verify(keycloakService, times(1)).userExistsById("D002");
+		verify(IAMService, times(1)).userExistsById("D002");
 		assertFalse(doctorDAO.existsById("D002"));
 	}
 
 	@Test
 	public void testDeleteDoctorSuccessUserPresent() {
 		
-		when(keycloakService.userExistsById("D002")).thenReturn(true);
-		when(keycloakService.deleteUser("D002")).thenReturn(HttpStatus.NO_CONTENT);
+		when(IAMService.userExistsById("D002")).thenReturn(true);
+		when(IAMService.deleteUser("D002")).thenReturn(HttpStatus.NO_CONTENT);
 		assertTrue(doctorDAO.existsById("D002"));
 
 		assertDoesNotThrow(() -> doctorService.deleteDoctor("D002"));
 
-		verify(keycloakService, times(1)).userExistsById("D002");
-		verify(keycloakService, times(1)).deleteUser("D002");
+		verify(IAMService, times(1)).userExistsById("D002");
+		verify(IAMService, times(1)).deleteUser("D002");
 		assertFalse(doctorDAO.existsById("D002"));
 	}
 

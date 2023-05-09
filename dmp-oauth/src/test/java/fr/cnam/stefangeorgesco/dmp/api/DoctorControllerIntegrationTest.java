@@ -38,7 +38,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.model.User;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.KeycloakService;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.IAMService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.SpecialtyDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dto.AddressDTO;
@@ -58,7 +58,7 @@ import fr.cnam.stefangeorgesco.dmp.domain.model.Specialty;
 public class DoctorControllerIntegrationTest {
 
 	@MockBean
-	private KeycloakService keycloakService;
+	private IAMService IAMService;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -403,7 +403,7 @@ public class DoctorControllerIntegrationTest {
 	@Test
 	@WithMockUser(roles={"ADMIN"})
 	public void testDeleteDoctorSuccessNoUser() throws Exception {
-		when(keycloakService.userExistsById("D002")).thenReturn(false);
+		when(IAMService.userExistsById("D002")).thenReturn(false);
 
 		assertTrue(doctorDAO.existsById("D002"));
 
@@ -411,15 +411,15 @@ public class DoctorControllerIntegrationTest {
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.status", is(200)))
 				.andExpect(jsonPath("$.message", is("Le dossier de médecin a bien été supprimé.")));
 
-		verify(keycloakService, times(1)).userExistsById("D002");
+		verify(IAMService, times(1)).userExistsById("D002");
 		assertFalse(doctorDAO.existsById("D002"));
 	}
 
 	@Test
 	@WithMockUser(roles={"ADMIN"})
 	public void testDeleteDoctorSuccessUserPresent() throws Exception {
-		when(keycloakService.userExistsById("D002")).thenReturn(true);
-		when(keycloakService.deleteUser(user.getId())).thenReturn(HttpStatus.NO_CONTENT);
+		when(IAMService.userExistsById("D002")).thenReturn(true);
+		when(IAMService.deleteUser(user.getId())).thenReturn(HttpStatus.NO_CONTENT);
 
 		assertTrue(doctorDAO.existsById("D002"));
 
@@ -427,8 +427,8 @@ public class DoctorControllerIntegrationTest {
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.status", is(200)))
 				.andExpect(jsonPath("$.message", is("Le dossier de médecin a bien été supprimé.")));
 
-		verify(keycloakService, times(1)).userExistsById("D002");
-		verify(keycloakService, times(1)).deleteUser(user.getId());
+		verify(IAMService, times(1)).userExistsById("D002");
+		verify(IAMService, times(1)).deleteUser(user.getId());
 		assertFalse(doctorDAO.existsById("D002"));
 	}
 

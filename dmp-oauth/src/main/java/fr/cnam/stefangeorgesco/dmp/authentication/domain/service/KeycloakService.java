@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
-public class KeycloakService {
+public class KeycloakService implements IAMService {
 
 	@Value("${IAM.admin.client.username}")
 	private String username;
@@ -50,6 +50,7 @@ public class KeycloakService {
 	 * @param username le nom d'utilisateur.
 	 * @return égal à true si l'utilisateur existe, false sinon.
 	 */
+	@Override
 	public boolean userExistsByUsername(String username) {
 		String token = getAdminToken();
 
@@ -66,6 +67,7 @@ public class KeycloakService {
 	 * @param id l'identifiant.
 	 * @return égal à true si l'utilisateur existe, false sinon.
 	 */
+	@Override
 	public boolean userExistsById(String id) {
 		String token = getAdminToken();
 
@@ -83,6 +85,7 @@ public class KeycloakService {
 	 * @return statut HttpStatus (valeur) retourné par la requête WebClient.
 	 * @throws WebClientResponseException erreur de communication avec Keycloak
 	 */
+	@Override
 	public HttpStatus createUser(UserDTO userDTO) throws WebClientResponseException {
 		String token = getAdminToken();
 
@@ -121,6 +124,7 @@ public class KeycloakService {
 	 * @return statut HttpStatus (valeur) retourné par la requête WebClient.
 	 * @throws WebClientResponseException erreur de communication avec Keycloak
 	 */
+	@Override
 	public HttpStatus updateUser(UserDTO userDTO) throws WebClientResponseException {
 		String token = getAdminToken();
 		String userId = getUserIdById(token, userDTO.getId());
@@ -144,6 +148,7 @@ public class KeycloakService {
 	 * @param id l'identifiant de l'utilisateur à supprimer.
 	 * @return statut HttpStatus (valeur) retourné par la requête WebClient.
 	 */
+	@Override
 	public HttpStatus deleteUser(String id) {
 		String token = getAdminToken();
 

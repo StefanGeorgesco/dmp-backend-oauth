@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 public class UserServiceIntegrationTest {
 
 	@MockBean
-	private KeycloakService keycloakService;
+	private IAMService IAMService;
 
 	@Autowired
 	private UserService userService;
@@ -120,67 +120,67 @@ public class UserServiceIntegrationTest {
 	@Test
 	public void testCreateDoctorAccountSuccess() {
 		
-		when(keycloakService.createUser(userDTO)).thenReturn(HttpStatus.CREATED);
+		when(IAMService.createUser(userDTO)).thenReturn(HttpStatus.CREATED);
 
 		assertDoesNotThrow(() -> userService.createUser(userDTO));
 
-		verify(keycloakService, times(1)).createUser(userDTO);
+		verify(IAMService, times(1)).createUser(userDTO);
 	}
 
 	@Test
 	public void testCreatePatientAccountSuccess() {
 
-		when(keycloakService.createUser(userDTO)).thenReturn(HttpStatus.CREATED);
+		when(IAMService.createUser(userDTO)).thenReturn(HttpStatus.CREATED);
 
 		userDTO.setId("patientFileId");
 		userDTO.setSecurityCode("7890");
 
 		assertDoesNotThrow(() -> userService.createUser(userDTO));
 
-		verify(keycloakService, times(1)).createUser(userDTO);
+		verify(IAMService, times(1)).createUser(userDTO);
 	}
 
 	@Test
 	public void testCreateDoctorAccountFailureUserAccountAlreadyExistsById() {
 
-		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(true);
+		when(IAMService.userExistsById(userDTO.getId())).thenReturn(true);
 		
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
 
-		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
+		verify(IAMService, times(1)).userExistsById(userDTO.getId());
 		assertEquals("Le compte utilisateur existe déjà.", ex.getMessage());
 	}
 
 	@Test
 	public void testCreatePatientAccountFailureUserAccountAlreadyExistsById() {
 
-		when(keycloakService.userExistsById(userDTO.getId())).thenReturn(true);
+		when(IAMService.userExistsById(userDTO.getId())).thenReturn(true);
 		
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
 
-		verify(keycloakService, times(1)).userExistsById(userDTO.getId());
+		verify(IAMService, times(1)).userExistsById(userDTO.getId());
 		assertEquals("Le compte utilisateur existe déjà.", ex.getMessage());
 	}
 
 	@Test
 	public void testCreateDoctorAccountFailureUserAccountAlreadyExistsByUsername() {
 
-		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
+		when(IAMService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
 
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
 
-		verify(keycloakService, times(1)).userExistsByUsername(userDTO.getUsername());
+		verify(IAMService, times(1)).userExistsByUsername(userDTO.getUsername());
 		assertEquals("Le nom d'utilisateur existe déjà.", ex.getMessage());
 	}
 
 	@Test
 	public void testCreatePatientAccountFailureUserAccountAlreadyExistsByUsername() {
 
-		when(keycloakService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
+		when(IAMService.userExistsByUsername(userDTO.getUsername())).thenReturn(true);
 
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class, () -> userService.createUser(userDTO));
 
-		verify(keycloakService, times(1)).userExistsByUsername(userDTO.getUsername());
+		verify(IAMService, times(1)).userExistsByUsername(userDTO.getUsername());
 		assertEquals("Le nom d'utilisateur existe déjà.", ex.getMessage());
 	}
 
@@ -223,22 +223,22 @@ public class UserServiceIntegrationTest {
 
 	@Test
 	public void testDeleteUserSuccess() {
-		when(keycloakService.userExistsById("D001")).thenReturn(true);
-		when(keycloakService.deleteUser("D001")).thenReturn(HttpStatus.NO_CONTENT);
+		when(IAMService.userExistsById("D001")).thenReturn(true);
+		when(IAMService.deleteUser("D001")).thenReturn(HttpStatus.NO_CONTENT);
 		
 		assertDoesNotThrow(() -> userService.deleteUser("D001"));
 
-		verify(keycloakService, times(1)).userExistsById("D001");
-		verify(keycloakService, times(1)).deleteUser("D001");
+		verify(IAMService, times(1)).userExistsById("D001");
+		verify(IAMService, times(1)).deleteUser("D001");
 	}
 
 	@Test
 	public void testDeleteUserFailureUserDoesNotExist() {
-		when(keycloakService.userExistsById("D002")).thenReturn(false);
+		when(IAMService.userExistsById("D002")).thenReturn(false);
 
 		DeleteException ex = assertThrows(DeleteException.class, () -> userService.deleteUser("D002"));
 
-		verify(keycloakService, times(1)).userExistsById("D002");
+		verify(IAMService, times(1)).userExistsById("D002");
 		assertEquals("Compte utilisateur non trouvé.", ex.getMessage());
 	}
 
