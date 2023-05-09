@@ -24,7 +24,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserServiceImpl;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.DoctorDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.FileDAO;
 import fr.cnam.stefangeorgesco.dmp.domain.dao.SpecialtyDAO;
@@ -40,7 +40,7 @@ import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
 
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
-public class DoctorServiceImplTest {
+public class DoctorServiceTest {
 
 	@MockBean
 	private FileDAO fileDAO;
@@ -52,10 +52,10 @@ public class DoctorServiceImplTest {
 	private SpecialtyDAO specialtyDAO;
 
 	@MockBean
-	private UserServiceImpl userService;
+	private UserService userService;
 
 	@Autowired
-	private DoctorServiceImpl doctorService;
+	private DoctorService doctorService;
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;

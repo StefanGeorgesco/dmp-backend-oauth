@@ -84,7 +84,7 @@ public class PatientFileServiceIntegrationTest {
 	private KeycloakService keycloakService;
 	
 	@MockBean
-	private RnippServiceImpl rnippService;
+	private RnippService rnippService;
 
 	@Autowired
 	private DoctorDAO doctorDAO;

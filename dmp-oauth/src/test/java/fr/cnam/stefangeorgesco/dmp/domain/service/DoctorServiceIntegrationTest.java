@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
 		@Sql(scripts = "/sql/create-files.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
 		@Sql(scripts = "/sql/delete-files.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
 		@Sql(scripts = "/sql/delete-specialties.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD) })
-public class DoctorServiceImplIntegrationTest {
+public class DoctorServiceIntegrationTest {
 
 	@MockBean
 	private KeycloakService keycloakService;
@@ -46,7 +46,7 @@ public class DoctorServiceImplIntegrationTest {
 	private DoctorDAO doctorDAO;
 
 	@Autowired
-	private DoctorServiceImpl doctorService;
+	private DoctorService doctorService;
 
 	private SpecialtyDTO specialtyDTO;
 

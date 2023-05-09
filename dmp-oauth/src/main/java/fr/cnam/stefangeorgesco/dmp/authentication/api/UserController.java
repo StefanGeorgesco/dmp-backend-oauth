@@ -2,7 +2,7 @@ package fr.cnam.stefangeorgesco.dmp.authentication.api;
 
 import fr.cnam.stefangeorgesco.dmp.api.RestResponse;
 import fr.cnam.stefangeorgesco.dmp.authentication.domain.dto.UserDTO;
-import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserServiceImpl;
+import fr.cnam.stefangeorgesco.dmp.authentication.domain.service.UserService;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.CheckException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.CreateException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.DuplicateKeyException;
@@ -24,9 +24,9 @@ import javax.validation.Valid;
 @RestController
 public class UserController {
 
-	private final UserServiceImpl userService;
+	private final UserService userService;
 
-	public UserController(UserServiceImpl userService) {
+	public UserController(UserService userService) {
 		this.userService = userService;
 	}
 
