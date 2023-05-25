@@ -1,7 +1,6 @@
 package fr.cnam.stefangeorgesco.dmp.domain.service;
 
 import fr.cnam.stefangeorgesco.dmp.domain.dto.DoctorDTO;
-import fr.cnam.stefangeorgesco.dmp.domain.dto.SpecialtyDTO;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.CreateException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.DeleteException;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
@@ -19,10 +18,4 @@ public interface DoctorService {
     DoctorDTO updateDoctor(DoctorDTO doctorDTO) throws UpdateException;
 
     void deleteDoctor(String id) throws DeleteException;
-
-    SpecialtyDTO findSpecialty(String id) throws FinderException;
-
-    List<SpecialtyDTO> findSpecialtiesByIdOrDescription(String q);
-
-    List<SpecialtyDTO> findAllSpecialties();
 }

@@ -66,6 +66,18 @@ public class PatientFileServiceIntegrationTest {
 	@Autowired
 	private PatientFileService patientFileService;
 
+	@Autowired
+	private DiseaseService diseaseService;
+
+	@Autowired
+	private MedicalActService medicalActService;
+
+	@Autowired
+	private CorrespondenceService correspondenceService;
+
+	@Autowired
+	private PatientFileItemService patientFileItemService;
+
 	private PatientFileDTO patientFileDTO;
 
 	private PatientFileDTO patientFileDTOResponse;
@@ -345,7 +357,7 @@ public class PatientFileServiceIntegrationTest {
 		doctor = doctorDAO.findById(correspondenceDTO.getDoctorId()).orElseThrow();
 
 		CorrespondenceDTO correspondenceDTOResponse = assertDoesNotThrow(
-				() -> patientFileService.createCorrespondence(correspondenceDTO));
+				() -> correspondenceService.createCorrespondence(correspondenceDTO));
 
 		assertEquals(count + 1, correspondenceDAO.count());
 
@@ -368,7 +380,7 @@ public class PatientFileServiceIntegrationTest {
 		count = correspondenceDAO.count();
 
 		CreateException ex = assertThrows(CreateException.class,
-				() -> patientFileService.createCorrespondence(correspondenceDTO));
+				() -> correspondenceService.createCorrespondence(correspondenceDTO));
 
 		assertEquals("La correspondance n'a pas pu être créé.", ex.getMessage());
 
@@ -383,7 +395,7 @@ public class PatientFileServiceIntegrationTest {
 		count = correspondenceDAO.count();
 
 		CreateException ex = assertThrows(CreateException.class,
-				() -> patientFileService.createCorrespondence(correspondenceDTO));
+				() -> correspondenceService.createCorrespondence(correspondenceDTO));
 
 		assertEquals("La correspondance n'a pas pu être créé.", ex.getMessage());
 
@@ -399,7 +411,7 @@ public class PatientFileServiceIntegrationTest {
 
 		assertTrue(correspondenceDAO.existsById(uuid));
 
-		patientFileService.deleteCorrespondence(uuid);
+		correspondenceService.deleteCorrespondence(uuid);
 
 		assertFalse(correspondenceDAO.existsById(uuid));
 
@@ -414,7 +426,7 @@ public class PatientFileServiceIntegrationTest {
 		assertTrue(correspondenceDAO.existsById(uuid));
 
 		CorrespondenceDTO correspondenceDTO = assertDoesNotThrow(
-				() -> patientFileService.findCorrespondence(uuid.toString()));
+				() -> correspondenceService.findCorrespondence(uuid.toString()));
 
 		assertEquals("2023-08-14", correspondenceDTO.getDateUntil().toString());
 		assertEquals("P004", correspondenceDTO.getPatientFileId());
@@ -432,7 +444,7 @@ public class PatientFileServiceIntegrationTest {
 		assertFalse(correspondenceDAO.existsById(uuid));
 
 		FinderException ex = assertThrows(FinderException.class,
-				() -> patientFileService.findCorrespondence(uuid.toString()));
+				() -> correspondenceService.findCorrespondence(uuid.toString()));
 
 		assertEquals("Correspondance non trouvée.", ex.getMessage());
 	}
@@ -440,7 +452,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindCorrespondencesByPatientFileIdFound3() {
 
-		List<CorrespondenceDTO> correspondencesDTO = patientFileService.findCorrespondencesByPatientFileId("P001");
+		List<CorrespondenceDTO> correspondencesDTO = correspondenceService.findCorrespondencesByPatientFileId("P001");
 
 		assertEquals(3, correspondencesDTO.size());
 		assertEquals("2023-05-02", correspondencesDTO.get(0).getDateUntil().toString());
@@ -451,7 +463,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindCorrespondencesByPatientFileIdFound0() {
 
-		List<CorrespondenceDTO> correspondencesDTO = patientFileService.findCorrespondencesByPatientFileId("P055");
+		List<CorrespondenceDTO> correspondencesDTO = correspondenceService.findCorrespondencesByPatientFileId("P055");
 
 		assertEquals(0, correspondencesDTO.size());
 	}
@@ -459,7 +471,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindDiseaseSuccess() {
 
-		diseaseDTO = assertDoesNotThrow(() -> patientFileService.findDisease("J01"));
+		diseaseDTO = assertDoesNotThrow(() -> diseaseService.findDisease("J01"));
 
 		assertEquals("J01", diseaseDTO.getId());
 		assertEquals("Sinusite aiguë", diseaseDTO.getDescription());
@@ -468,7 +480,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindDiseaseFailureDiseaseDoesNotExist() {
 
-		FinderException ex = assertThrows(FinderException.class, () -> patientFileService.findDisease("J000"));
+		FinderException ex = assertThrows(FinderException.class, () -> diseaseService.findDisease("J000"));
 
 		assertEquals("Maladie non trouvée.", ex.getMessage());
 	}
@@ -476,7 +488,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindMedicalActSuccess() {
 
-		medicalActDTO = assertDoesNotThrow(() -> patientFileService.findMedicalAct("HCAE201"));
+		medicalActDTO = assertDoesNotThrow(() -> medicalActService.findMedicalAct("HCAE201"));
 
 		assertEquals("HCAE201", medicalActDTO.getId());
 		assertEquals("Dilatation de sténose du conduit d'une glande salivaire par endoscopie [sialendoscopie] ",
@@ -486,7 +498,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindMedicalActFailureMedicalActDoesNotExist() {
 
-		FinderException ex = assertThrows(FinderException.class, () -> patientFileService.findMedicalAct("H000000"));
+		FinderException ex = assertThrows(FinderException.class, () -> medicalActService.findMedicalAct("H000000"));
 
 		assertEquals("Acte médical non trouvé.", ex.getMessage());
 	}
@@ -494,7 +506,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindDiseasesByIdOrDescriptionFound8() {
 
-		List<DiseaseDTO> diseasesDTO = patientFileService.findDiseasesByIdOrDescription("sinusite", 10);
+		List<DiseaseDTO> diseasesDTO = diseaseService.findDiseasesByIdOrDescription("sinusite", 10);
 
 		assertEquals(8, diseasesDTO.size());
 	}
@@ -502,7 +514,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindDiseasesByIdOrDescriptionFound0() {
 
-		List<DiseaseDTO> diseasesDTO = patientFileService.findDiseasesByIdOrDescription("mas", 10);
+		List<DiseaseDTO> diseasesDTO = diseaseService.findDiseasesByIdOrDescription("mas", 10);
 
 		assertEquals(0, diseasesDTO.size());
 	}
@@ -510,7 +522,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindDiseasesByIdOrDescriptionSearchStringIsBlank() {
 
-		List<DiseaseDTO> diseasesDTO = patientFileService.findDiseasesByIdOrDescription("", 10);
+		List<DiseaseDTO> diseasesDTO = diseaseService.findDiseasesByIdOrDescription("", 10);
 
 		assertEquals(0, diseasesDTO.size());
 	}
@@ -518,7 +530,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindMedicalActsByIdOrDescriptionFound9() {
 
-		List<MedicalActDTO> medicalActsDTO = patientFileService.findMedicalActsByIdOrDescription("radio", 10);
+		List<MedicalActDTO> medicalActsDTO = medicalActService.findMedicalActsByIdOrDescription("radio", 10);
 
 		assertEquals(9, medicalActsDTO.size());
 	}
@@ -526,7 +538,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindMedicalActsByIdOrDescriptionFound0() {
 
-		List<MedicalActDTO> medicalActsDTO = patientFileService.findMedicalActsByIdOrDescription("rid", 10);
+		List<MedicalActDTO> medicalActsDTO = medicalActService.findMedicalActsByIdOrDescription("rid", 10);
 
 		assertEquals(0, medicalActsDTO.size());
 	}
@@ -534,7 +546,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindMedicalActsByIdOrDescriptionSearchStringIsBlank() {
 
-		List<MedicalActDTO> medicalActsDTO = patientFileService.findMedicalActsByIdOrDescription("", 10);
+		List<MedicalActDTO> medicalActsDTO = medicalActService.findMedicalActsByIdOrDescription("", 10);
 
 		assertEquals(0, medicalActsDTO.size());
 	}
@@ -559,7 +571,7 @@ public class PatientFileServiceIntegrationTest {
 		Doctor recipientDoctor = doctorDAO.findById(mailDTO.getRecipientDoctorId()).orElseThrow();
 
 		PatientFileItemDTO patientFileItemDTOResponse = assertDoesNotThrow(
-				() -> patientFileService.createPatientFileItem(mailDTO));
+				() -> patientFileItemService.createPatientFileItem(mailDTO));
 
 		assertEquals(count + 1, patientFileItemDAO.count());
 
@@ -587,7 +599,7 @@ public class PatientFileServiceIntegrationTest {
 		count = patientFileItemDAO.count();
 
 		CreateException ex = assertThrows(CreateException.class,
-				() -> patientFileService.createPatientFileItem(prescriptionDTO));
+				() -> patientFileItemService.createPatientFileItem(prescriptionDTO));
 
 		assertEquals("L'élément médical n'a pas pu être créé.", ex.getMessage());
 
@@ -617,7 +629,7 @@ public class PatientFileServiceIntegrationTest {
 
 		actDTO.setComments(comment);
 
-		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileService.updatePatientFileItem(actDTO));
+		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileItemService.updatePatientFileItem(actDTO));
 
 		act = (Act) patientFileItemDAO.findById(uuid).orElseThrow();
 
@@ -653,7 +665,7 @@ public class PatientFileServiceIntegrationTest {
 		assertFalse(medicalActDAO.existsById(id));
 
 		UpdateException ex = assertThrows(UpdateException.class,
-				() -> patientFileService.updatePatientFileItem(actDTO));
+				() -> patientFileItemService.updatePatientFileItem(actDTO));
 
 		assertEquals("L'élément médical n'a pas pu être modifié.", ex.getMessage());
 	}
@@ -678,7 +690,7 @@ public class PatientFileServiceIntegrationTest {
 		assertFalse(patientFileItemDAO.existsById(uuid));
 
 		FinderException ex = assertThrows(FinderException.class,
-				() -> patientFileService.updatePatientFileItem(actDTO));
+				() -> patientFileItemService.updatePatientFileItem(actDTO));
 
 		assertTrue(ex.getMessage().contains("Elément médical non trouvé."));
 	}
@@ -701,7 +713,7 @@ public class PatientFileServiceIntegrationTest {
 		actDTO.setComments(comment);
 
 		UpdateException ex = assertThrows(UpdateException.class,
-				() -> patientFileService.updatePatientFileItem(actDTO));
+				() -> patientFileItemService.updatePatientFileItem(actDTO));
 
 		assertEquals("Le type de l'élément médical est incorrect.", ex.getMessage());
 	}
@@ -728,7 +740,7 @@ public class PatientFileServiceIntegrationTest {
 
 		diagnosisDTO.setComments(comment);
 
-		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileService.updatePatientFileItem(diagnosisDTO));
+		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileItemService.updatePatientFileItem(diagnosisDTO));
 
 		diagnosis = (Diagnosis) patientFileItemDAO.findById(uuid).orElseThrow();
 
@@ -758,7 +770,7 @@ public class PatientFileServiceIntegrationTest {
 		diagnosisDTO.setComments(comment);
 
 		UpdateException ex = assertThrows(UpdateException.class,
-				() -> patientFileService.updatePatientFileItem(diagnosisDTO));
+				() -> patientFileItemService.updatePatientFileItem(diagnosisDTO));
 
 		assertEquals("Le type de l'élément médical est incorrect.", ex.getMessage());
 	}
@@ -784,7 +796,7 @@ public class PatientFileServiceIntegrationTest {
 		mailDTO.setText(text);
 		mailDTO.setRecipientDoctorId(id);
 
-		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileService.updatePatientFileItem(mailDTO));
+		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileItemService.updatePatientFileItem(mailDTO));
 
 		mail = (Mail) patientFileItemDAO.findById(uuid).orElseThrow();
 
@@ -811,7 +823,7 @@ public class PatientFileServiceIntegrationTest {
 		mailDTO.setRecipientDoctorId(id);
 
 		UpdateException ex = assertThrows(UpdateException.class,
-				() -> patientFileService.updatePatientFileItem(mailDTO));
+				() -> patientFileItemService.updatePatientFileItem(mailDTO));
 
 		assertEquals("Le type de l'élément médical est incorrect.", ex.getMessage());
 	}
@@ -834,7 +846,7 @@ public class PatientFileServiceIntegrationTest {
 		prescriptionDTO.setDescription(description);
 
 		patientFileItemDTOResponse = assertDoesNotThrow(
-				() -> patientFileService.updatePatientFileItem(prescriptionDTO));
+				() -> patientFileItemService.updatePatientFileItem(prescriptionDTO));
 
 		prescription = (Prescription) patientFileItemDAO.findById(uuid).orElseThrow();
 
@@ -856,7 +868,7 @@ public class PatientFileServiceIntegrationTest {
 		prescriptionDTO.setDescription(description);
 
 		UpdateException ex = assertThrows(UpdateException.class,
-				() -> patientFileService.updatePatientFileItem(prescriptionDTO));
+				() -> patientFileItemService.updatePatientFileItem(prescriptionDTO));
 
 		assertEquals("Le type de l'élément médical est incorrect.", ex.getMessage());
 	}
@@ -878,7 +890,7 @@ public class PatientFileServiceIntegrationTest {
 		symptomDTO.setComments(comment);
 		symptomDTO.setDescription(description);
 
-		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileService.updatePatientFileItem(symptomDTO));
+		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileItemService.updatePatientFileItem(symptomDTO));
 
 		symptom = (Symptom) patientFileItemDAO.findById(uuid).orElseThrow();
 
@@ -900,7 +912,7 @@ public class PatientFileServiceIntegrationTest {
 		symptomDTO.setDescription(description);
 
 		UpdateException ex = assertThrows(UpdateException.class,
-				() -> patientFileService.updatePatientFileItem(symptomDTO));
+				() -> patientFileItemService.updatePatientFileItem(symptomDTO));
 
 		assertEquals("Le type de l'élément médical est incorrect.", ex.getMessage());
 	}
@@ -914,7 +926,7 @@ public class PatientFileServiceIntegrationTest {
 
 		assertTrue(patientFileItemDAO.existsById(uuid));
 
-		patientFileService.deletePatientFileItem(uuid);
+		patientFileItemService.deletePatientFileItem(uuid);
 
 		assertFalse(patientFileItemDAO.existsById(uuid));
 
@@ -926,7 +938,7 @@ public class PatientFileServiceIntegrationTest {
 
 		uuid = UUID.fromString("142763cf-6eeb-47a5-b8f8-8ec85f0025c4");
 
-		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileService.findPatientFileItem(uuid));
+		patientFileItemDTOResponse = assertDoesNotThrow(() -> patientFileItemService.findPatientFileItem(uuid));
 
 		assertTrue(patientFileItemDTOResponse instanceof SymptomDTO);
 
@@ -949,7 +961,7 @@ public class PatientFileServiceIntegrationTest {
 
 		assertFalse(patientFileItemDAO.existsById(uuid));
 
-		FinderException ex = assertThrows(FinderException.class, () -> patientFileService.findPatientFileItem(uuid));
+		FinderException ex = assertThrows(FinderException.class, () -> patientFileItemService.findPatientFileItem(uuid));
 
 		assertEquals("Elément médical non trouvé.", ex.getMessage());
 	}
@@ -957,7 +969,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindPatientFileItemsByPatientFileIdFound10() {
 
-		List<PatientFileItemDTO> patientFileItemsDTO = patientFileService.findPatientFileItemsByPatientFileId("P005");
+		List<PatientFileItemDTO> patientFileItemsDTO = patientFileItemService.findPatientFileItemsByPatientFileId("P005");
 
 		assertEquals(10, patientFileItemsDTO.size());
 		assertTrue(patientFileItemsDTO.get(1) instanceof DiagnosisDTO);
@@ -966,7 +978,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindPatientFileItemsByPatientFileIdFound0PatientFileHasNoItems() {
 
-		List<PatientFileItemDTO> patientFileItemsDTO = patientFileService.findPatientFileItemsByPatientFileId("P014");
+		List<PatientFileItemDTO> patientFileItemsDTO = patientFileItemService.findPatientFileItemsByPatientFileId("P014");
 
 		assertEquals(0, patientFileItemsDTO.size());
 	}
@@ -974,7 +986,7 @@ public class PatientFileServiceIntegrationTest {
 	@Test
 	public void testFindPatientFileItemsByPatientFileIdFound0PatientFileDoesNotExist() {
 
-		List<PatientFileItemDTO> patientFileItemsDTO = patientFileService.findPatientFileItemsByPatientFileId("P002");
+		List<PatientFileItemDTO> patientFileItemsDTO = patientFileItemService.findPatientFileItemsByPatientFileId("P002");
 
 		assertEquals(0, patientFileItemsDTO.size());
 	}
@@ -988,8 +1000,8 @@ public class PatientFileServiceIntegrationTest {
 
 		assertTrue(patientFileDAO.existsById(id));
 
-		List<CorrespondenceDTO> correspondenceDTOs = patientFileService.findCorrespondencesByPatientFileId(id);
-		List<PatientFileItemDTO> patientFileItemDTOs = patientFileService.findPatientFileItemsByPatientFileId(id);
+		List<CorrespondenceDTO> correspondenceDTOs = correspondenceService.findCorrespondencesByPatientFileId(id);
+		List<PatientFileItemDTO> patientFileItemDTOs = patientFileItemService.findPatientFileItemsByPatientFileId(id);
 
 		assertEquals(1, correspondenceDTOs.size());
 		assertEquals(10, patientFileItemDTOs.size());
@@ -999,8 +1011,8 @@ public class PatientFileServiceIntegrationTest {
 		verify(IAMService, times(1)).userExistsById(id);
 		assertFalse(patientFileDAO.existsById(id));
 
-		correspondenceDTOs = patientFileService.findCorrespondencesByPatientFileId(id);
-		patientFileItemDTOs = patientFileService.findPatientFileItemsByPatientFileId(id);
+		correspondenceDTOs = correspondenceService.findCorrespondencesByPatientFileId(id);
+		patientFileItemDTOs = patientFileItemService.findPatientFileItemsByPatientFileId(id);
 
 		assertEquals(0, correspondenceDTOs.size());
 		assertEquals(0, patientFileItemDTOs.size());
@@ -1017,8 +1029,8 @@ public class PatientFileServiceIntegrationTest {
 		user.setId(id);
 		assertTrue(patientFileDAO.existsById(id));
 
-		List<CorrespondenceDTO> correspondenceDTOs = patientFileService.findCorrespondencesByPatientFileId(id);
-		List<PatientFileItemDTO> patientFileItemDTOs = patientFileService.findPatientFileItemsByPatientFileId(id);
+		List<CorrespondenceDTO> correspondenceDTOs = correspondenceService.findCorrespondencesByPatientFileId(id);
+		List<PatientFileItemDTO> patientFileItemDTOs = patientFileItemService.findPatientFileItemsByPatientFileId(id);
 
 		assertEquals(1, correspondenceDTOs.size());
 		assertEquals(10, patientFileItemDTOs.size());
@@ -1029,8 +1041,8 @@ public class PatientFileServiceIntegrationTest {
 		verify(IAMService, times(1)).deleteUser(id);
 		assertFalse(patientFileDAO.existsById(id));
 
-		correspondenceDTOs = patientFileService.findCorrespondencesByPatientFileId(id);
-		patientFileItemDTOs = patientFileService.findPatientFileItemsByPatientFileId(id);
+		correspondenceDTOs = correspondenceService.findCorrespondencesByPatientFileId(id);
+		patientFileItemDTOs = patientFileItemService.findPatientFileItemsByPatientFileId(id);
 
 		assertEquals(0, correspondenceDTOs.size());
 		assertEquals(0, patientFileItemDTOs.size());
@@ -1045,5 +1057,4 @@ public class PatientFileServiceIntegrationTest {
 
 		assertEquals("Le dossier patient n'a pas pu être supprimé.", ex.getMessage());
 	}
-
 }

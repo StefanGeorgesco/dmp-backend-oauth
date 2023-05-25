@@ -48,15 +48,13 @@ public class DoctorServiceIntegrationTest {
 	@Autowired
 	private DoctorService doctorService;
 
-	private SpecialtyDTO specialtyDTO;
-
 	private DoctorDTO doctorDTO;
 
 	private Doctor doctor;
 
 	@BeforeEach
 	public void setupBeforeEach() {
-		specialtyDTO = new SpecialtyDTO();
+		SpecialtyDTO specialtyDTO = new SpecialtyDTO();
 		specialtyDTO.setId("S001");
 		specialtyDTO.setDescription("A specialty");
 
@@ -290,55 +288,6 @@ public class DoctorServiceIntegrationTest {
 		List<DoctorDTO> doctors = doctorService.findDoctorsByIdOrFirstnameOrLastname("");
 
 		assertEquals(0, doctors.size());
-	}
-
-	@Test
-	public void testFindSpecialtySuccess() {
-
-		specialtyDTO = assertDoesNotThrow(() -> doctorService.findSpecialty("S045"));
-
-		assertEquals("S045", specialtyDTO.getId());
-		assertEquals("urologie", specialtyDTO.getDescription());
-	}
-
-	@Test
-	public void testFindSpecialtyFailureSpecialtyDoesNotExist() {
-
-		FinderException ex = assertThrows(FinderException.class, () -> doctorService.findSpecialty("S145"));
-
-		assertEquals("Spécialité non trouvée.", ex.getMessage());
-	}
-
-	@Test
-	public void testFindSpecialtiesByIdOrDescriptionFound8() {
-
-		List<SpecialtyDTO> specialtiesDTO = doctorService.findSpecialtiesByIdOrDescription("chirur");
-
-		assertEquals(8, specialtiesDTO.size());
-	}
-
-	@Test
-	public void testFindSpecialtiesByIdOrDescriptionFound0() {
-
-		List<SpecialtyDTO> specialtiesDTO = doctorService.findSpecialtiesByIdOrDescription("tu");
-
-		assertEquals(0, specialtiesDTO.size());
-	}
-
-	@Test
-	public void testFindSpecialtiesByIdOrDescriptionSearchStringIsBlank() {
-
-		List<SpecialtyDTO> specialtiesDTO = doctorService.findSpecialtiesByIdOrDescription("");
-
-		assertEquals(0, specialtiesDTO.size());
-	}
-
-	@Test
-	public void testFindAllSpecialtiesFound45() {
-
-		List<SpecialtyDTO> specialtiesDTO = doctorService.findAllSpecialties();
-
-		assertEquals(45, specialtiesDTO.size());
 	}
 
 }

@@ -1,6 +1,8 @@
 package fr.cnam.stefangeorgesco.dmp.api;
 
 import fr.cnam.stefangeorgesco.dmp.domain.dto.*;
+import fr.cnam.stefangeorgesco.dmp.domain.service.CorrespondenceService;
+import fr.cnam.stefangeorgesco.dmp.domain.service.PatientFileItemService;
 import fr.cnam.stefangeorgesco.dmp.domain.service.PatientFileService;
 import fr.cnam.stefangeorgesco.dmp.domain.service.PatientFileServiceImpl;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.*;
@@ -26,8 +28,16 @@ public class PatientFileController {
 
 	private final PatientFileService patientFileService;
 
-	public PatientFileController(PatientFileService patientFileService) {
+	private final CorrespondenceService correspondenceService;
+
+	private final PatientFileItemService patientFileItemService;
+
+	public PatientFileController(PatientFileService patientFileService,
+								 CorrespondenceService correspondenceService,
+								 PatientFileItemService patientFileItemService) {
 		this.patientFileService = patientFileService;
+		this.correspondenceService = correspondenceService;
+		this.patientFileItemService = patientFileItemService;
 	}
 
 	/**
@@ -111,7 +121,7 @@ public class PatientFileController {
 
 		String userId = principal.getName();
 
-		return ResponseEntity.ok(patientFileService.findCorrespondencesByPatientFileId(userId));
+		return ResponseEntity.ok(correspondenceService.findCorrespondencesByPatientFileId(userId));
 	}
 
 	/**
@@ -129,7 +139,7 @@ public class PatientFileController {
 
 		String userId = principal.getName();
 
-		return ResponseEntity.ok(patientFileService.findPatientFileItemsByPatientFileId(userId));
+		return ResponseEntity.ok(patientFileItemService.findPatientFileItemsByPatientFileId(userId));
 	}
 
 	/**
@@ -251,7 +261,7 @@ public class PatientFileController {
 		correspondenceDTO.setPatientFileId(patientFileDTO.getId());
 
 		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(patientFileService.createCorrespondence(correspondenceDTO));
+				.body(correspondenceService.createCorrespondence(correspondenceDTO));
 
 	}
 
@@ -286,7 +296,7 @@ public class PatientFileController {
 
 		String referringDoctorId = patientFileService.findPatientFile(id).getReferringDoctorId();
 
-		List<CorrespondenceDTO> correspondencesDTO = patientFileService.findCorrespondencesByPatientFileId(id);
+		List<CorrespondenceDTO> correspondencesDTO = correspondenceService.findCorrespondencesByPatientFileId(id);
 
 		LocalDate now = LocalDate.now();
 
@@ -304,7 +314,7 @@ public class PatientFileController {
 		patientFileItemDTO.setPatientFileId(id);
 
 		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(patientFileService.createPatientFileItem(patientFileItemDTO));
+				.body(patientFileItemService.createPatientFileItem(patientFileItemDTO));
 	}
 
 	/**
@@ -332,7 +342,7 @@ public class PatientFileController {
 
 		String referringDoctorId = patientFileService.findPatientFile(id).getReferringDoctorId();
 
-		List<CorrespondenceDTO> correspondencesDTO = patientFileService.findCorrespondencesByPatientFileId(id);
+		List<CorrespondenceDTO> correspondencesDTO = correspondenceService.findCorrespondencesByPatientFileId(id);
 
 		LocalDate now = LocalDate.now();
 
@@ -375,7 +385,7 @@ public class PatientFileController {
 
 		String referringDoctorId = patientFileService.findPatientFile(id).getReferringDoctorId();
 
-		List<CorrespondenceDTO> correspondencesDTO = patientFileService.findCorrespondencesByPatientFileId(id);
+		List<CorrespondenceDTO> correspondencesDTO = correspondenceService.findCorrespondencesByPatientFileId(id);
 
 		LocalDate now = LocalDate.now();
 
@@ -389,7 +399,7 @@ public class PatientFileController {
 			throw new FinderException("L'utilisateur n'est pas le médecin référent ou correspondant.");
 		}
 
-		return ResponseEntity.ok(patientFileService.findPatientFileItemsByPatientFileId(id));
+		return ResponseEntity.ok(patientFileItemService.findPatientFileItemsByPatientFileId(id));
 	}
 
 	/**
@@ -427,7 +437,7 @@ public class PatientFileController {
 
 		patientFileItemDTO.setId(patientFileItemId);
 
-		PatientFileItemDTO storedPatientFileItemDTO = patientFileService.findPatientFileItem(patientFileItemId);
+		PatientFileItemDTO storedPatientFileItemDTO = patientFileItemService.findPatientFileItem(patientFileItemId);
 
 		if (!patienfFileId.equals(storedPatientFileItemDTO.getPatientFileId())) {
 			throw new FinderException("Elément médical non trouvé pour le dossier patient '" + patienfFileId + "'");
@@ -442,7 +452,7 @@ public class PatientFileController {
 
 		String referringDoctorId = patientFileService.findPatientFile(patienfFileId).getReferringDoctorId();
 
-		List<CorrespondenceDTO> correspondencesDTO = patientFileService
+		List<CorrespondenceDTO> correspondencesDTO = correspondenceService
 				.findCorrespondencesByPatientFileId(patienfFileId);
 
 		LocalDate now = LocalDate.now();
@@ -457,7 +467,7 @@ public class PatientFileController {
 			throw new FinderException("L'utilisateur n'est pas le médecin référent ou correspondant.");
 		}
 
-		return ResponseEntity.ok(patientFileService.updatePatientFileItem(patientFileItemDTO));
+		return ResponseEntity.ok(patientFileItemService.updatePatientFileItem(patientFileItemDTO));
 	}
 
 	/**
@@ -490,13 +500,13 @@ public class PatientFileController {
 			throw new DeleteException("L'utilisateur n'est pas le médecin référent.");
 		}
 
-		CorrespondenceDTO storedCorrespondenceDTO = patientFileService.findCorrespondence(correspondenceId);
+		CorrespondenceDTO storedCorrespondenceDTO = correspondenceService.findCorrespondence(correspondenceId);
 
 		if (!patientFileId.equals(storedCorrespondenceDTO.getPatientFileId())) {
 			throw new FinderException("Correspondance non trouvée pour le dossier patient '" + patientFileId + "'");
 		}
 
-		patientFileService.deleteCorrespondence(UUID.fromString(correspondenceId));
+		correspondenceService.deleteCorrespondence(UUID.fromString(correspondenceId));
 
 		RestResponse response = new RestResponse(HttpStatus.OK.value(), "La correspondance a bien été supprimée.");
 
@@ -532,7 +542,7 @@ public class PatientFileController {
 
 		UUID patientFileItemId = UUID.fromString(itemId);
 
-		PatientFileItemDTO storedPatientFileItemDTO = patientFileService.findPatientFileItem(patientFileItemId);
+		PatientFileItemDTO storedPatientFileItemDTO = patientFileItemService.findPatientFileItem(patientFileItemId);
 
 		if (!patienfFileId.equals(storedPatientFileItemDTO.getPatientFileId())) {
 			throw new FinderException("Elément médical non trouvé pour le dossier patient '" + patienfFileId + "'");
@@ -547,7 +557,7 @@ public class PatientFileController {
 
 		String referringDoctorId = patientFileService.findPatientFile(patienfFileId).getReferringDoctorId();
 
-		List<CorrespondenceDTO> correspondencesDTO = patientFileService
+		List<CorrespondenceDTO> correspondencesDTO = correspondenceService
 				.findCorrespondencesByPatientFileId(patienfFileId);
 
 		LocalDate now = LocalDate.now();
@@ -562,84 +572,10 @@ public class PatientFileController {
 			throw new DeleteException("L'utilisateur n'est pas le médecin référent ou correspondant.");
 		}
 
-		patientFileService.deletePatientFileItem(patientFileItemId);
+		patientFileItemService.deletePatientFileItem(patientFileItemId);
 
 		RestResponse response = new RestResponse(HttpStatus.OK.value(), "L'élément médical a bien été supprimé.");
 
 		return ResponseEntity.ok(response);
-
 	}
-
-	/**
-	 * Gestionnaire des requêtes GET de consultation d'une maladie désignée par son
-	 * identifiant.
-	 * 
-	 * @param id l'identifiant de la maladie, fourni en variable de chemin.
-	 * @return un objet {@link fr.cnam.stefangeorgesco.dmp.domain.dto.DiseaseDTO}
-	 *         représentant la maladie consultée, encapsulé dans un objet
-	 *         org.springframework.http.ResponseEntity.
-	 * @throws FinderException maladie non trouvée.
-	 */
-	@GetMapping("/disease/{id}")
-	public ResponseEntity<DiseaseDTO> getDisease(@PathVariable String id) throws FinderException {
-
-		return ResponseEntity.ok(patientFileService.findDisease(id));
-	}
-
-	/**
-	 * Gestionnaire des requêtes GET de récupération des maladies trouvées par une
-	 * recherche à partir d'une chaîne de caractères.
-	 * 
-	 * @param q     la chaîne de caractère (String) utilisée pour la recherche,
-	 *              fournie en paramètre de requête.
-	 * @param limit le nombre maximum d'objets récupérés, paramètre de requête
-	 *              optionel. Il est fixé à 30 par défaut.
-	 * @return une liste ({@link java.util.List}) d'objets
-	 *         {@link fr.cnam.stefangeorgesco.dmp.domain.dto.DiseaseDTO}
-	 *         représentant le résultat de la recherche, encapsulée dans un objet
-	 *         org.springframework.http.ResponseEntity.
-	 */
-	@GetMapping("/disease")
-	public ResponseEntity<List<DiseaseDTO>> getDiseases(@RequestParam String q,
-			@RequestParam(required = false, defaultValue = "30") int limit) {
-
-		return ResponseEntity.ok(patientFileService.findDiseasesByIdOrDescription(q, limit));
-	}
-
-	/**
-	 * Gestionnaire des requêtes GET de consultation d'un acte médical désignée par
-	 * son identifiant.
-	 * 
-	 * @param id l'identifiant de l'élément médical, fourni en variable de chemin.
-	 * @return un objet {@link fr.cnam.stefangeorgesco.dmp.domain.dto.MedicalActDTO}
-	 *         représentant l'acte médical consulté, encapsulé dans un objet
-	 *         org.springframework.http.ResponseEntity.
-	 * @throws FinderException acte médical non trouvé.
-	 */
-	@GetMapping("/medical-act/{id}")
-	public ResponseEntity<MedicalActDTO> getMedicalAct(@PathVariable String id) throws FinderException {
-
-		return ResponseEntity.ok(patientFileService.findMedicalAct(id));
-	}
-
-	/**
-	 * Gestionnaire des requêtes GET de récupération des actes médicaux trouvés par
-	 * une recherche à partir d'une chaîne de caractères.
-	 * 
-	 * @param q     la chaîne de caractère (String) utilisée pour la recherche,
-	 *              fournie en paramètre de requête.
-	 * @param limit le nombre maximum d'objets récupérés, paramètre de requête
-	 *              optionel. Il est fixé à 30 par défaut.
-	 * @return une liste ({@link java.util.List}) d'objets
-	 *         {@link fr.cnam.stefangeorgesco.dmp.domain.dto.MedicalActDTO}
-	 *         représentant le résultat de la recherche, encapsulée dans un objet
-	 *         org.springframework.http.ResponseEntity.
-	 */
-	@GetMapping("/medical-act")
-	public ResponseEntity<List<MedicalActDTO>> getMedicalActs(@RequestParam String q,
-			@RequestParam(required = false, defaultValue = "30") int limit) {
-
-		return ResponseEntity.ok(patientFileService.findMedicalActsByIdOrDescription(q, limit));
-	}
-
 }
