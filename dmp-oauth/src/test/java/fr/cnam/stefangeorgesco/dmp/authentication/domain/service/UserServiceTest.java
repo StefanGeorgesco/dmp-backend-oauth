@@ -58,8 +58,7 @@ public class UserServiceTest {
 		userDTO.setSecurityCode("securityCode");
 
 		user = new User();
-		String username = "nom_utilisateur";
-		user.setUsername(username);
+		user.setUsername("nom_utilisateur");
 	}
 
 	@Test
@@ -229,5 +228,4 @@ public class UserServiceTest {
 		assertTrue(ex.getMessage()
 				.startsWith("Le compte utilisateur n'a pas pu être supprimé (erreur Keycloak, HTTPStatus : "));
 	}
-
 }
