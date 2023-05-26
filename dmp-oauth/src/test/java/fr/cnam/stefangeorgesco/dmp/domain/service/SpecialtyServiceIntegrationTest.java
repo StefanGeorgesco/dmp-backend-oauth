@@ -2,7 +2,6 @@ package fr.cnam.stefangeorgesco.dmp.domain.service;
 
 import fr.cnam.stefangeorgesco.dmp.domain.dto.SpecialtyDTO;
 import fr.cnam.stefangeorgesco.dmp.exception.domain.FinderException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,19 +22,9 @@ public class SpecialtyServiceIntegrationTest {
 	@Autowired
 	private SpecialtyService specialtyService;
 
-	private SpecialtyDTO specialtyDTO;
-
-	@BeforeEach
-	public void setupBeforeEach() {
-		specialtyDTO = new SpecialtyDTO();
-		specialtyDTO.setId("S001");
-		specialtyDTO.setDescription("A specialty");
-	}
-
 	@Test
 	public void testFindSpecialtySuccess() {
-
-		specialtyDTO = assertDoesNotThrow(() -> specialtyService.findSpecialty("S045"));
+		SpecialtyDTO specialtyDTO = assertDoesNotThrow(() -> specialtyService.findSpecialty("S045"));
 
 		assertEquals("S045", specialtyDTO.getId());
 		assertEquals("urologie", specialtyDTO.getDescription());
@@ -80,5 +69,4 @@ public class SpecialtyServiceIntegrationTest {
 
 		assertEquals(45, specialtiesDTO.size());
 	}
-
 }

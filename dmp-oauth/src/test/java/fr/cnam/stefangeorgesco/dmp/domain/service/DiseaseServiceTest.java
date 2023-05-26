@@ -25,41 +25,39 @@ public class DiseaseServiceTest {
 	@Autowired
 	private DiseaseService diseaseService;
 
-	private DiseaseDTO diseaseDTO;
-
-	private Disease disease1;
-
-	private Disease disease2;
+	private Disease disease;
 
 	@BeforeEach
 	public void setup() {
-		disease1 = new Disease();
-		disease1.setId("DIS001");
-		disease1.setDescription("Disease 1");
-		disease2 = new Disease();
-		disease2.setId("DIS002");
-		disease2.setDescription("Disease 2");
-		diseaseDTO = new DiseaseDTO();
-		diseaseDTO.setId("DIS001");
+		disease = new Disease();
+		disease.setId("DIS001");
+		disease.setDescription("Disease 1");
 	}
 
 	@Test
 	public void testFindDiseaseSuccess() {
 
-		when(diseaseDAO.findById(disease1.getId())).thenReturn(Optional.of(disease1));
+		DiseaseDTO diseaseDTO = new DiseaseDTO();
+		diseaseDTO.setId("DIS001");
 
-		diseaseDTO = assertDoesNotThrow(() -> diseaseService.findDisease(disease1.getId()));
+		when(diseaseDAO.findById(disease.getId())).thenReturn(Optional.of(disease));
 
-		verify(diseaseDAO, times(1)).findById(disease1.getId());
+		diseaseDTO = assertDoesNotThrow(() -> diseaseService.findDisease(disease.getId()));
 
-		assertEquals(disease1.getId(), diseaseDTO.getId());
-		assertEquals(disease1.getDescription(), diseaseDTO.getDescription());
+		verify(diseaseDAO, times(1)).findById(disease.getId());
+
+		assertEquals(disease.getId(), diseaseDTO.getId());
+		assertEquals(disease.getDescription(), diseaseDTO.getDescription());
 	}
 
 	@Test
 	public void testFindDiseasesByIdOrDescriptionFound2() {
 
-		when(diseaseDAO.findByIdOrDescription("sinusite", 10)).thenReturn(List.of(disease1, disease2));
+		Disease disease2 = new Disease();
+		disease2.setId("DIS002");
+		disease2.setDescription("Disease 2");
+
+		when(diseaseDAO.findByIdOrDescription("sinusite", 10)).thenReturn(List.of(disease, disease2));
 
 		List<DiseaseDTO> diseasesDTO = diseaseService.findDiseasesByIdOrDescription("sinusite", 10);
 

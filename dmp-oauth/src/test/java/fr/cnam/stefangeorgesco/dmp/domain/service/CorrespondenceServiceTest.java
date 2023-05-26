@@ -38,11 +38,11 @@ public class CorrespondenceServiceTest {
 
 	private Correspondence persistentCorrespondence;
 
-	private Correspondence foundCorrespondence1;
-
-	private Correspondence foundCorrespondence2;
-
 	private UUID uuid;
+
+	private Doctor doctor;
+
+	private PatientFile patientFile1;
 
 	@BeforeEach
 	public void setup() {
@@ -59,58 +59,39 @@ public class CorrespondenceServiceTest {
 		specialty2.setId("S002");
 		specialty2.setDescription("Specialty 2");
 
-		Doctor doctor1 = new Doctor();
-		doctor1.setId("D001");
+		doctor = new Doctor();
+		doctor.setId("D001");
+
 		Doctor doctor2 = new Doctor();
 		doctor2.setId("D002");
 		doctor2.setFirstname("firstname");
 		doctor2.setLastname("lastname");
 		doctor2.setSpecialties(List.of(specialty1, specialty2));
 
-		PatientFile patientFile1 = new PatientFile();
+		patientFile1 = new PatientFile();
 		patientFile1.setId("ID_1");
 		patientFile1.setFirstname("firstname_1");
 		patientFile1.setLastname("lastname_1");
 		patientFile1.setDateOfBirth(LocalDate.of(2000, 2, 13));
 		patientFile1.setAddress(address);
 		patientFile1.setSecurityCode("securityCode_1");
-		patientFile1.setReferringDoctor(doctor1);
-
-		PatientFile patientFile2 = new PatientFile();
-		patientFile2.setId("ID_2");
-		patientFile2.setFirstname("firstname_2");
-		patientFile2.setLastname("lastname_2");
-		patientFile2.setDateOfBirth(LocalDate.of(1995, 8, 21));
-		patientFile2.setAddress(address);
-		patientFile2.setSecurityCode("securityCode_2");
-		patientFile2.setReferringDoctor(doctor1);
-
-		correspondenceDTO = new CorrespondenceDTO();
-		correspondenceDTO.setDateUntil(LocalDate.now().plusDays(1));
-		correspondenceDTO.setDoctorId("D002");
-		correspondenceDTO.setPatientFileId("ID_1");
+		patientFile1.setReferringDoctor(doctor);
 
 		persistentCorrespondence = new Correspondence();
 		persistentCorrespondence.setDateUntil(LocalDate.of(2022, 7, 29));
 		persistentCorrespondence.setDoctor(doctor2);
 		persistentCorrespondence.setPatientFile(patientFile1);
 
-		foundCorrespondence1 = new Correspondence();
-		foundCorrespondence1.setId(UUID.randomUUID());
-		foundCorrespondence1.setDateUntil(LocalDate.of(2022, 8, 1));
-		foundCorrespondence1.setDoctor(doctor1);
-		foundCorrespondence1.setPatientFile(patientFile1);
-		foundCorrespondence2 = new Correspondence();
-		foundCorrespondence2.setId(UUID.randomUUID());
-		foundCorrespondence2.setDateUntil(LocalDate.of(2022, 9, 5));
-		foundCorrespondence2.setDoctor(doctor2);
-		foundCorrespondence2.setPatientFile(patientFile2);
-
 		uuid = UUID.randomUUID();
 	}
 
 	@Test
 	public void testCreateCorrespondenceSuccess() {
+
+		correspondenceDTO = new CorrespondenceDTO();
+		correspondenceDTO.setDateUntil(LocalDate.now().plusDays(1));
+		correspondenceDTO.setDoctorId("D002");
+		correspondenceDTO.setPatientFileId("ID_1");
 
 		uuid = UUID.randomUUID();
 		persistentCorrespondence.setId(uuid);
@@ -194,15 +175,21 @@ public class CorrespondenceServiceTest {
 	@Test
 	public void testFindCorrespondencesByPatientFileIdFound3() {
 
+		Correspondence foundCorrespondence = new Correspondence();
+		foundCorrespondence.setId(UUID.randomUUID());
+		foundCorrespondence.setDateUntil(LocalDate.of(2022, 8, 1));
+		foundCorrespondence.setDoctor(doctor);
+		foundCorrespondence.setPatientFile(patientFile1);
+
 		when(correspondenceDAO.findByPatientFileId("P001"))
-				.thenReturn(List.of(foundCorrespondence1, foundCorrespondence2));
+				.thenReturn(List.of(foundCorrespondence, foundCorrespondence));
 
 		List<CorrespondenceDTO> correspondencesDTO = correspondenceService.findCorrespondencesByPatientFileId("P001");
 
 		verify(correspondenceDAO, times(1)).findByPatientFileId("P001");
 
 		assertEquals(2, correspondencesDTO.size());
-		assertEquals(foundCorrespondence1.getId(), correspondencesDTO.get(0).getId());
+		assertEquals(foundCorrespondence.getId(), correspondencesDTO.get(0).getId());
 		assertEquals("2022-08-01", correspondencesDTO.get(0).getDateUntil().toString());
 		assertEquals("D001", correspondencesDTO.get(0).getDoctorId());
 		assertEquals("ID_1", correspondencesDTO.get(0).getPatientFileId());

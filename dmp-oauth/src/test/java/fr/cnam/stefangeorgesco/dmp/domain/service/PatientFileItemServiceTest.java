@@ -33,14 +33,6 @@ public class PatientFileItemServiceTest {
 
 	private ActDTO actDTO;
 
-	private DiagnosisDTO diagnosisDTO;
-
-	private MailDTO mailDTO;
-
-	private PrescriptionDTO prescriptionDTO;
-
-	private SymptomDTO symptomDTO;
-
 	private Disease disease1;
 
 	private Disease disease2;
@@ -135,38 +127,6 @@ public class PatientFileItemServiceTest {
 		actDTO.setAuthoringDoctorId("D001");
 		actDTO.setPatientFileId("P001");
 		actDTO.setMedicalActDTO(medicalActDTO);
-
-		DiseaseDTO diseaseDTO = new DiseaseDTO();
-		diseaseDTO.setId("DIS001");
-
-		diagnosisDTO = new DiagnosisDTO();
-		diagnosisDTO.setDate(date);
-		diagnosisDTO.setComments("diagnosis comment");
-		diagnosisDTO.setAuthoringDoctorId("D001");
-		diagnosisDTO.setPatientFileId("P001");
-		diagnosisDTO.setDiseaseDTO(diseaseDTO);
-
-		mailDTO = new MailDTO();
-		mailDTO.setDate(date);
-		mailDTO.setComments("mail comment");
-		mailDTO.setAuthoringDoctorId("D001");
-		mailDTO.setPatientFileId("P001");
-		mailDTO.setText("texte du message");
-		mailDTO.setRecipientDoctorId("D002");
-
-		prescriptionDTO = new PrescriptionDTO();
-		prescriptionDTO.setDate(date);
-		prescriptionDTO.setComments("prescription comment");
-		prescriptionDTO.setAuthoringDoctorId("D001");
-		prescriptionDTO.setPatientFileId("P001");
-		prescriptionDTO.setDescription("prescription description");
-
-		symptomDTO = new SymptomDTO();
-		symptomDTO.setDate(date);
-		symptomDTO.setComments("symptom comment");
-		symptomDTO.setAuthoringDoctorId("D001");
-		symptomDTO.setPatientFileId("P001");
-		symptomDTO.setDescription("symptom description");
 
 		uuid = UUID.randomUUID();
 
@@ -343,6 +303,15 @@ public class PatientFileItemServiceTest {
 	@Test
 	public void testUpdateDiagnosisSuccess() {
 
+		DiseaseDTO diseaseDTO = new DiseaseDTO();
+		diseaseDTO.setId("DIS001");
+
+		DiagnosisDTO diagnosisDTO = new DiagnosisDTO();
+		diagnosisDTO.setDate(date);
+		diagnosisDTO.setComments("diagnosis comment");
+		diagnosisDTO.setAuthoringDoctorId("D001");
+		diagnosisDTO.setPatientFileId("P001");
+		diagnosisDTO.setDiseaseDTO(diseaseDTO);
 		diagnosisDTO.setId(uuid);
 
 		diagnosis.setId(uuid);
@@ -391,6 +360,13 @@ public class PatientFileItemServiceTest {
 	@Test
 	public void testUpdateMailSuccess() {
 
+		MailDTO mailDTO = new MailDTO();
+		mailDTO.setDate(date);
+		mailDTO.setComments("mail comment");
+		mailDTO.setAuthoringDoctorId("D001");
+		mailDTO.setPatientFileId("P001");
+		mailDTO.setText("texte du message");
+		mailDTO.setRecipientDoctorId("D002");
 		mailDTO.setId(uuid);
 
 		mail.setId(uuid);
@@ -437,6 +413,12 @@ public class PatientFileItemServiceTest {
 	@Test
 	public void testUpdatePrescriptionSuccess() {
 
+		PrescriptionDTO prescriptionDTO = new PrescriptionDTO();
+		prescriptionDTO.setDate(date);
+		prescriptionDTO.setComments("prescription comment");
+		prescriptionDTO.setAuthoringDoctorId("D001");
+		prescriptionDTO.setPatientFileId("P001");
+		prescriptionDTO.setDescription("prescription description");
 		prescriptionDTO.setId(uuid);
 
 		prescription.setId(uuid);
@@ -482,6 +464,12 @@ public class PatientFileItemServiceTest {
 	@Test
 	public void testUpdateSymptomSuccess() {
 
+		SymptomDTO symptomDTO = new SymptomDTO();
+		symptomDTO.setDate(date);
+		symptomDTO.setComments("symptom comment");
+		symptomDTO.setAuthoringDoctorId("D001");
+		symptomDTO.setPatientFileId("P001");
+		symptomDTO.setDescription("symptom description");
 		symptomDTO.setId(uuid);
 
 		symptom.setId(uuid);

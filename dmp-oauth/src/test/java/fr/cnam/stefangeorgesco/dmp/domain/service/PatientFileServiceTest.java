@@ -63,15 +63,13 @@ public class PatientFileServiceTest {
 
 	private PatientFileDTO patientFileDTOResponse;
 
-	private Doctor newDoctor;
-
 	private PatientFile persistentPatientFile;
 
 	private PatientFile savedPatientFile;
 
-	private PatientFile patientFile1;
+	private Address address;
 
-	private PatientFile patientFile2;
+	private Doctor doctor;
 
 	@BeforeEach
 	public void setup() {
@@ -91,16 +89,14 @@ public class PatientFileServiceTest {
 		patientFileDTO.setAddressDTO(addressDTO);
 		patientFileDTO.setReferringDoctorId("D001");
 
-		Address address = new Address();
+		address = new Address();
 		address.setStreet1("street 1");
 		address.setZipcode("zipcode");
 		address.setCity("City");
 		address.setCountry("Country");
 
-		Doctor doctor1 = new Doctor();
-		doctor1.setId("D001");
-
-		newDoctor = new Doctor();
+		doctor = new Doctor();
+		doctor.setId("D001");
 
 		persistentPatientFile = new PatientFile();
 		persistentPatientFile.setId(patientFileDTO.getId());
@@ -109,25 +105,7 @@ public class PatientFileServiceTest {
 		persistentPatientFile.setDateOfBirth(LocalDate.of(2000, 2, 13));
 		persistentPatientFile.setAddress(address);
 		persistentPatientFile.setSecurityCode("securityCode");
-		persistentPatientFile.setReferringDoctor(doctor1);
-
-		patientFile1 =  new PatientFile();
-		patientFile1.setId("ID_1");
-		patientFile1.setFirstname("firstname_1");
-		patientFile1.setLastname("lastname_1");
-		patientFile1.setDateOfBirth(LocalDate.of(2000, 2, 13));
-		patientFile1.setAddress(address);
-		patientFile1.setSecurityCode("securityCode_1");
-		patientFile1.setReferringDoctor(doctor1);
-
-		patientFile2 = new PatientFile();
-		patientFile2.setId("ID_2");
-		patientFile2.setFirstname("firstname_2");
-		patientFile2.setLastname("lastname_2");
-		patientFile2.setDateOfBirth(LocalDate.of(1995, 8, 21));
-		patientFile2.setAddress(address);
-		patientFile2.setSecurityCode("securityCode_2");
-		patientFile2.setReferringDoctor(doctor1);
+		persistentPatientFile.setReferringDoctor(doctor);
 	}
 
 	@Test
@@ -259,8 +237,9 @@ public class PatientFileServiceTest {
 	@Test
 	public void testUpdateReferringDoctorSuccess() {
 
-		patientFileDTO.setReferringDoctorId("D002");
+		Doctor newDoctor = new Doctor();
 		newDoctor.setId("D002");
+		patientFileDTO.setReferringDoctorId("D002");
 		assertEquals("D001", persistentPatientFile.getReferringDoctor().getId());
 
 		when(patientFileDAO.findById(patientFileDTO.getId())).thenReturn(Optional.of(persistentPatientFile));
@@ -348,6 +327,24 @@ public class PatientFileServiceTest {
 
 	@Test
 	public void testFindPatientFileByIdOrFirstnameOrLastnameFound2() {
+		PatientFile patientFile1 = new PatientFile();
+		patientFile1.setId("ID_1");
+		patientFile1.setFirstname("firstname_1");
+		patientFile1.setLastname("lastname_1");
+		patientFile1.setDateOfBirth(LocalDate.of(2000, 2, 13));
+		patientFile1.setAddress(address);
+		patientFile1.setSecurityCode("securityCode_1");
+		patientFile1.setReferringDoctor(doctor);
+
+		PatientFile patientFile2 = new PatientFile();
+		patientFile2.setId("ID_2");
+		patientFile2.setFirstname("firstname_2");
+		patientFile2.setLastname("lastname_2");
+		patientFile2.setDateOfBirth(LocalDate.of(1995, 8, 21));
+		patientFile2.setAddress(address);
+		patientFile2.setSecurityCode("securityCode_2");
+		patientFile2.setReferringDoctor(doctor);
+
 		when(patientFileDAO.findByIdOrFirstnameOrLastname("la")).thenReturn(List.of(patientFile1, patientFile2));
 
 		List<PatientFileDTO> patientFilesDTO = patientFileService.findPatientFilesByIdOrFirstnameOrLastname("la");

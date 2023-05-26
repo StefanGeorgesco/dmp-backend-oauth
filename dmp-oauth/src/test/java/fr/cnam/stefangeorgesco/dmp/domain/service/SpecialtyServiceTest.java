@@ -25,17 +25,12 @@ public class SpecialtyServiceTest {
 	@Autowired
 	private SpecialtyService specialtyService;
 
-	private SpecialtyDTO specialtyDTO1;
-
 	private Specialty specialty1;
 
 	private Specialty specialty2;
 
 	@BeforeEach
-	public void setupBeforeEach() {
-		specialtyDTO1 = new SpecialtyDTO();
-		specialtyDTO1.setId("S001");
-
+	public void setup() {
 		specialty1 = new Specialty();
 		specialty1.setId("S001");
 		specialty1.setDescription("First specialty");
@@ -49,7 +44,7 @@ public class SpecialtyServiceTest {
 
 		when(specialtyDAO.findById(specialty1.getId())).thenReturn(Optional.of(specialty1));
 
-		specialtyDTO1 = assertDoesNotThrow(() -> specialtyService.findSpecialty(specialty1.getId()));
+		SpecialtyDTO specialtyDTO1 = assertDoesNotThrow(() -> specialtyService.findSpecialty(specialty1.getId()));
 
 		verify(specialtyDAO, times(1)).findById(specialty1.getId());
 
@@ -94,5 +89,4 @@ public class SpecialtyServiceTest {
 		assertEquals("S001", specialtiesDTO.get(0).getId());
 		assertEquals("First specialty", specialtiesDTO.get(0).getDescription());
 	}
-
 }

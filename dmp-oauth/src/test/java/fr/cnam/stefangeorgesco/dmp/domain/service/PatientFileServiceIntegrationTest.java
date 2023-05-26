@@ -69,8 +69,6 @@ public class PatientFileServiceIntegrationTest {
 
 	private PatientFileDTO patientFileDTOResponse;
 
-	private PatientFile patientFile;
-
 	private PatientFile savedPatientFile;
 
 	private String id;
@@ -92,26 +90,6 @@ public class PatientFileServiceIntegrationTest {
 		patientFileDTO.setEmail("patrick.dubois@mail.fr");
 		patientFileDTO.setAddressDTO(addressDTO);
 		patientFileDTO.setReferringDoctorId("D001");
-
-		Address address = new Address();
-		address.setStreet1("1 Rue Lecourbe");
-		address.setZipcode("75015");
-		address.setCity("Paris Cedex 15");
-		address.setCountry("France-");
-
-		Doctor doctor = new Doctor();
-		doctor.setId("D001");
-
-		patientFile = new PatientFile();
-		patientFile.setId("P002");
-		patientFile.setFirstname("Patrick");
-		patientFile.setLastname("Dubois");
-		patientFile.setDateOfBirth(LocalDate.of(2000, 2, 13));
-		patientFile.setPhone("9876543210");
-		patientFile.setEmail("patrick.dubois@mail.fr");
-		patientFile.setAddress(address);
-		patientFile.setSecurityCode("code");
-		patientFile.setReferringDoctor(doctor);
 	}
 
 	@Test
@@ -127,6 +105,26 @@ public class PatientFileServiceIntegrationTest {
 
 	@Test
 	public void testCreatePatientFileFailurePatientFileAlreadyExist() throws CheckException {
+		Address address = new Address();
+		address.setStreet1("1 Rue Lecourbe");
+		address.setZipcode("75015");
+		address.setCity("Paris Cedex 15");
+		address.setCountry("France-");
+
+		Doctor doctor = new Doctor();
+		doctor.setId("D001");
+
+		PatientFile patientFile = new PatientFile();
+		patientFile.setId("P002");
+		patientFile.setFirstname("Patrick");
+		patientFile.setLastname("Dubois");
+		patientFile.setDateOfBirth(LocalDate.of(2000, 2, 13));
+		patientFile.setPhone("9876543210");
+		patientFile.setEmail("patrick.dubois@mail.fr");
+		patientFile.setAddress(address);
+		patientFile.setSecurityCode("code");
+		patientFile.setReferringDoctor(doctor);
+
 		patientFileDAO.save(patientFile);
 
 		doNothing().when(rnippService).checkPatientData(patientFileDTO);

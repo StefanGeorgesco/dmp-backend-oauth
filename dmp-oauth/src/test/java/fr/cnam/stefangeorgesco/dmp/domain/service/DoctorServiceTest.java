@@ -71,7 +71,7 @@ public class DoctorServiceTest {
 	private Doctor foundDoctor2;
 
 	@BeforeEach
-	public void setupBeforeEach() {
+	public void setup() {
 		specialtyDTO1 = new SpecialtyDTO();
 		specialtyDTO1.setId("S001");
 		specialtyDTO2 = new SpecialtyDTO();

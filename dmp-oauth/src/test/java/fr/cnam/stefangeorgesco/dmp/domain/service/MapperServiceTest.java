@@ -24,15 +24,9 @@ public class MapperServiceTest {
 
 	private Specialty specialty2;
 
-	private Doctor doctor1;
-
-	private Doctor doctor2;
+	private Doctor doctor;
 
 	private PatientFile patientFile;
-
-	private Disease disease;
-
-	private MedicalAct medicalAct;
 
 	private Act act;
 
@@ -41,10 +35,6 @@ public class MapperServiceTest {
 	private Mail mail;
 
 	private Symptom symptom;
-
-	private DiseaseDTO diseaseDTO;
-
-	private MedicalActDTO medicalActDTO;
 
 	private ActDTO actDTO;
 
@@ -69,30 +59,22 @@ public class MapperServiceTest {
 		specialty2.setId("S002");
 		specialty2.setDescription("Second specialty");
 
-		doctor1 = new Doctor();
-		doctor1.setId("D001");
-		doctor1.setFirstname("Patrick");
-		doctor1.setLastname("Dubois");
-		doctor1.setPhone("9876543210");
-		doctor1.setEmail("patrick.dubois@mail.fr");
-		doctor1.setAddress(address);
-		doctor1.setSpecialties(List.of(specialty1, specialty2));
-
-		doctor2 = new Doctor();
+		doctor = new Doctor();
+		doctor.setId("D001");
+		doctor.setFirstname("Patrick");
+		doctor.setLastname("Dubois");
+		doctor.setPhone("9876543210");
+		doctor.setEmail("patrick.dubois@mail.fr");
+		doctor.setAddress(address);
+		doctor.setSpecialties(List.of(specialty1, specialty2));
 
 		patientFile = new PatientFile();
 		patientFile.setId("P001");
-
-		disease = new Disease();
-		medicalAct = new MedicalAct();
 
 		act = new Act();
 		diagnosis = new Diagnosis();
 		mail = new Mail();
 		symptom = new Symptom();
-
-		diseaseDTO = new DiseaseDTO();
-		medicalActDTO = new MedicalActDTO();
 
 		actDTO = new ActDTO();
 		diagnosisDTO = new DiagnosisDTO();
@@ -123,6 +105,7 @@ public class MapperServiceTest {
 
 	@Test
 	public void testModelMapperMail2MailDTO() {
+		Doctor doctor2 = new Doctor();
 		doctor2.setId("D002");
 		doctor2.setFirstname("firstname_2");
 		doctor2.setLastname("lastname_2");
@@ -130,7 +113,7 @@ public class MapperServiceTest {
 		mail.setId(UUID.randomUUID());
 		mail.setDate(LocalDate.of(2022, 7, 22));
 		mail.setComments("A comment");
-		mail.setAuthoringDoctor(doctor1);
+		mail.setAuthoringDoctor(doctor);
 		mail.setPatientFile(patientFile);
 		mail.setText("mail text");
 		mail.setRecipientDoctor(doctor2);
@@ -156,6 +139,7 @@ public class MapperServiceTest {
 
 	@Test
 	public void testModelMapperDiagnosisDTO2Diagnosis() {
+		DiseaseDTO diseaseDTO = new DiseaseDTO();
 		diseaseDTO.setId("DIS001");
 		diseaseDTO.setDescription("A disease");
 		diagnosisDTO.setId(UUID.randomUUID());
@@ -178,12 +162,13 @@ public class MapperServiceTest {
 
 	@Test
 	public void testModelMapperDiagnosis2DiagnosisDTO() {
+		Disease disease = new Disease();
 		disease.setId("DIS001");
 		disease.setDescription("A disease");
 		diagnosis.setId(UUID.randomUUID());
 		diagnosis.setDate(LocalDate.of(2022, 7, 22));
 		diagnosis.setComments("A comment");
-		diagnosis.setAuthoringDoctor(doctor1);
+		diagnosis.setAuthoringDoctor(doctor);
 		diagnosis.setPatientFile(patientFile);
 		diagnosis.setDisease(disease);
 
@@ -204,6 +189,7 @@ public class MapperServiceTest {
 
 	@Test
 	public void testModelMapperActDTO2Act() {
+		MedicalActDTO medicalActDTO = new MedicalActDTO();
 		medicalActDTO.setId("MA001");
 		medicalActDTO.setDescription("A medical act");
 		actDTO.setId(UUID.randomUUID());
@@ -226,12 +212,13 @@ public class MapperServiceTest {
 
 	@Test
 	public void testModelMapperAct2ActDTO() {
+		MedicalAct medicalAct = new MedicalAct();
 		medicalAct.setId("MA001");
 		medicalAct.setDescription("A disease");
 		act.setId(UUID.randomUUID());
 		act.setDate(LocalDate.of(2022, 7, 22));
 		act.setComments("A comment");
-		act.setAuthoringDoctor(doctor1);
+		act.setAuthoringDoctor(doctor);
 		act.setPatientFile(patientFile);
 		act.setMedicalAct(medicalAct);
 
@@ -274,7 +261,7 @@ public class MapperServiceTest {
 		symptom.setId(UUID.randomUUID());
 		symptom.setDate(LocalDate.of(2022, 7, 22));
 		symptom.setComments("A comment");
-		symptom.setAuthoringDoctor(doctor1);
+		symptom.setAuthoringDoctor(doctor);
 		symptom.setPatientFile(patientFile);
 		symptom.setDescription("Symptom description");
 

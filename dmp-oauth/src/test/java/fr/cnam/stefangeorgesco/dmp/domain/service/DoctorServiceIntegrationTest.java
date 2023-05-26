@@ -50,10 +50,8 @@ public class DoctorServiceIntegrationTest {
 
 	private DoctorDTO doctorDTO;
 
-	private Doctor doctor;
-
 	@BeforeEach
-	public void setupBeforeEach() {
+	public void setup() {
 		SpecialtyDTO specialtyDTO = new SpecialtyDTO();
 		specialtyDTO.setId("S001");
 		specialtyDTO.setDescription("A specialty");
@@ -75,29 +73,6 @@ public class DoctorServiceIntegrationTest {
 		doctorDTO.setEmail("pierre.martin@docteurs.fr");
 		doctorDTO.setSpecialtiesDTO(specialtyDTOs);
 		doctorDTO.setAddressDTO(addressDTO);
-
-		Specialty specialty = new Specialty();
-		specialty.setId("S001");
-		specialty.setDescription("A specialty");
-
-		List<Specialty> specialties = new ArrayList<>();
-		specialties.add(specialty);
-
-		Address address = new Address();
-		address.setStreet1("1 Rue Lecourbe");
-		address.setZipcode("75015");
-		address.setCity("Paris");
-		address.setCountry("France");
-
-		doctor = new Doctor();
-		doctor.setId("D003");
-		doctor.setFirstname("Pierre");
-		doctor.setLastname("Martin");
-		doctor.setPhone("012345679");
-		doctor.setEmail("pierre.martin@docteurs.fr");
-		doctor.setSpecialties(specialties);
-		doctor.setAddress(address);
-		doctor.setSecurityCode("code");
 	}
 
 	@AfterEach
@@ -119,6 +94,29 @@ public class DoctorServiceIntegrationTest {
 
 	@Test
 	public void testCreateDoctorFailureDoctorAlreadyExists() {
+		Specialty specialty = new Specialty();
+		specialty.setId("S001");
+		specialty.setDescription("A specialty");
+
+		List<Specialty> specialties = new ArrayList<>();
+		specialties.add(specialty);
+
+		Address address = new Address();
+		address.setStreet1("1 Rue Lecourbe");
+		address.setZipcode("75015");
+		address.setCity("Paris");
+		address.setCountry("France");
+
+		Doctor doctor = new Doctor();
+		doctor.setId("D003");
+		doctor.setFirstname("Pierre");
+		doctor.setLastname("Martin");
+		doctor.setPhone("012345679");
+		doctor.setEmail("pierre.martin@docteurs.fr");
+		doctor.setSpecialties(specialties);
+		doctor.setAddress(address);
+		doctor.setSecurityCode("code");
+
 		doctorDAO.save(doctor);
 
 		DuplicateKeyException ex = assertThrows(DuplicateKeyException.class,
@@ -289,5 +287,4 @@ public class DoctorServiceIntegrationTest {
 
 		assertEquals(0, doctors.size());
 	}
-
 }
