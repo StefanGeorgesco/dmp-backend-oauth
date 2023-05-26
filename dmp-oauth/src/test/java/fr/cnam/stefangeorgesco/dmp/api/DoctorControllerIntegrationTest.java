@@ -59,12 +59,8 @@ public class DoctorControllerIntegrationTest {
 
 	private DoctorDTO doctorDTO;
 
-	private Doctor doctor;
-
-	private User user;
-
 	@BeforeEach
-	public void setupBeforeEach() {
+	public void setup() {
 		SpecialtyDTO specialtyDTO1 = new SpecialtyDTO();
 		specialtyDTO1.setId("S001");
 		specialtyDTO1.setDescription("any");
@@ -90,37 +86,6 @@ public class DoctorControllerIntegrationTest {
 		doctorDTO.setEmail("pierre.martin@docteurs.fr");
 		doctorDTO.setSpecialtiesDTO(specialtyDTOs);
 		doctorDTO.setAddressDTO(addressDTO);
-
-		Specialty specialty1 = new Specialty();
-		specialty1.setId("S001");
-		Specialty specialty2 = new Specialty();
-		specialty2.setId("S002");
-
-		List<Specialty> specialties = new ArrayList<>();
-		specialties.add(specialty1);
-		specialties.add(specialty2);
-
-		Address address = new Address();
-		address.setStreet1("1 Rue Lecourbe");
-		address.setZipcode("75015");
-		address.setCity("Paris");
-		address.setCountry("France");
-
-		doctor = new Doctor();
-		doctor.setId("D003");
-		doctor.setFirstname("Pierre");
-		doctor.setLastname("Martin");
-		doctor.setPhone("012345679");
-		doctor.setEmail("pierre.martin@docteurs.fr");
-		doctor.setSpecialties(specialties);
-		doctor.setAddress(address);
-		doctor.setSecurityCode("code");
-
-		user = new User();
-		user.setId("D002");
-		user.setUsername("username");
-		user.setPassword("password");
-		user.setSecurityCode("code");
 	}
 
 	@AfterEach
@@ -152,6 +117,30 @@ public class DoctorControllerIntegrationTest {
 	@Test
 	@WithMockUser(roles={"ADMIN"})
 	public void testCreateDoctorFailureDoctorAlreadyExists() throws Exception {
+		Specialty specialty1 = new Specialty();
+		specialty1.setId("S001");
+		Specialty specialty2 = new Specialty();
+		specialty2.setId("S002");
+
+		List<Specialty> specialties = new ArrayList<>();
+		specialties.add(specialty1);
+		specialties.add(specialty2);
+
+		Address address = new Address();
+		address.setStreet1("1 Rue Lecourbe");
+		address.setZipcode("75015");
+		address.setCity("Paris");
+		address.setCountry("France");
+
+		Doctor doctor = new Doctor();
+		doctor.setId("D003");
+		doctor.setFirstname("Pierre");
+		doctor.setLastname("Martin");
+		doctor.setPhone("012345679");
+		doctor.setEmail("pierre.martin@docteurs.fr");
+		doctor.setSpecialties(specialties);
+		doctor.setAddress(address);
+		doctor.setSecurityCode("code");
 		doctorDAO.save(doctor);
 
 		mockMvc.perform(post("/doctor").contentType(MediaType.APPLICATION_JSON)
@@ -403,6 +392,12 @@ public class DoctorControllerIntegrationTest {
 	@Test
 	@WithMockUser(roles={"ADMIN"})
 	public void testDeleteDoctorSuccessUserPresent() throws Exception {
+		User user = new User();
+		user.setId("D002");
+		user.setUsername("username");
+		user.setPassword("password");
+		user.setSecurityCode("code");
+
 		when(IAMService.userExistsById("D002")).thenReturn(true);
 		when(IAMService.deleteUser(user.getId())).thenReturn(HttpStatus.NO_CONTENT);
 
